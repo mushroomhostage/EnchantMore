@@ -34,6 +34,30 @@ import org.bukkit.enchantments.*;
 import org.bukkit.*;
 
 class EnchantMoreListener implements Listener {
+
+    // Better enchantment names more closely matching in-game display
+    // TODO: replace with ItemStackX
+    final Enchantment PROTECTION = Enchantment.PROTECTION_ENVIRONMENTAL;
+    final Enchantment FIRE_PROTECTION = Enchantment.PROTECTION_FIRE;
+    final Enchantment FEATHER_FALLING = Enchantment.PROTECTION_FALL;
+    final Enchantment BLAST_PROTECTION = Enchantment.PROTECTION_EXPLOSIONS;
+    final Enchantment PROJECTILE_PROTECTION = Enchantment.PROTECTION_PROJECTILE;
+    final Enchantment RESPIRATION = Enchantment.OXYGEN;
+    final Enchantment AQUA_AFFINITY = Enchantment.WATER_WORKER;
+    final Enchantment SHARPNESS = Enchantment.DAMAGE_ALL;
+    final Enchantment SMITE = Enchantment.DAMAGE_UNDEAD;
+    final Enchantment BANE = Enchantment.DAMAGE_ARTHROPODS;
+    final Enchantment KNOCKBACK = Enchantment.KNOCKBACK;
+    final Enchantment FIRE_ASPECT = Enchantment.FIRE_ASPECT;
+    final Enchantment LOOTING = Enchantment.LOOT_BONUS_MOBS;
+    final Enchantment EFFICIENCY = Enchantment.DIG_SPEED;
+    final Enchantment SILK_TOUCH = Enchantment.SILK_TOUCH;
+    final Enchantment UNBREAKING = Enchantment.DURABILITY;
+    final Enchantment FORTUNE = Enchantment.LOOT_BONUS_BLOCKS;
+    final Enchantment POWER = Enchantment.ARROW_DAMAGE;
+    final Enchantment PUNCH = Enchantment.ARROW_KNOCKBACK;
+    final Enchantment FLAME = Enchantment.ARROW_FIRE;
+    final Enchantment INFINITE = Enchantment.ARROW_INFINITE;
    
     EnchantMore plugin;
 
@@ -58,7 +82,7 @@ class EnchantMoreListener implements Listener {
         if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
             World world = block.getWorld();
 
-            if (item.containsEnchantment(Enchantment.DAMAGE_UNDEAD)) { // "Smite"
+            if (item.containsEnchantment(SMITE)) {
                 world.strikeLightning(block.getLocation());
             }
         }
@@ -75,8 +99,8 @@ class EnchantMoreListener implements Listener {
         }
 
         // Flint & Steel + Fire Aspect = set mobs on fire
-        if (item.getType() == Material.FLINT_AND_STEEL && item.containsEnchantment(Enchantment.FIRE_ASPECT)) {
-            entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(Enchantment.FIRE_ASPECT)));
+        if (item.getType() == Material.FLINT_AND_STEEL && item.containsEnchantment(FIRE_ASPECT)) {
+            entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
             // TODO: fix
             item.setDurability((short)(item.getDurability() - 1));
@@ -93,13 +117,13 @@ class EnchantMoreListener implements Listener {
         }
 
         // Fishing Rod + Fire Aspect = set mobs on fire
-        if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY && item.containsEnchantment(Enchantment.FIRE_ASPECT)) {
+        if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY && item.containsEnchantment(FIRE_ASPECT)) {
             Entity entity = event.getCaught();
 
             if (entity == null) {
                 return;
             }
-            entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(Enchantment.FIRE_ASPECT)));
+            entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
             // TODO: fix
             item.setDurability((short)(item.getDurability() - 1));
