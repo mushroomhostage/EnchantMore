@@ -76,12 +76,41 @@ class EnchantMoreListener implements Listener {
 
         // Flint & Steel + Fire Aspect = set mobs on fire
         if (item.getType() == Material.FLINT_AND_STEEL && item.containsEnchantment(Enchantment.FIRE_ASPECT)) {
-            // TODO: configurable ticks per level
-            int fireTicks = 20 * 10 * item.getEnchantmentLevel(Enchantment.FIRE_ASPECT);    
-            entity.setFireTicks(fireTicks);
+            entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(Enchantment.FIRE_ASPECT)));
 
+            // TODO: fix
             item.setDurability((short)(item.getDurability() - 1));
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerFish(PlayerFishEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getItemInHand();
+
+        if (item == null) {
+            return;
+        }
+
+        // Fishing Rod + Fire Aspect = set mobs on fire
+        if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY && item.containsEnchantment(Enchantment.FIRE_ASPECT)) {
+            Entity entity = event.getCaught();
+
+            if (entity == null) {
+                return;
+            }
+            entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(Enchantment.FIRE_ASPECT)));
+
+            // TODO: fix
+            item.setDurability((short)(item.getDurability() - 1));
+           
+        }
+    }
+
+    // Get time to burn entity for given enchantment level
+    private int getFireTicks(int level) {
+         // TODO: configurable ticks per level
+        return 20 * 10 * level;
     }
 }
 
