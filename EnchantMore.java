@@ -47,12 +47,19 @@ class EnchantMoreListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         ItemStack item = event.getItem();
+        Action action = event.getAction();
         Player player = event.getPlayer();
 
-        if (item.getType() == Material.FLINT_AND_STEEL) {
+        if (item == null) {
+            return;
+        }
+
+        if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
             World world = block.getWorld();
 
-            world.strikeLightning(block.getLocation());
+            if (item.containsEnchantment(Enchantment.DAMAGE_UNDEAD)) { // "Smite"
+                world.strikeLightning(block.getLocation());
+            }
         }
     }
 }
