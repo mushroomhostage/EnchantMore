@@ -33,6 +33,11 @@ import org.bukkit.scheduler.*;
 import org.bukkit.enchantments.*;
 import org.bukkit.*;
 
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+
+import net.minecraft.server.MobEffectList;
+import net.minecraft.server.MobEffect;
+
 class EnchantMoreListener implements Listener {
 
     // Better enchantment names more closely matching in-game display
@@ -98,12 +103,32 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
-        // Flint & Steel + Fire Aspect = set mobs on fire
-        if (item.getType() == Material.FLINT_AND_STEEL && item.containsEnchantment(FIRE_ASPECT)) {
-            entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
+        if (item.getType() == Material.FLINT_AND_STEEL) {
+            if (entity == null) {
+                return;
+            }
 
-            // TODO: fix
-            item.setDurability((short)(item.getDurability() - 1));
+            // Flint & Steel + Fire Aspect = set mobs on fire
+            if (item.containsEnchantment(FIRE_ASPECT)) {
+                entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
+
+                // TODO: fix
+                item.setDurability((short)(item.getDurability() - 1));
+            }
+
+            // Flint & Steel + Respiration = smoke inhalation
+            if (item.containsEnchantment(RESPIRATION)) {
+                World world = entity.getWorld();
+
+                world.playEffect(entity.getLocation(), Effect.SMOKE, 0);    // TOOD: smoke direction
+                world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);    // TOOD: smoke direction
+
+                // Confusion effect
+                ((CraftPlayer)entity).getHandle().addEffect(new MobEffect(
+                    9,      // MobEffectList.CONFUSION
+                    20*10,  // length
+                    1));    // amplifier
+            }
         }
     }
 
