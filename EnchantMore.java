@@ -54,12 +54,33 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
+        // Flint & Steel + Smite = strike lightning
         if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
             World world = block.getWorld();
 
             if (item.containsEnchantment(Enchantment.DAMAGE_UNDEAD)) { // "Smite"
                 world.strikeLightning(block.getLocation());
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Entity entity = event.getRightClicked();
+        Player player = event.getPlayer();
+        ItemStack item = player.getItemInHand();
+
+        if (item == null) {
+            return;
+        }
+
+        // Flint & Steel + Fire Aspect = set mobs on fire
+        if (item.getType() == Material.FLINT_AND_STEEL && item.containsEnchantment(Enchantment.FIRE_ASPECT)) {
+            // TODO: configurable ticks per level
+            int fireTicks = 20 * 10 * item.getEnchantmentLevel(Enchantment.FIRE_ASPECT);    
+            entity.setFireTicks(fireTicks);
+
+            item.setDurability((short)(item.getDurability() - 1));
         }
     }
 }
