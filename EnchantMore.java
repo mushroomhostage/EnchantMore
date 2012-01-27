@@ -116,18 +116,27 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
-        // Fishing Rod + Fire Aspect = set mobs on fire
-        if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY && item.containsEnchantment(FIRE_ASPECT)) {
+        if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY) {
             Entity entity = event.getCaught();
 
             if (entity == null) {
                 return;
             }
-            entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
-            // TODO: fix
-            item.setDurability((short)(item.getDurability() - 1));
-           
+            // Fishing Rod + Fire Aspect = set mobs on fire
+            if (item.containsEnchantment(FIRE_ASPECT)) {
+                entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
+
+                // TODO: fix
+                item.setDurability((short)(item.getDurability() - 1));
+            }
+            
+            // Fishing Rod + Smite = strike mobs with lightning
+            if (item.containsEnchantment(SMITE)) {
+                World world = entity.getWorld();
+
+                world.strikeLightning(entity.getLocation());
+            }
         }
     }
 
