@@ -523,18 +523,52 @@ class EnchantMoreListener implements Listener {
             }
 
         } else if (isHoe(item.getType())) {
-            // Hoe + Silk Touch = collect farmland
+            // Hoe + Silk Touch = collect farmland, crop block, pumpkin/melon stem, cake block, sugarcane block (preserving data)
             if (item.containsEnchantment(SILK_TOUCH)) {
-                // TODO: collect growing plants/food? wheat seeds, cake block, pumpkin stem, melon stem, nether wart block
-                // would have to override block place too, to be able to place (and store growth stage in data)
-                if (block.getType() == Material.SOIL) {
+                // Collect farm-related blocks, preserving the growth/wetness/eaten data
+                if (isFarmBlock(block.getType())) {
+                    ItemStack drop = new ItemStack(block.getType(), 1);
 
-                    world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
+                    // Store block data value
+                    //drop.setDurability(block.getData());      // bukkit doesn't preserve
+                    drop.addUnsafeEnchantment(SILK_TOUCH, block.getData());
+
+
+                    world.dropItemNaturally(block.getLocation(), drop);
                     
                     block.setType(Material.AIR);
                 }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Block block = event.getBlockPlaced();
+        Player player = event.getPlayer();
+
+        // Item to place as a block
+        // NOT event.getItemInHand(), see https://bukkit.atlassian.net/browse/BUKKIT-596 BlockPlaceEvent getItemInHand() loses enchantments
+        ItemStack item = player.getItemInHand();
+
+        // Set data of farm-related block
+        if (item != null && item.containsEnchantment(SILK_TOUCH)) {
+            if (isFarmBlock(item.getType())) {
+                block.setData((byte)item.getEnchantmentLevel(SILK_TOUCH));
+            }
+        }
+
+    }
+
+    // Get whether material is a farm-related block, either land or growing crops
+    private boolean isFarmBlock(Material m) {
+        return m == Material.SOIL ||     // Farmland
+            m == Material.CROPS ||    // wheat TODO: update wiki, calls 'Wheat Seeds' though in-game 'Crops'
+            m == Material.SUGAR_CANE_BLOCK ||
+            m == Material.CAKE_BLOCK ||
+            m == Material.PUMPKIN_STEM ||
+            m == Material.MELON_STEM ||
+            m == Material.NETHER_STALK; // TODO: test
     }
 
     // Get item as if it was smelted
