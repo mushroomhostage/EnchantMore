@@ -361,7 +361,8 @@ class EnchantMoreListener implements Listener {
                 }
                 // TODO: use durability
             }
-        } /* else if (isSword(item.getType())) {
+        }  else if (isSword(item.getType())) {
+            /*
             // BLOCKED: Sword + Flame = night vision when blocking 
             // The visual effect plays (navy blue swirly particles), but doesn't actually do anything as of Minecraft 1.1
             if (item.containsEnchantment(FLAME)) {
@@ -371,7 +372,7 @@ class EnchantMoreListener implements Listener {
                     10));    // amplifier
             }
 
-            // BLOCKED: Sword + Infinity = invisibility when blocking
+            // BLOCKED: Sword + Infinity = invisibility when blocking 
             // Also has no implemented effect in Minecraft 1.1. Maybe a plugin could use?
             if (item.containsEnchantment(INFINITE)) {
                 ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
@@ -380,7 +381,17 @@ class EnchantMoreListener implements Listener {
                     10));    // amplifier
 
             }
-        }*/
+            */
+
+
+            // Sword + Protection = resistance when blocking 
+            if (item.containsEnchantment(PROTECTION)) {
+                 ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
+                    11,     // resistance
+                    20*10*item.getEnchantmentLevel(PROTECTION),  // length
+                    10));    // amplifier
+            }
+        }
     }
 
 
