@@ -160,6 +160,14 @@ class EnchantMoreListener implements Listener {
                 world.createExplosion(block.getLocation(), power, true);
             }
 
+            // Flint & Steel + Efficiency = burn faster (turn wood to grass)
+            if (item.containsEnchantment(EFFICIENCY)) {
+                if (isWoodenBlock(block.getType(), block.getData())) {
+                    block.setType(Material.LEAVES);
+                    // TODO: data? just leaving as before, but type may be unexpected
+                }
+            }
+
         } else if (isHoe(item.getType())) {
             // Hoe + Aqua Affinity = hydrate below
             // TODO: maybe should add water on side of, if air? better for farming
@@ -220,6 +228,17 @@ class EnchantMoreListener implements Listener {
                 // TODO: use durability
             }
         }
+    }
+
+    // Return whether is a wooden block
+    private boolean isWoodenBlock(Material m, byte data) {
+        return m == Material.WOOD || 
+            m == Material.WOOD_PLATE || 
+            m == Material.WOOD_STAIRS ||
+            m == Material.WOODEN_DOOR || 
+            m == Material.LOG ||
+            (m == Material.STEP && data == 2) ||      // wooden slab
+            (m == Material.DOUBLE_STEP && data == 2);// wooden double slab
     }
 
     // Attempt to grow organic structure
