@@ -364,8 +364,9 @@ class EnchantMoreListener implements Listener {
         collectContiguous(start, 10, result);
 
         for (Block block: result) {
-            block.breakNaturally(); //tool);
-            //plugin.log.info("break"+block);
+            block.setType(Material.AIR);
+            //block.breakNaturally(); //tool);
+            plugin.log.info("break"+block);
         }
     }
 
@@ -417,7 +418,7 @@ class EnchantMoreListener implements Listener {
                 block.setType(Material.AIR);
             }
 
-            // Axe + Power =
+            // Axe + Power = fell tree
             if (isAxe(item.getType())) {
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
                     // Chop tree
