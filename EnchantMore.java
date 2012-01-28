@@ -136,8 +136,51 @@ class EnchantMoreListener implements Listener {
                     }
                 }
             }
+        } else if (isHoe(item.getType())) {
+            // Hoe + Aqua Affinity = hydrate below
+            if (item.containsEnchantment(AQUA_AFFINITY)) {
+                Block below = block.getRelative(BlockFace.DOWN, 1);
+                
+                if (below.getType() == Material.DIRT) {
+                    below.setType(Material.STATIONARY_WATER);
+                }
+            }
         }
     }
+
+    private boolean isHoe(Material m) {
+        return m == Material.DIAMOND_HOE ||
+            m == Material.GOLD_HOE || 
+            m == Material.IRON_HOE ||
+            m == Material.STONE_HOE ||
+            m == Material.WOOD_HOE;
+    }
+
+    private boolean isPickaxe(Material m) {
+        return m == Material.DIAMOND_PICKAXE ||
+            m == Material.GOLD_PICKAXE ||
+            m == Material.IRON_PICKAXE ||
+            m == Material.STONE_PICKAXE ||
+            m == Material.WOOD_PICKAXE;
+    }
+
+    private boolean isShovel(Material m) {
+        return m == Material.DIAMOND_SPADE ||
+            m == Material.GOLD_SPADE ||
+            m == Material.IRON_SPADE ||
+            m == Material.STONE_SPADE ||
+            m == Material.WOOD_SPADE;
+    }
+
+    private boolean isAxe(Material m) {
+        return m == Material.DIAMOND_AXE ||
+            m == Material.GOLD_AXE ||
+            m == Material.IRON_AXE ||
+            m == Material.STONE_AXE ||
+            m == Material.WOOD_AXE;
+    }
+
+
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
@@ -260,23 +303,9 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
-        if (item.getType() == Material.DIAMOND_PICKAXE ||
-            item.getType() == Material.GOLD_PICKAXE ||
-            item.getType() == Material.IRON_PICKAXE ||
-            item.getType() == Material.STONE_PICKAXE ||     // TODO: cleaner 'is pickaxe' data
-            item.getType() == Material.WOOD_PICKAXE ||
-
-            item.getType() == Material.DIAMOND_SPADE ||
-            item.getType() == Material.GOLD_SPADE ||
-            item.getType() == Material.IRON_SPADE ||
-            item.getType() == Material.STONE_SPADE ||
-            item.getType() == Material.WOOD_SPADE ||
-
-            item.getType() == Material.DIAMOND_AXE ||
-            item.getType() == Material.GOLD_AXE ||
-            item.getType() == Material.IRON_AXE ||
-            item.getType() == Material.STONE_AXE ||
-            item.getType() == Material.WOOD_AXE) {
+        if (isPickaxe(item.getType()) ||
+            isShovel(item.getType()) ||
+            isAxe(item.getType())) {
 
             // Pickaxe/shovel/axe + Flame = auto-smelt
             if (item.containsEnchantment(FLAME)) {
@@ -311,7 +340,7 @@ class EnchantMoreListener implements Listener {
                 }
                 */
             }
-        }
+        } //else if (item.getType() == Material.
     }
 
     // Get item as if it was smelted
