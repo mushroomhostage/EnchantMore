@@ -33,8 +33,10 @@ import org.bukkit.scheduler.*;
 import org.bukkit.enchantments.*;
 import org.bukkit.*;
 
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.entity.CraftSpider;
+import org.bukkit.craftbukkit.entity.CraftCaveSpider;
 
 import net.minecraft.server.MobEffectList;
 import net.minecraft.server.MobEffect;
@@ -183,6 +185,22 @@ class EnchantMoreListener implements Listener {
                         1));    // amplifier
                 }
                 // TODO: use durability
+            }
+
+            // Shears + Bane of Arthropods = collect spider eyes
+            if (item.containsEnchantment(BANE)) {
+                if (entity instanceof CaveSpider || entity instanceof Spider) {
+                    Creature bug = (Creature)entity;
+
+                    // If at least 50% health, cut out eyes, then drop health
+                    if (bug.getHealth() >= bug.getMaxHealth() / 2) {
+                        World world = player.getWorld();
+
+                        world.dropItemNaturally(bug.getEyeLocation(), new ItemStack(Material.SPIDER_EYE, 1));
+
+                        bug.setHealth(bug.getMaxHealth() / 2 - 1);
+                    }
+                }
             }
         }
     }
