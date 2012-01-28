@@ -34,6 +34,7 @@ import org.bukkit.enchantments.*;
 import org.bukkit.*;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.entity.CraftEntity;
 
 import net.minecraft.server.MobEffectList;
 import net.minecraft.server.MobEffect;
@@ -83,12 +84,20 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
-        // Flint & Steel + Smite = strike lightning
         if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
             World world = block.getWorld();
-
+        
+            // Flint & Steel + Smite = strike lightning
             if (item.containsEnchantment(SMITE)) {
                 world.strikeLightning(block.getLocation());
+            }
+
+            // Flint & Steel + Fire Protection = player fire resistance
+            if (item.containsEnchantment(FIRE_PROTECTION)) {
+                ((CraftPlayer)player).getHandle().addEffect(new MobEffect(
+                    12, // fireResistance - http://wiki.vg/Protocol#Effects
+                    20*10*item.getEnchantmentLevel(FIRE_PROTECTION), // length
+                    1)); // amplifier
             }
         }
     }
@@ -123,14 +132,19 @@ class EnchantMoreListener implements Listener {
                 world.playEffect(entity.getLocation(), Effect.SMOKE, 0);    // TOOD: smoke direction
                 world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);    // TOOD: smoke direction
 
-                // Confusion effect
-                ((CraftPlayer)entity).getHandle().addEffect(new MobEffect(
-                    9,      // MobEffectList.CONFUSION
-                    20*10,  // length
-                    1));    // amplifier
+                // Confusion effect on players
+                if (entity instanceof CraftPlayer) {
+                    ((CraftPlayer)entity).getHandle().addEffect(new MobEffect(
+                        9,      // MobEffectList.CONFUSION - http://wiki.vg/Protocol#Effects
+                        20*10*item.getEnchantmentLevel(RESPIRATION),  // length
+                        1));    // amplifier
+                }
             }
+
         }
     }
+
+
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerFish(PlayerFishEvent event) {
