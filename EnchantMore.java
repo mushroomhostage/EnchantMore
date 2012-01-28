@@ -158,7 +158,7 @@ class EnchantMoreListener implements Listener {
                 item.setDurability((short)(item.getDurability() - 1));
             }
 
-            // Flint & Steel + Respiration = smoke inhalation
+            // Flint & Steel + Respiration = smoke inhalation (confusion)
             if (item.containsEnchantment(RESPIRATION)) {
                 World world = entity.getWorld();
 
@@ -173,7 +173,17 @@ class EnchantMoreListener implements Listener {
                         1));    // amplifier
                 }
             }
-
+        } else if (item.getType() == Material.SHEARS) {
+            // Shears + Smite = gouge eyes (blindness)
+            if (item.containsEnchantment(SMITE)) {
+                if (entity instanceof CraftPlayer) {
+                    ((CraftPlayer)entity).getHandle().addEffect(new MobEffect(
+                        15,     // blindness
+                        20*10*item.getEnchantmentLevel(SMITE),  // length
+                        1));    // amplifier
+                }
+                // TODO: use durability
+            }
         }
     }
 
