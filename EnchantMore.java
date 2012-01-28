@@ -175,6 +175,7 @@ class EnchantMoreListener implements Listener {
                 Block below = block.getRelative(BlockFace.DOWN, item.getEnchantmentLevel(AQUA_AFFINITY));
                 
                 if (below.getType() == Material.DIRT) {
+                    // TODO: do not place in Nether?
                     below.setType(Material.STATIONARY_WATER);
                 }
             }
@@ -622,7 +623,7 @@ class EnchantMoreListener implements Listener {
             }
 
         } else if (isHoe(item.getType())) {
-            // Hoe + Silk Touch = collect farmland, crop block, pumpkin/melon stem, cake block, sugarcane block (preserving data)
+            // Hoe + Silk Touch = collect farmland, crop block, pumpkin/melon stem, cake block, sugarcane block, netherwart block (preserving data)
             if (item.containsEnchantment(SILK_TOUCH)) {
                 // Collect farm-related blocks, preserving the growth/wetness/eaten data
                 if (isFarmBlock(block.getType())) {
@@ -667,7 +668,7 @@ class EnchantMoreListener implements Listener {
             m == Material.CAKE_BLOCK ||
             m == Material.PUMPKIN_STEM ||
             m == Material.MELON_STEM ||
-            m == Material.NETHER_STALK; // TODO: test
+            m == Material.NETHER_WARTS; // not the item, that is NETHER_STALK (confusingly)
     }
 
     // Get item as if it was smelted
