@@ -99,6 +99,39 @@ class EnchantMoreListener implements Listener {
                     20*10*item.getEnchantmentLevel(FIRE_PROTECTION), // length
                     1)); // amplifier
             }
+
+            // Flint & Steel + Aqua Affinity = vaporize water
+            if (item.containsEnchantment(AQUA_AFFINITY)) {
+                // Can't actually click on water, the click "goes through" as if it was air
+                // Not like buckets filled or lily pads placements
+                /* 
+                if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
+                    block.setType(Material.AIR);
+                    plugin.log.info("water");
+                }
+                */
+
+                // Find water within ignited cube area
+                int r = item.getEnchantmentLevel(AQUA_AFFINITY);
+
+                Location loc = block.getLocation();
+                int x0 = loc.getBlockX();
+                int y0 = loc.getBlockY();
+                int z0 = loc.getBlockZ();
+               
+                for (int dx = -r; dx <= r; dx += 1) {
+                    for (int dy = -r; dy <= r; dy += 1) {
+                        for (int dz = -r; dz <= r; dz += 1) {
+                            Block b = world.getBlockAt(dx+x0, dy+y0, dz+z0);
+                           
+                            if (b.getType() == Material.STATIONARY_WATER || b.getType() == Material.WATER) {
+                                b.setType(Material.AIR);
+                                world.playEffect(b.getLocation(), Effect.SMOKE, 0); // TODO: direction
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
