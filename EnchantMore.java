@@ -1,5 +1,6 @@
 package me.exphc.EnchantMore;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
@@ -37,9 +38,10 @@ import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftSpider;
 import org.bukkit.craftbukkit.entity.CraftCaveSpider;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
-import net.minecraft.server.MobEffectList;
 import net.minecraft.server.MobEffect;
+import net.minecraft.server.FurnaceRecipes;
 
 class EnchantMoreListener implements Listener {
 
@@ -170,7 +172,7 @@ class EnchantMoreListener implements Listener {
                 // Confusion effect on players
                 if (entity instanceof CraftPlayer) {
                     ((CraftPlayer)entity).getHandle().addEffect(new MobEffect(
-                        9,      // MobEffectList.CONFUSION - http://wiki.vg/Protocol#Effects
+                        9,      // confusion  - http://wiki.vg/Protocol#Effects
                         20*10*item.getEnchantmentLevel(RESPIRATION),  // length
                         1));    // amplifier
                 }
@@ -201,6 +203,7 @@ class EnchantMoreListener implements Listener {
                         bug.setHealth(bug.getMaxHealth() / 2 - 1);
                     }
                 }
+                // TODO: use durability
             }
         }
     }
@@ -244,6 +247,48 @@ class EnchantMoreListener implements Listener {
     private int getFireTicks(int level) {
          // TODO: configurable ticks per level
         return 20 * 10 * level;
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL) 
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        ItemStack item = player.getItemInHand();
+
+        if (item == null) {
+            return;
+        }
+
+        if (item.getType() == Material.DIAMOND_PICKAXE ||
+            item.getType() == Material.GOLD_PICKAXE ||
+            item.getType() == Material.IRON_PICKAXE ||
+            item.getType() == Material.STONE_PICKAXE ||     // TODO: cleaner 'is pickaxe' data
+            item.getType() == Material.WOOD_PICKAXE) {
+
+            // Pickaxe + Flame = auto-smelt
+            if (item.containsEnchantment(FLAME)) {
+                Collection<ItemStack> rawDrops = block.getDrops(item);
+                World world = player.getWorld();
+
+                for (ItemStack rawDrop: rawDrops) {
+                    ItemStack smeltedDrop = smelt(rawDrop);
+
+                    world.dropItemNaturally(block.getLocation(), smeltedDrop);
+                }
+
+
+                block.setType(Material.AIR);
+            }
+        }
+    }
+
+    // Get item as if it was smelted
+    private ItemStack smelt(ItemStack raw) {
+        net.minecraft.server.ItemStack smeltNMS = FurnaceRecipes.getInstance().a(raw.getTypeId());
+
+        ItemStack smelted = (ItemStack)(new CraftItemStack(smeltNMS));
+    
+        return smelted;
     }
 }
 
