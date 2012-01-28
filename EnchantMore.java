@@ -401,6 +401,23 @@ class EnchantMoreListener implements Listener {
                 }
                 */
             }
+
+            // Shears + Fortune = apples from leaves
+            if (item.containsEnchantment(FORTUNE)) {
+                if (block.getType() == Material.LEAVES) {
+                    Material dropType;
+
+                    // TODO: different probabilities, depending on level too (higher, more golden)
+                    switch (random.nextInt(10)) {
+                    case 0: dropType = Material.GOLDEN_APPLE; break;
+                    default: dropType = Material.APPLE;
+                    }
+
+                    world.dropItemNaturally(block.getLocation(), new ItemStack(dropType, 1));
+                    
+                    block.setType(Material.AIR);
+                }
+            }
         } else if (isHoe(item.getType())) {
             // Hoe + Silk Touch = collect farmland
             if (item.containsEnchantment(SILK_TOUCH)) {
