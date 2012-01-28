@@ -358,31 +358,41 @@ class EnchantMoreListener implements Listener {
     }
 
     // Break all contiguous blocks of the same type
-    private void breakContiguous(Block start, ItemStack tool) {
+    private void breakContiguous(Block start, ItemStack tool, int limit) {
         Set<Block> result = new HashSet<Block>();
 
-        collectContiguous(start, 10, result);
+        plugin.log.info("collectContiguous starting");
+        collectContiguous(start, limit, result);
+        plugin.log.info("collectContiguous returned");
 
         for (Block block: result) {
             block.setType(Material.AIR);
-            //block.breakNaturally(); //tool);
-            plugin.log.info("break"+block);
+            //block.breakNaturally(); //tool);  // no, infinite recurse
+            //plugin.log.info("break"+block);
         }
     }
 
     // Recursively find all contiguous blocks 
+    // TODO: faster?
     private void collectContiguous(Block start, int limit, Set<Block> result) {
-        plugin.log.info("bc"+start+","+limit);
+        if (limit < 0) {
+            return;
+        }
+
         result.add(start);
-        for (int dx = -1; dx <= 1; dx += 1) {
+
+        DONE: for (int dx = -1; dx <= 1; dx += 1) {
             for (int dy = -1; dy <= 1; dy += 1) {
                 for (int dz = -1; dz <= 1; dz += 1) {
                     Block other = start.getRelative(dx, dy, dz);
 
+                    limit -= 1;
+                    if (limit < 0) {
+                        break DONE;
+                    }
+
                     if (other.getType() == start.getType()) {
-                        if (limit > 0) {
-                            collectContiguous(other, limit - 1, result);
-                        }
+                        collectContiguous(other, limit - 1, result);
                     }
                 }
             }
@@ -422,7 +432,7 @@ class EnchantMoreListener implements Listener {
             if (isAxe(item.getType())) {
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
                     // Chop tree
-                    breakContiguous(block, item);
+                    breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
@@ -459,6 +469,11 @@ class EnchantMoreListener implements Listener {
                     
                     block.setType(Material.AIR);
                 }
+            }
+
+            // Shears + Power =
+            if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
+                breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
             }
         } else if (isHoe(item.getType())) {
             // Hoe + Silk Touch = collect farmland
