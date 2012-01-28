@@ -1,5 +1,6 @@
 package me.exphc.EnchantMore;
 
+import java.util.Random;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -68,11 +69,15 @@ class EnchantMoreListener implements Listener {
     final Enchantment PUNCH = Enchantment.ARROW_KNOCKBACK;
     final Enchantment FLAME = Enchantment.ARROW_FIRE;
     final Enchantment INFINITE = Enchantment.ARROW_INFINITE;
+
+    Random random;
    
     EnchantMore plugin;
 
     public EnchantMoreListener(EnchantMore pl) {
         plugin = pl;
+
+        random = new Random();
 
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -88,8 +93,9 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
+        World world = block.getWorld();
+
         if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
-            World world = block.getWorld();
         
             // Flint & Steel + Smite = strike lightning
             if (item.containsEnchantment(SMITE)) {
@@ -138,12 +144,34 @@ class EnchantMoreListener implements Listener {
             }
         } else if (isHoe(item.getType())) {
             // Hoe + Aqua Affinity = hydrate below
-            // TODO: maybe should add water on side of, if air? 
+            // TODO: maybe should add water on side of, if air? better for farming
             if (item.containsEnchantment(AQUA_AFFINITY)) {
-                Block below = block.getRelative(BlockFace.DOWN, 1);
+                Block below = block.getRelative(BlockFace.DOWN, item.getEnchantmentLevel(AQUA_AFFINITY));
                 
                 if (below.getType() == Material.DIRT) {
                     below.setType(Material.STATIONARY_WATER);
+                }
+            }
+
+            // Hoe + Fortune = chance to drop seeds
+            if (item.containsEnchantment(FORTUNE) && action == Action.RIGHT_CLICK_BLOCK) {
+                if (block.getType() == Material.DIRT || block.getType() == Material.GRASS) {
+                    if (random.nextInt(3) != 0) {   // TODO: configurable, and depend on level
+                        Material seedType;
+
+                        // TODO: configurable probabilities
+                        switch (random.nextInt(4)) {
+                        case 2: seedType = Material.MELON_SEEDS; break;
+                        case 3: seedType = Material.PUMPKIN_SEEDS; break;
+                        default: seedType = Material.SEEDS; // wheat, 50%
+                        }
+
+                        // TODO: configurable and random quantity
+                      
+                        ItemStack drop = new ItemStack(seedType, 1);
+
+                        world.dropItemNaturally(block.getRelative(BlockFace.UP, 1).getLocation(), drop);
+                    }
                 }
             }
         }
