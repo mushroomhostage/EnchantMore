@@ -428,6 +428,7 @@ class EnchantMoreListener implements Listener {
                 block.setType(Material.AIR);
             }
 
+            /* TODO: fix performance
             // Axe + Power = fell tree
             if (isAxe(item.getType())) {
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
@@ -435,6 +436,7 @@ class EnchantMoreListener implements Listener {
                     breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
                 }
             }
+            */
         } else if (item.getType() == Material.SHEARS) {
             // Shears + Silk Touch = collect cobweb, dead bush
             if (item.containsEnchantment(SILK_TOUCH)) {
@@ -471,10 +473,13 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            // Shears + Power =
+            /* TODO: fix performance
+            // Shears + Power = 
             if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
                 breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
             }
+            */
+
         } else if (isHoe(item.getType())) {
             // Hoe + Silk Touch = collect farmland
             if (item.containsEnchantment(SILK_TOUCH)) {
