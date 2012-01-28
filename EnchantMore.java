@@ -227,6 +227,12 @@ class EnchantMoreListener implements Listener {
                 growStructure(block.getLocation(), player);
                 // TODO: use durability
             }
+        } else if (isPickaxe(item.getType())) {
+            // Pickaxe + Power = instant break anything (including bedrock)
+            if (item.containsEnchantment(POWER)) {
+                // Note: this also works for bedrock!
+                block.breakNaturally(item);
+            }
         }
     }
 
