@@ -358,9 +358,8 @@ class EnchantMoreListener implements Listener {
     }
 
     // Break all contiguous blocks of the same type
-    private Collection<ItemStack> breakContiguous(Block start, ItemStack tool, int limit) {
+    private int breakContiguous(Block start, ItemStack tool, int limit) {
         Set<Block> result = new HashSet<Block>();
-        List<ItemStack> drops = new ArrayList<ItemStack>();       // doesn't need to be ordered, but that's what getDrops() uses
 
         plugin.log.info("collectContiguous starting");
         collectContiguous(start, limit, result);
@@ -375,7 +374,7 @@ class EnchantMoreListener implements Listener {
             //plugin.log.info("break"+block);
         }
 
-        return drops;
+        return result.size();
     }
 
     // Recursively find all contiguous blocks 
@@ -439,17 +438,49 @@ class EnchantMoreListener implements Listener {
             }
 
             // Axe + Power = fell tree
-            if (isAxe(item.getType())) {
-                if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
-                    // Chop tree
-                    Collection<ItemStack> drops = breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+            if (isAxe(item.getType()) && item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
+                // Chop tree
+                breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+            }
 
-                    for (ItemStack drop: drops) {
-                        plugin.log.info("drop "+drop);
-                        world.dropItemNaturally(block.getLocation(), drop);
+            // Shovel + Power = excavation
+            if (isShovel(item.getType()) && item.containsEnchantment(POWER) && 
+                (block.getType() == Material.DIRT ||
+                block.getType() == Material.GRASS ||
+                block.getType() == Material.GRAVEL)) { 
+
+                // Clear out those annoying veins of gravel (or dirt)
+
+                // too slow
+                //breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+
+                // Dig a cube out, but no drops
+                int r = item.getEnchantmentLevel(POWER);
+
+                Location loc = block.getLocation();
+                int x0 = loc.getBlockX();
+                int y0 = loc.getBlockY();
+                int z0 = loc.getBlockZ();
+               
+                for (int dx = -r; dx <= r; dx += 1) {
+                    for (int dy = -r; dy <= r; dy += 1) {
+                        for (int dz = -r; dz <= r; dz += 1) {
+                            int x = dx + x0, y = dy + y0, z = dz + z0;
+
+                            int type = world.getBlockTypeIdAt(x, y, z);
+                            if (type == Material.DIRT.getId() ||
+                                type == Material.GRASS.getId() ||
+                                type == Material.GRAVEL.getId()) {
+
+                                Block b = world.getBlockAt(x, y, z);
+                                b.setType(Material.AIR);
+                            }
+                        }
                     }
                 }
+
             }
+
         } else if (item.getType() == Material.SHEARS) {
             // Shears + Silk Touch = collect cobweb, dead bush
             if (item.containsEnchantment(SILK_TOUCH)) {
