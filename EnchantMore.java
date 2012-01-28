@@ -263,9 +263,21 @@ class EnchantMoreListener implements Listener {
             item.getType() == Material.GOLD_PICKAXE ||
             item.getType() == Material.IRON_PICKAXE ||
             item.getType() == Material.STONE_PICKAXE ||     // TODO: cleaner 'is pickaxe' data
-            item.getType() == Material.WOOD_PICKAXE) {
+            item.getType() == Material.WOOD_PICKAXE ||
 
-            // Pickaxe + Flame = auto-smelt
+            item.getType() == Material.DIAMOND_SPADE ||
+            item.getType() == Material.GOLD_SPADE ||
+            item.getType() == Material.IRON_SPADE ||
+            item.getType() == Material.STONE_SPADE ||
+            item.getType() == Material.WOOD_SPADE ||
+
+            item.getType() == Material.DIAMOND_AXE ||
+            item.getType() == Material.GOLD_AXE ||
+            item.getType() == Material.IRON_AXE ||
+            item.getType() == Material.STONE_AXE ||
+            item.getType() == Material.WOOD_AXE) {
+
+            // Pickaxe/shovel/axe + Flame = auto-smelt
             if (item.containsEnchantment(FLAME)) {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
                 World world = player.getWorld();
