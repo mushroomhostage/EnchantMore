@@ -261,6 +261,14 @@ class EnchantMoreListener implements Listener {
             m == Material.WOOD_HOE;
     }
 
+    private boolean isSword(Material m) {
+        return m == Material.DIAMOND_SWORD ||   
+            m == Material.GOLD_SWORD ||
+            m == Material.IRON_SWORD ||
+            m == Material.STONE_SWORD ||
+            m == Material.WOOD_SWORD;
+    }
+
     private boolean isPickaxe(Material m) {
         return m == Material.DIAMOND_PICKAXE ||
             m == Material.GOLD_PICKAXE ||
@@ -353,7 +361,16 @@ class EnchantMoreListener implements Listener {
                 }
                 // TODO: use durability
             }
-        }
+        } /* else if (isSword(item.getType())) {
+            // TODO: Sword + Flame = night vision when blocking attacks
+            // The visual effect plays (navy blue swirly particles), but doesn't actually do anything as of Minecraft 1.1
+            if (item.containsEnchantment(FLAME)) {
+                    ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
+                        16,     // nightVision
+                        20*10*item.getEnchantmentLevel(FLAME),  // length
+                        10));    // amplifier
+            }
+        }*/
     }
 
 
