@@ -486,9 +486,9 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            // Shears + Power = 
+            // Shears + Power = hedge trimmer
             if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
-                breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+                breakContiguous(block, item, 50 * item.getEnchantmentLevel(POWER));
             }
 
         } else if (isHoe(item.getType())) {
