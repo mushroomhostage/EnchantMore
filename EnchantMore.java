@@ -93,6 +93,11 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
+        if (block == null) {
+            // TODO: we might need to handle non-block (air) events
+            return;
+        }
+
         World world = block.getWorld();
 
         if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
@@ -122,6 +127,7 @@ class EnchantMoreListener implements Listener {
                 */
 
                 // Find water within ignited cube area
+                // TODO: refactor
                 int r = item.getEnchantmentLevel(AQUA_AFFINITY);
 
                 Location loc = block.getLocation();
@@ -173,6 +179,27 @@ class EnchantMoreListener implements Listener {
                         world.dropItemNaturally(block.getRelative(BlockFace.UP, 1).getLocation(), drop);
                     }
                 }
+            }
+
+            // Hoe + Efficiency = hoe larger area
+            if (item.containsEnchantment(EFFICIENCY)) {
+                int r = item.getEnchantmentLevel(EFFICIENCY);
+
+                Location loc = block.getLocation();
+                int x0 = loc.getBlockX();
+                int y0 = loc.getBlockY();
+                int z0 = loc.getBlockZ();
+               
+                for (int dx = -r; dx <= r; dx += 1) {
+                    for (int dz = -r; dz <= r; dz += 1) {
+                        Block b = world.getBlockAt(dx+x0, y0, dz+z0);
+                       
+                        if (b.getType() == Material.DIRT || b.getType() == Material.GRASS) {
+                            b.setType(Material.SOIL);
+                        }
+                    }
+                }
+               
             }
         }
     }
