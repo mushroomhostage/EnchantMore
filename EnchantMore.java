@@ -138,6 +138,7 @@ class EnchantMoreListener implements Listener {
             }
         } else if (isHoe(item.getType())) {
             // Hoe + Aqua Affinity = hydrate below
+            // TODO: maybe should add water on side of, if air? 
             if (item.containsEnchantment(AQUA_AFFINITY)) {
                 Block below = block.getRelative(BlockFace.DOWN, 1);
                 
@@ -326,9 +327,7 @@ class EnchantMoreListener implements Listener {
                 if (block.getType() == Material.DEAD_BUSH ||
                     block.getType() == Material.WEB) {
 
-                    ItemStack drop = new ItemStack(block.getType(), 1);
-                    
-                    world.dropItemNaturally(block.getLocation(), drop);
+                    world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
 
                     block.setType(Material.AIR);
                 } 
@@ -340,7 +339,19 @@ class EnchantMoreListener implements Listener {
                 }
                 */
             }
-        } //else if (item.getType() == Material.
+        } else if (isHoe(item.getType())) {
+            // Hoe + Silk Touch = collect farmland
+            if (item.containsEnchantment(SILK_TOUCH)) {
+                // TODO: collect growing plants/food? wheat seeds, cake block, pumpkin stem, melon stem, nether wart block
+                // would have to override block place too, to be able to place (and store growth stage in data)
+                if (block.getType() == Material.SOIL) {
+
+                    world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
+                    
+                    block.setType(Material.AIR);
+                }
+            }
+        }
     }
 
     // Get item as if it was smelted
