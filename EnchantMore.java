@@ -441,6 +441,36 @@ class EnchantMoreListener implements Listener {
     
         return smelted;
     }
+
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerShearEntity(PlayerShearEntityEvent event) {
+        Player player = event.getPlayer();
+        Entity entity = event.getEntity();
+        ItemStack tool = player.getItemInHand();
+        World world = player.getWorld();
+
+        if (tool == null) {
+            return;
+        }
+
+        if (!(entity instanceof Sheep)) {
+            return;
+        }
+        // TODO: mooshroom?
+
+        // Shears + Looting = more wool, random colors
+        if (tool.getType() == Material.SHEARS && tool.containsEnchantment(LOOTING)) {
+            Location loc = entity.getLocation();
+
+            int quantity = random.nextInt(tool.getEnchantmentLevel(LOOTING) * 2);
+            for (int i = 0; i < quantity; i += 1) {
+                short color = (short)random.nextInt(16);
+
+                world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.WOOL, 1, color));
+            }
+        }
+    }
 }
 
 public class EnchantMore extends JavaPlugin {
