@@ -254,6 +254,7 @@ class EnchantMoreListener implements Listener {
         Player player = event.getPlayer();
         Block block = event.getBlock();
         ItemStack item = player.getItemInHand();
+        World world = player.getWorld();
 
         if (item == null) {
             return;
@@ -280,7 +281,6 @@ class EnchantMoreListener implements Listener {
             // Pickaxe/shovel/axe + Flame = auto-smelt
             if (item.containsEnchantment(FLAME)) {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
-                World world = player.getWorld();
 
                 for (ItemStack rawDrop: rawDrops) {
                     ItemStack smeltedDrop = smelt(rawDrop);
@@ -290,6 +290,26 @@ class EnchantMoreListener implements Listener {
 
 
                 block.setType(Material.AIR);
+            }
+        } else if (item.getType() == Material.SHEARS) {
+            // Shears + Silk Touch = collect cobweb, dead bush
+            if (item.containsEnchantment(SILK_TOUCH)) {
+                if (block.getType() == Material.DEAD_BUSH ||
+                    block.getType() == Material.WEB) {
+
+                    ItemStack drop = new ItemStack(block.getType(), 1);
+                    
+                    world.dropItemNaturally(block.getLocation(), drop);
+
+                    block.setType(Material.AIR);
+                } 
+                // TODO: cut grass, turn into dirt (no drop)
+                /*
+                else if (block.getType() == Material.GRASS) {
+                    block.setType(Material.DIRT);
+                    event.setCancelled(true);
+                }
+                */
             }
         }
     }
