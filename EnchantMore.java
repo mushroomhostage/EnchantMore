@@ -717,6 +717,18 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
+        // Bow + Looting = steal 
+        if (item.containsEnchantment(LOOTING)) {
+            double s = 5.0 * item.getEnchantmentLevel(LOOTING);
+
+            List<Entity> loots = arrow.getNearbyEntities(s, s, s);
+            for (Entity loot: loots) {
+                // TODO: different levels, for only items, exp, mobs?
+                // This moves everything!
+                loot.teleport(player.getLocation());
+            }
+        }
+
         // Bow + Feather Falling = teleport
         if (item.containsEnchantment(FEATHER_FALLING)) {
             Location dest = arrow.getLocation();
