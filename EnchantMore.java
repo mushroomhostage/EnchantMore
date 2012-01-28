@@ -717,6 +717,9 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
+        Location dest = arrow.getLocation();
+        World world = dest.getWorld();
+
         // Bow + Looting = steal 
         if (item.containsEnchantment(LOOTING)) {
             double s = 5.0 * item.getEnchantmentLevel(LOOTING);
@@ -729,10 +732,13 @@ class EnchantMoreListener implements Listener {
             }
         }
 
+        // Bow + Smite = lightning
+        if (item.containsEnchantment(SMITE)) {
+            world.strikeLightning(dest);
+        }
+
         // Bow + Feather Falling = teleport
         if (item.containsEnchantment(FEATHER_FALLING)) {
-            Location dest = arrow.getLocation();
-
             // use up the arrow
             arrow.remove();
 
