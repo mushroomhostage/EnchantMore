@@ -183,7 +183,7 @@ class EnchantMoreListener implements Listener {
                       
                         ItemStack drop = new ItemStack(seedType, 1);
 
-                        world.dropItemNaturally(block.getRelative(BlockFace.UP, 1).getLocation(), drop);
+                        world.dropItemNaturally(block.getRelative(BlockFace.UP).getLocation(), drop);
                     }
                 }
             }
@@ -355,6 +355,24 @@ class EnchantMoreListener implements Listener {
         return 20 * 10 * level;
     }
 
+    // Break all contiguous blocks of the same type
+    private void breakContiguous(Block start, Material m, ItemStack tool, int limit) {
+        start.breakNaturally(tool);
+        for (int dx = -1; dx <= 1; dx += 1) {
+            for (int dy = -1; dy <= 1; dy += 1) {
+                for (int dz = -1; dz <= 1; dz += 1) {
+                    Block other = start.getRelative(dx, dy, dz);
+
+                    if (other.getType() == m) {
+                        other.breakNaturally(tool);
+
+                        breakContiguous(start, m, tool, limit - 1);
+                    }
+                }
+            }
+        }
+    }
+
     @EventHandler(priority = EventPriority.NORMAL) 
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
@@ -382,6 +400,14 @@ class EnchantMoreListener implements Listener {
 
 
                 block.setType(Material.AIR);
+            }
+
+            // Axe + Power =
+            if (isAxe(item.getType())) {
+                if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
+                    // Chop tree
+                    breakContiguous(block, block.getType(), item, 10);
+                }
             }
         } else if (item.getType() == Material.SHEARS) {
             // Shears + Silk Touch = collect cobweb, dead bush
