@@ -693,6 +693,35 @@ class EnchantMoreListener implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onProjectileHit(ProjectileHitEvent event) {
+        Entity entity = event.getEntity();
+
+        if (!(entity instanceof Arrow)) {
+            return;
+        }
+
+        Arrow arrow = (Arrow)entity;
+        LivingEntity shooter = arrow.getShooter();
+        
+        if (shooter == null || !(shooter instanceof Player)) {
+            // shot from dispenser, skeleton, etc.
+            return;
+        }
+
+        Player player = (Player)shooter;
+        ItemStack item = player.getItemInHand();
+
+        if (item == null || item.getType() != Material.BOW) {
+            return;
+        }
+
+        // Bow + Feather Falling = teleport
+        if (item.containsEnchantment(FEATHER_FALLING)) {
+            player.teleport(arrow);
+        }
+    }
 }
 
 public class EnchantMore extends JavaPlugin {
