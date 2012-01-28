@@ -42,9 +42,12 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftSpider;
 import org.bukkit.craftbukkit.entity.CraftCaveSpider;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.CraftWorld;
 
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.FurnaceRecipes;
+import net.minecraft.server.ItemDye;
+//import net.minecraft.server.ItemStack;        // import conflict
 
 class EnchantMoreListener implements Listener {
 
@@ -111,7 +114,7 @@ class EnchantMoreListener implements Listener {
 
             // Flint & Steel + Fire Protection = player fire resistance
             if (item.containsEnchantment(FIRE_PROTECTION)) {
-                ((CraftPlayer)player).getHandle().addEffect(new MobEffect(
+                ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
                     12, // fireResistance - http://wiki.vg/Protocol#Effects
                     20*10*item.getEnchantmentLevel(FIRE_PROTECTION), // length
                     1)); // amplifier
@@ -171,7 +174,7 @@ class EnchantMoreListener implements Listener {
             // Hoe + Fortune = chance to drop seeds
             if (item.containsEnchantment(FORTUNE) && action == Action.RIGHT_CLICK_BLOCK) {
                 if (block.getType() == Material.DIRT || block.getType() == Material.GRASS) {
-                    if (random.nextInt(3) != 0) {   // TODO: configurable, and depend on level
+                    if (random.nextInt(2) != 0) {   // TODO: configurable, and depend on level
                         Material seedType;
 
                         // TODO: configurable probabilities
@@ -210,7 +213,25 @@ class EnchantMoreListener implements Listener {
                 }
                
             }
+
+            // Hoe + Respiration = grow
+            if (item.containsEnchantment(RESPIRATION) && action == Action.LEFT_CLICK_BLOCK) {
+                growStructure(block.getLocation(), player);
+                // TODO: use durability
+            }
         }
+    }
+
+    // Attempt to grow organic structure
+    private void growStructure(Location loc, Player player) {
+        int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
+        World world = loc.getWorld();
+
+        net.minecraft.server.ItemDye bonemealDye = new net.minecraft.server.ItemDye(15);
+        CraftItemStack bonemealStack = (new CraftItemStack(Material.INK_SACK, 1, (short)15));
+
+
+        bonemealDye.a(bonemealStack.getHandle(), ((CraftPlayer)player).getHandle(), ((CraftWorld)world).getHandle(), x, y, z, 0/*unused*/);
     }
 
     private boolean isHoe(Material m) {
@@ -279,7 +300,7 @@ class EnchantMoreListener implements Listener {
 
                 // Confusion effect on players
                 if (entity instanceof CraftPlayer) {
-                    ((CraftPlayer)entity).getHandle().addEffect(new MobEffect(
+                    ((CraftPlayer)entity).getHandle().addEffect(new net.minecraft.server.MobEffect(
                         9,      // confusion  - http://wiki.vg/Protocol#Effects
                         20*10*item.getEnchantmentLevel(RESPIRATION),  // length
                         1));    // amplifier
@@ -289,7 +310,7 @@ class EnchantMoreListener implements Listener {
             // Shears + Smite = gouge eyes (blindness)
             if (item.containsEnchantment(SMITE)) {
                 if (entity instanceof CraftPlayer) {
-                    ((CraftPlayer)entity).getHandle().addEffect(new MobEffect(
+                    ((CraftPlayer)entity).getHandle().addEffect(new net.minecraft.server.MobEffect(
                         15,     // blindness
                         20*10*item.getEnchantmentLevel(SMITE),  // length
                         1));    // amplifier
@@ -573,7 +594,7 @@ class EnchantMoreListener implements Listener {
 
     // Get item as if it was smelted
     private ItemStack smelt(ItemStack raw) {
-        net.minecraft.server.ItemStack smeltNMS = FurnaceRecipes.getInstance().a(raw.getTypeId());
+        net.minecraft.server.ItemStack smeltNMS = net.minecraft.server.FurnaceRecipes.getInstance().a(raw.getTypeId());
 
         ItemStack smelted = (ItemStack)(new CraftItemStack(smeltNMS));
     
