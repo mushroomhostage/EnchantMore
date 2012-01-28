@@ -358,18 +358,24 @@ class EnchantMoreListener implements Listener {
     }
 
     // Break all contiguous blocks of the same type
-    private void breakContiguous(Block start, ItemStack tool, int limit) {
+    private Collection<ItemStack> breakContiguous(Block start, ItemStack tool, int limit) {
         Set<Block> result = new HashSet<Block>();
+        List<ItemStack> drops = new ArrayList<ItemStack>();       // doesn't need to be ordered, but that's what getDrops() uses
 
         plugin.log.info("collectContiguous starting");
         collectContiguous(start, limit, result);
-        plugin.log.info("collectContiguous returned");
+        plugin.log.info("collectContiguous returned with "+result.size());
 
         for (Block block: result) {
+            // TODO: accumulate same type to optimize drops?
+            drops.addAll(block.getDrops(tool));
+
             block.setType(Material.AIR);
             //block.breakNaturally(); //tool);  // no, infinite recurse
             //plugin.log.info("break"+block);
         }
+
+        return drops;
     }
 
     // Recursively find all contiguous blocks 
@@ -384,6 +390,9 @@ class EnchantMoreListener implements Listener {
         DONE: for (int dx = -1; dx <= 1; dx += 1) {
             for (int dy = -1; dy <= 1; dy += 1) {
                 for (int dz = -1; dz <= 1; dz += 1) {
+                    if (dx == 0 && dy == 0 && dz == 0) {
+                        continue;
+                    }
                     Block other = start.getRelative(dx, dy, dz);
 
                     limit -= 1;
@@ -391,7 +400,8 @@ class EnchantMoreListener implements Listener {
                         break DONE;
                     }
 
-                    if (other.getType() == start.getType()) {
+                    // Follow same type _and_ data (different leaves, etc.)
+                    if (other.getType() == start.getType() && other.getData() == start.getData()) {
                         collectContiguous(other, limit - 1, result);
                     }
                 }
@@ -428,15 +438,18 @@ class EnchantMoreListener implements Listener {
                 block.setType(Material.AIR);
             }
 
-            /* TODO: fix performance
             // Axe + Power = fell tree
             if (isAxe(item.getType())) {
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
                     // Chop tree
-                    breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+                    Collection<ItemStack> drops = breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+
+                    for (ItemStack drop: drops) {
+                        plugin.log.info("drop "+drop);
+                        world.dropItemNaturally(block.getLocation(), drop);
+                    }
                 }
             }
-            */
         } else if (item.getType() == Material.SHEARS) {
             // Shears + Silk Touch = collect cobweb, dead bush
             if (item.containsEnchantment(SILK_TOUCH)) {
