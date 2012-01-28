@@ -411,7 +411,10 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
-        if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY) {
+        PlayerFishEvent.State state = event.getState();
+        World world = player.getWorld();
+
+        if (state == PlayerFishEvent.State.CAUGHT_ENTITY) {
             Entity entity = event.getCaught();
 
             if (entity == null) {
@@ -428,9 +431,21 @@ class EnchantMoreListener implements Listener {
             
             // Fishing Rod + Smite = strike mobs with lightning
             if (item.containsEnchantment(SMITE)) {
-                World world = entity.getWorld();
-
                 world.strikeLightning(entity.getLocation());
+            }
+        } else if (state == PlayerFishEvent.State.CAUGHT_FISH) {
+            // Fishing Rod + Flame = catch cooked fish
+            if (item.containsEnchantment(FLAME)) {
+                event.setCancelled(true);
+
+                world.dropItemNaturally(player.getLocation(), new ItemStack(Material.COOKED_FISH, 1));
+            }
+        } else if (state == PlayerFishEvent.State.FAILED_ATTEMPT) {
+            // TODO
+
+            player.sendMessage("fail");
+            if (item.containsEnchantment(SILK_TOUCH)) {
+                // TODO: always (or more reliably) catch fish
             }
         }
     }
@@ -737,9 +752,16 @@ class EnchantMoreListener implements Listener {
             world.strikeLightning(dest);
         }
 
+        // Bow + Fire Aspect = firey explosions
+        if (item.containsEnchantment(FIRE_ASPECT)) {
+            float power = 1.0f * item.getEnchantmentLevel(FIRE_ASPECT);
+
+            world.createExplosion(dest, power, true);
+        }
+
         // Bow + Feather Falling = teleport
         if (item.containsEnchantment(FEATHER_FALLING)) {
-            // use up the arrow
+            // use up the arrow (TODO: not at higher levels?) or set no pickup?
             arrow.remove();
 
             player.teleport(dest);
