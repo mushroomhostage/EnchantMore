@@ -719,7 +719,12 @@ class EnchantMoreListener implements Listener {
 
         // Bow + Feather Falling = teleport
         if (item.containsEnchantment(FEATHER_FALLING)) {
-            player.teleport(arrow);
+            Location dest = arrow.getLocation();
+
+            // use up the arrow
+            arrow.remove();
+
+            player.teleport(dest);
         }
     }
 }
