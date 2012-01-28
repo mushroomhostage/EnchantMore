@@ -127,7 +127,6 @@ class EnchantMoreListener implements Listener {
                 */
 
                 // Find water within ignited cube area
-                // TODO: refactor
                 int r = item.getEnchantmentLevel(AQUA_AFFINITY);
 
                 Location loc = block.getLocation();
@@ -148,6 +147,14 @@ class EnchantMoreListener implements Listener {
                     }
                 }
             }
+
+            // Flint & Steel + Sharpness = firey explosion
+            if (item.containsEnchantment(SHARPNESS)) {
+                float power = item.getEnchantmentLevel(SHARPNESS) * 1.0f;
+
+                world.createExplosion(block.getLocation(), power, true);
+            }
+
         } else if (isHoe(item.getType())) {
             // Hoe + Aqua Affinity = hydrate below
             // TODO: maybe should add water on side of, if air? better for farming
@@ -182,7 +189,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Hoe + Efficiency = hoe larger area
-            if (item.containsEnchantment(EFFICIENCY)) {
+            if (item.containsEnchantment(EFFICIENCY)) { // also can use left-click, for efficiency!
                 int r = item.getEnchantmentLevel(EFFICIENCY);
 
                 Location loc = block.getLocation();
