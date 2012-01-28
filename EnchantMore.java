@@ -368,10 +368,10 @@ class EnchantMoreListener implements Listener {
 
         for (Block block: result) {
             // TODO: accumulate same type to optimize drops?
-            drops.addAll(block.getDrops(tool));
+            //drops.addAll(block.getDrops(tool));
 
-            block.setType(Material.AIR);
-            //block.breakNaturally(); //tool);  // no, infinite recurse
+            //block.setType(Material.AIR);
+            block.breakNaturally(tool);  // no, infinite recurse
             //plugin.log.info("break"+block);
         }
 
@@ -387,7 +387,7 @@ class EnchantMoreListener implements Listener {
 
         result.add(start);
 
-        DONE: for (int dx = -1; dx <= 1; dx += 1) {
+        for (int dx = -1; dx <= 1; dx += 1) {
             for (int dy = -1; dy <= 1; dy += 1) {
                 for (int dz = -1; dz <= 1; dz += 1) {
                     if (dx == 0 && dy == 0 && dz == 0) {
@@ -397,7 +397,7 @@ class EnchantMoreListener implements Listener {
 
                     limit -= 1;
                     if (limit < 0) {
-                        break DONE;
+                        return;
                     }
 
                     // Follow same type _and_ data (different leaves, etc.)
@@ -486,12 +486,10 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            /* TODO: fix performance
             // Shears + Power = 
             if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
                 breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
             }
-            */
 
         } else if (isHoe(item.getType())) {
             // Hoe + Silk Touch = collect farmland
