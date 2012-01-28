@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -356,17 +358,30 @@ class EnchantMoreListener implements Listener {
     }
 
     // Break all contiguous blocks of the same type
-    private void breakContiguous(Block start, Material m, ItemStack tool, int limit) {
-        start.breakNaturally(tool);
+    private void breakContiguous(Block start, ItemStack tool) {
+        Set<Block> result = new HashSet<Block>();
+
+        collectContiguous(start, 10, result);
+
+        for (Block block: result) {
+            block.breakNaturally(); //tool);
+            //plugin.log.info("break"+block);
+        }
+    }
+
+    // Recursively find all contiguous blocks 
+    private void collectContiguous(Block start, int limit, Set<Block> result) {
+        plugin.log.info("bc"+start+","+limit);
+        result.add(start);
         for (int dx = -1; dx <= 1; dx += 1) {
             for (int dy = -1; dy <= 1; dy += 1) {
                 for (int dz = -1; dz <= 1; dz += 1) {
                     Block other = start.getRelative(dx, dy, dz);
 
-                    if (other.getType() == m) {
-                        other.breakNaturally(tool);
-
-                        breakContiguous(start, m, tool, limit - 1);
+                    if (other.getType() == start.getType()) {
+                        if (limit > 0) {
+                            collectContiguous(other, limit - 1, result);
+                        }
                     }
                 }
             }
@@ -406,7 +421,7 @@ class EnchantMoreListener implements Listener {
             if (isAxe(item.getType())) {
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
                     // Chop tree
-                    breakContiguous(block, block.getType(), item, 10);
+                    breakContiguous(block, item);
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
