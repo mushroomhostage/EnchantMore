@@ -267,18 +267,19 @@ class EnchantMoreListener implements Listener {
             if (item.containsEnchantment(POWER)) {
                 // Note: this also works for bedrock!
                 block.breakNaturally(item);
-                // no extra damage
             }
+
+            damage(item);
         }
     }
 
    
     // Use up a tool
-    private void damage(ItemStack tool) {
+    public static void damage(ItemStack tool) {
         damage(tool, 1);
     }
 
-    private void damage(ItemStack tool, int amount) {
+    public static void damage(ItemStack tool, int amount) {
         tool.setDurability((short)(tool.getDurability() + amount));
         // TODO: if reaches max, break? set to air or not?
     }
@@ -411,7 +412,9 @@ class EnchantMoreListener implements Listener {
                     // TODO: can we used the predefined effects (w/ duration, amplifier) in MobEffectList?
                     // as suggested here: http://forums.bukkit.org/threads/potion-events.57086/#post-936679
                     // however, b() takes a MobEffect, but MobEffectList.CONFUSIOn is a MobEffectList
-                    (((CraftPlayer)entity).getHandle()).b(MobEffectList.CONFUSION);
+                    //(((CraftPlayer)entity).getHandle()).b(MobEffectList.CONFUSION);
+
+                    damage(item);
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
@@ -422,8 +425,9 @@ class EnchantMoreListener implements Listener {
                         15,     // blindness
                         20*10*item.getEnchantmentLevel(SMITE),  // length
                         1));    // amplifier
+
+                    damage(item);
                 }
-                // TODO: use durability
             }
 
             // Shears + Bane of Arthropods = collect spider eyes
@@ -437,8 +441,9 @@ class EnchantMoreListener implements Listener {
 
                         bug.setHealth(bug.getMaxHealth() / 2 - 1);
                     }
+
+                    damage(item);
                 }
-                // TODO: use durability
             }
 
             // Shears + Looting = feathers from chicken (secondary)
@@ -451,7 +456,10 @@ class EnchantMoreListener implements Listener {
                         world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.FEATHER, random.nextInt(5) + 1));
 
                         bird.setHealth(bird.getMaxHealth() / 2 - 1);
+                        // There isn't any "featherless chicken" sprite
                     }
+                    
+                    damage(item);
                 }
             }
         }  else if (isSword(item.getType())) {
@@ -463,6 +471,7 @@ class EnchantMoreListener implements Listener {
                     16,     // nightVision
                     20*10*item.getEnchantmentLevel(FLAME),  // length
                     10));    // amplifier
+                damage(item);
             }
 
             // BLOCKED: Sword + Infinity = invisibility when blocking 
@@ -472,7 +481,7 @@ class EnchantMoreListener implements Listener {
                     14,     // invisibility
                     20*2*item.getEnchantmentLevel(INFINITE),  // length
                     10));    // amplifier
-
+                damage(item);
             }
             */
 
@@ -483,6 +492,7 @@ class EnchantMoreListener implements Listener {
                     11,     // resistance
                     20*10*item.getEnchantmentLevel(PROTECTION),  // length
                     10));    // amplifier
+                damage(item);
             }
         }
     }
@@ -574,12 +584,15 @@ class EnchantMoreListener implements Listener {
 
 
                 block.setType(Material.AIR);
+
+                // no extra damage
             }
 
             // Axe + Power = fell tree
             if (isAxe(item.getType()) && item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
                 // Chop tree
                 breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+                // no extra damage
             }
 
             // Shovel + Power = excavation (dig large area, no drops)
@@ -612,7 +625,7 @@ class EnchantMoreListener implements Listener {
                         }
                     }
                 }
-
+                // no extra damage
             }
 
         } else if (item.getType() == Material.SHEARS) {
@@ -625,6 +638,7 @@ class EnchantMoreListener implements Listener {
 
                     block.setType(Material.AIR);
                 } 
+                // no extra damage
             }
 
             // Shears + Fortune = apples from leaves
@@ -642,12 +656,14 @@ class EnchantMoreListener implements Listener {
                     
                     block.setType(Material.AIR);
                 }
+                // no extra damage
             }
 
             // Shears + Power = hedge trimmer; cut grass
             // see also secondary effect above
             if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
                 breakContiguous(block, item, 50 * item.getEnchantmentLevel(POWER));
+                // no extra damage
             }
 
         } else if (isHoe(item.getType())) {
@@ -666,6 +682,7 @@ class EnchantMoreListener implements Listener {
                     
                     block.setType(Material.AIR);
                 }
+                // no extra damage
             }
         }
     }
@@ -726,6 +743,7 @@ class EnchantMoreListener implements Listener {
 
                 world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.WOOL, 1, color));
             }
+            // no extra damage
         }
     }
 
@@ -811,13 +829,14 @@ class EnchantMoreListener implements Listener {
             if (item.containsEnchantment(FIRE_ASPECT)) {
                 entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
-                // TODO: fix
-                item.setDurability((short)(item.getDurability() - 1));
+                damage(item);
             }
             
             // Fishing Rod + Smite = strike mobs with lightning
             if (item.containsEnchantment(SMITE)) {
                 world.strikeLightning(entity.getLocation());
+
+                damage(item);
             }
         } else if (state == PlayerFishEvent.State.CAUGHT_FISH) {
             // Fishing Rod + Flame = catch cooked fish
@@ -870,7 +889,7 @@ class EnchantMoreListener implements Listener {
                 // TODO: should also cancel fish event as to not drop?
             }
 
-
+            // no extra damage 
 
         } else if (state == PlayerFishEvent.State.FAILED_ATTEMPT) {
             // Fishing Rod + Silk Touch = catch more reliably
@@ -888,6 +907,8 @@ class EnchantMoreListener implements Listener {
                     world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, 1));
                 }
             }
+
+            // no extra damage
         } else if (state == PlayerFishEvent.State.FISHING) {
             // Fishing Rod + Efficiency = fish faster
             if (item.containsEnchantment(EFFICIENCY)) {
@@ -919,7 +940,12 @@ class EnchantMoreFishTask implements Runnable {
 
 
     public void run() {
-        world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, 1));
+        ItemStack tool = player.getItemInHand();
+        if (tool != null && tool.getType() == Material.FISHING_ROD) {
+            world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, 1));
+
+            EnchantMoreListener.damage(tool);
+        }
 
         // TODO: reel in fishing line?
     }
