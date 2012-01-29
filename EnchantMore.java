@@ -347,6 +347,31 @@ class EnchantMoreListener implements Listener {
             m == Material.WOOD_AXE;
     }
 
+    // Get whether material is a farm-related block, either land or growing crops
+    private boolean isFarmBlock(Material m) {
+        return m == Material.SOIL ||     // Farmland
+            m == Material.CROPS ||    // wheat TODO: update wiki, calls 'Wheat Seeds' though in-game 'Crops'
+            m == Material.SUGAR_CANE_BLOCK ||
+            m == Material.CAKE_BLOCK ||
+            m == Material.PUMPKIN_STEM ||
+            m == Material.MELON_STEM ||
+            m == Material.NETHER_WARTS; // not the item, that is NETHER_STALK (confusingly)
+    }
+
+    // Get whether able to be excavated by shovel
+    private boolean isExcavatable(int m) {
+        return m == Material.DIRT.getId() ||
+            m == Material.GRASS.getId() ||
+            m == Material.GRAVEL.getId() ||
+            m == Material.SOUL_SAND.getId() ||
+            m == Material.NETHERRACK.getId(); // not normally diggable, but why not?
+    }
+
+    private boolean isExcavatable(Material m) {
+        return isExcavatable(m.getId());
+    }
+
+
 
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -556,9 +581,7 @@ class EnchantMoreListener implements Listener {
 
             // Shovel + Power = excavation (dig large area, no drops)
             if (isShovel(item.getType()) && item.containsEnchantment(POWER) && 
-                (block.getType() == Material.DIRT ||
-                block.getType() == Material.GRASS ||
-                block.getType() == Material.GRAVEL)) { 
+                isExcavatable(block.getType())) {
 
                 // Clear out those annoying veins of gravel (or dirt)
 
@@ -579,10 +602,7 @@ class EnchantMoreListener implements Listener {
                             int x = dx + x0, y = dy + y0, z = dz + z0;
 
                             int type = world.getBlockTypeIdAt(x, y, z);
-                            if (type == Material.DIRT.getId() ||
-                                type == Material.GRASS.getId() ||
-                                type == Material.GRAVEL.getId()) {
-
+                            if (isExcavatable(type)) {
                                 Block b = world.getBlockAt(x, y, z);
                                 b.setType(Material.AIR);
                             }
@@ -665,16 +685,6 @@ class EnchantMoreListener implements Listener {
 
     }
 
-    // Get whether material is a farm-related block, either land or growing crops
-    private boolean isFarmBlock(Material m) {
-        return m == Material.SOIL ||     // Farmland
-            m == Material.CROPS ||    // wheat TODO: update wiki, calls 'Wheat Seeds' though in-game 'Crops'
-            m == Material.SUGAR_CANE_BLOCK ||
-            m == Material.CAKE_BLOCK ||
-            m == Material.PUMPKIN_STEM ||
-            m == Material.MELON_STEM ||
-            m == Material.NETHER_WARTS; // not the item, that is NETHER_STALK (confusingly)
-    }
 
     // Get item as if it was smelted
     private ItemStack smelt(ItemStack raw) {
