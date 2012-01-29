@@ -155,7 +155,7 @@ class EnchantMoreListener implements Listener {
 
             // Flint & Steel + Sharpness = firey explosion
             if (item.containsEnchantment(SHARPNESS)) {
-                float power = item.getEnchantmentLevel(SHARPNESS) * 1.0f;
+                float power = (item.getEnchantmentLevel(SHARPNESS) - 1) * 1.0f;
 
                 world.createExplosion(block.getLocation(), power, true);
             }
@@ -772,7 +772,7 @@ class EnchantMoreListener implements Listener {
 
                 Material m;
 
-                // TODO: configurable
+                // TODO: configurable, like Junkyard Creek http://dev.bukkit.org/server-mods/junkyardcreek/
                 switch(random.nextInt(19)) {
                 case 0: m = Material.MONSTER_EGGS; break;       // hidden silverfish block
                 case 1:
