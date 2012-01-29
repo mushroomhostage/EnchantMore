@@ -7,7 +7,7 @@ dozens of new effects, ranging from entertainingly destructive to legitimately u
 ## Features
 * 36 new item/enchantment effects
 * Items in inventory appear as expected (glowing + descriptive tooltip), no client mods required - [screenshot](http://imgur.com/BNqBi)
-* Only adds functionality, does not change any – all your existing enchanted tools work as expected
+* Only adds functionality, does not change any -- all your existing enchanted tools work as expected
 
 **Important**: to enchant items, you currently need to use an inventory editor or enchanting plugin,
 such as [Tim The Enchanter](http://dev.bukkit.org/server-mods/enchanter/). New enchantments are *not* yet 
@@ -61,7 +61,9 @@ items to be tightly controlled.
 ## Notes
 [Slot data](http://wiki.vg/Slot\_Data) protocol reference
 
-Other relevant plugins pertaining to enchantments you may be interested in:
+Other relevant plugins of interest pertaining to enchantments:
+
 * [Sublimation](http://dev.bukkit.org/server-mods/sublimation/) - silk touch ice, no longer overpowered
 * [SilkSpawners](http://dev.bukkit.org/server-mods/silkspawners/) - pickup and move mob spawners with silk touch
+
 
