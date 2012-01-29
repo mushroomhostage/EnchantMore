@@ -105,7 +105,15 @@ class EnchantMoreListener implements Listener {
 
         World world = block.getWorld();
 
-        if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
+        // Shears + Silk Touch = cut grass (secondary effect)
+        if (item.getType() == Material.SHEARS) {
+            if (item.containsEnchantment(SILK_TOUCH)) {
+                if (block.getType() == Material.GRASS) {
+                    block.setType(Material.DIRT);
+                }
+            }
+
+        } else if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
         
             // Flint & Steel + Smite = strike lightning
             if (item.containsEnchantment(SMITE)) {
@@ -202,7 +210,7 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            // Hoe + Efficiency = hoe larger area
+            // Hoe + Efficiency = till larger area
             if (item.containsEnchantment(EFFICIENCY)) { // also can use left-click, for efficiency!
                 int r = item.getEnchantmentLevel(EFFICIENCY);
 
@@ -229,7 +237,7 @@ class EnchantMoreListener implements Listener {
                 // TODO: use durability
             }
         } else if (isPickaxe(item.getType())) {
-            // Pickaxe + Power = instant break anything (including bedrock)
+            // Pickaxe + Power = instantly break anything (including bedrock)
             if (item.containsEnchantment(POWER)) {
                 // Note: this also works for bedrock!
                 block.breakNaturally(item);
@@ -325,7 +333,7 @@ class EnchantMoreListener implements Listener {
                 item.setDurability((short)(item.getDurability() - 1));
             }
 
-            // Flint & Steel + Respiration = smoke inhalation (confusion)
+            // Flint & Steel + Respiration = smoke inhalation (confusion effect on player)
             if (item.containsEnchantment(RESPIRATION)) {
                 World world = entity.getWorld();
 
@@ -341,7 +349,7 @@ class EnchantMoreListener implements Listener {
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
-            // Shears + Smite = gouge eyes (blindness)
+            // Shears + Smite = gouge eyes (blindness effect on player)
             if (item.containsEnchantment(SMITE)) {
                 if (entity instanceof CraftPlayer) {
                     ((CraftPlayer)entity).getHandle().addEffect(new net.minecraft.server.MobEffect(
@@ -474,7 +482,9 @@ class EnchantMoreListener implements Listener {
             isShovel(item.getType()) ||
             isAxe(item.getType())) {
 
-            // Pickaxe/shovel/axe + Flame = auto-smelt
+            // Pickaxe + Flame = auto-smelt
+            // Shovel + Flame = auto-smelt
+            // Axe + Flame = auto-smelt
             if (item.containsEnchantment(FLAME)) {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
 
@@ -494,7 +504,7 @@ class EnchantMoreListener implements Listener {
                 breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
             }
 
-            // Shovel + Power = excavation
+            // Shovel + Power = excavation (dig large area, no drops)
             if (isShovel(item.getType()) && item.containsEnchantment(POWER) && 
                 (block.getType() == Material.DIRT ||
                 block.getType() == Material.GRASS ||
@@ -533,7 +543,8 @@ class EnchantMoreListener implements Listener {
             }
 
         } else if (item.getType() == Material.SHEARS) {
-            // Shears + Silk Touch = collect cobweb, dead bush
+            // Shears + Silk Touch = collect cobweb, dead bush; cut grass
+            // see also secondary effect above
             if (item.containsEnchantment(SILK_TOUCH)) {
                 if (block.getType() == Material.DEAD_BUSH ||
                     block.getType() == Material.WEB) {
@@ -542,13 +553,6 @@ class EnchantMoreListener implements Listener {
 
                     block.setType(Material.AIR);
                 } 
-                // TODO: cut grass, turn into dirt (no drop)
-                /*
-                else if (block.getType() == Material.GRASS) {
-                    block.setType(Material.DIRT);
-                    event.setCancelled(true);
-                }
-                */
             }
 
             // Shears + Fortune = apples from leaves
@@ -699,7 +703,7 @@ class EnchantMoreListener implements Listener {
             }
         }
 
-        // Bow + Smite = lightning
+        // Bow + Smite = strike lightning
         if (item.containsEnchantment(SMITE)) {
             world.strikeLightning(dest);
         }
