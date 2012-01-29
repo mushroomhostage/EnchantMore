@@ -797,6 +797,45 @@ class EnchantMoreListener implements Listener {
             world.createExplosion(dest, power, true);
         }
 
+        // Bow + Aqua Affinity = freeze water, stun players
+        if (item.containsEnchantment(AQUA_AFFINITY)) {
+            int r = item.getEnchantmentLevel(AQUA_AFFINITY);
+
+            // freeze water 
+            int x0 = dest.getBlockX();
+            int y0 = dest.getBlockY();
+            int z0 = dest.getBlockZ();
+           
+            // TODO: refactor
+            for (int dx = -r; dx <= r; dx += 1) {
+                for (int dy = -r; dy <= r; dy += 1) {
+                    for (int dz = -r; dz <= r; dz += 1) {
+                        Block b = world.getBlockAt(dx+x0, dy+y0, dz+z0);
+                       
+                        if (b.getType() == Material.STATIONARY_WATER || b.getType() == Material.WATER) {
+                            b.setType(Material.ICE);
+                        }
+                    }
+                }
+            }
+
+            // stun nearby players
+            List<Entity> victims = arrow.getNearbyEntities(r, r, r);
+            for (Entity victim: victims) {
+                if (victim instanceof CraftPlayer) {
+                    CraftPlayer victimPlayer = (CraftPlayer)victim;
+                    (victimPlayer).getHandle().addEffect(new net.minecraft.server.MobEffect(
+                        2, // moveSlowdown - http://wiki.vg/Protocol#Effects
+                        20*10*item.getEnchantmentLevel(AQUA_AFFINITY), // length
+                        1)); // amplifier
+                }
+            }
+
+            // no extra damage
+        }
+
+        // TODO: phase, fire arrow through blocks
+
         // Bow + Feather Falling = teleport
         if (item.containsEnchantment(FEATHER_FALLING)) {
             // use up the arrow (TODO: not at higher levels?) or set no pickup?
