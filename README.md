@@ -35,7 +35,7 @@ accessible through enchanting tables.
 * Flint & Steel + Respiration = smoke inhalation (confusion effect on player)
 * Flint & Steel + Sharpness = firey explosion
 * Flint & Steel + Smite = strike lightning
-* Hoe + Aqua Affinity = hydrate below
+* Hoe + Aqua Affinity = auto-hydrate
 * Hoe + Efficiency = till larger area
 * Hoe + Fortune = chance to drop seeds
 * Hoe + Respiration = grow
