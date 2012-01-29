@@ -9,7 +9,7 @@ and new enchantment effects on axes, bows, and other tools?
 * Only adds functionality, does not 
 
 **Important**: to enchant items, you currently need to use an inventory editor or another enchanting plugin,
-such as [Tim The Enchanter](http://dev.bukkit.org/server-mods/enchanter/). New enchantments are not yet 
+such as [Tim The Enchanter](http://dev.bukkit.org/server-mods/enchanter/). New enchantments are *not* yet 
 accessible through enchanting tables.
 
 

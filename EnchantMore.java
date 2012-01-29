@@ -111,6 +111,7 @@ class EnchantMoreListener implements Listener {
                 if (block.getType() == Material.GRASS) {
                     block.setType(Material.DIRT);
                 }
+                damage(item);
             }
 
         } else if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
@@ -118,6 +119,7 @@ class EnchantMoreListener implements Listener {
             // Flint & Steel + Smite = strike lightning
             if (item.containsEnchantment(SMITE)) {
                 world.strikeLightning(block.getLocation());
+                damage(item, 9);
             }
 
             // Flint & Steel + Fire Protection = player fire resistance
@@ -245,6 +247,17 @@ class EnchantMoreListener implements Listener {
         }
     }
 
+   
+    // Use up a tool
+    private void damage(ItemStack tool) {
+        damage(tool, 1);
+    }
+
+    private void damage(ItemStack tool, int amount) {
+        tool.setDurability((short)(tool.getDurability() + amount));
+        // TODO: if reaches max, break? set to air or not?
+    }
+
     // Return whether is a wooden block
     private boolean isWoodenBlock(Material m, byte data) {
         return m == Material.WOOD || 
@@ -331,8 +344,7 @@ class EnchantMoreListener implements Listener {
             if (item.containsEnchantment(FIRE_ASPECT)) {
                 entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
-                // TODO: fix
-                item.setDurability((short)(item.getDurability() - 1));
+                damage(item);
             }
 
             // Flint & Steel + Respiration = smoke inhalation (confusion effect on player)
