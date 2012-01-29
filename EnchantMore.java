@@ -320,6 +320,8 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
+        World world = player.getWorld();
+        
         if (item.getType() == Material.FLINT_AND_STEEL) {
             if (entity == null) {
                 return;
@@ -335,8 +337,6 @@ class EnchantMoreListener implements Listener {
 
             // Flint & Steel + Respiration = smoke inhalation (confusion effect on player)
             if (item.containsEnchantment(RESPIRATION)) {
-                World world = entity.getWorld();
-
                 world.playEffect(entity.getLocation(), Effect.SMOKE, 0);    // TOOD: smoke direction
                 world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);    // TOOD: smoke direction
 
@@ -367,14 +367,26 @@ class EnchantMoreListener implements Listener {
 
                     // If at least 50% health, cut out eyes, then drop health
                     if (bug.getHealth() >= bug.getMaxHealth() / 2) {
-                        World world = player.getWorld();
-
                         world.dropItemNaturally(bug.getEyeLocation(), new ItemStack(Material.SPIDER_EYE, 1));
 
                         bug.setHealth(bug.getMaxHealth() / 2 - 1);
                     }
                 }
                 // TODO: use durability
+            }
+
+            // Shears + Looting = feathers from chicken (secondary)
+            if (item.containsEnchantment(LOOTING)) {
+                if (entity instanceof Chicken) {
+                    Creature bird = (Creature)entity;
+
+                    // Pulling feathers damages the creature
+                    if (bird.getHealth() >= bird.getMaxHealth() / 2) {
+                        world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.FEATHER, random.nextInt(5) + 1));
+
+                        bird.setHealth(bird.getMaxHealth() / 2 - 1);
+                    }
+                }
             }
         }  else if (isSword(item.getType())) {
             /*
@@ -652,7 +664,8 @@ class EnchantMoreListener implements Listener {
         }
         // TODO: mooshroom?
 
-        // Shears + Looting = more wool, random colors
+        // Shears + Looting = more wool (random colors); feathers from chickens
+        // see also secondary effect above
         if (tool.getType() == Material.SHEARS && tool.containsEnchantment(LOOTING)) {
             Location loc = entity.getLocation();
 
