@@ -402,64 +402,6 @@ class EnchantMoreListener implements Listener {
     }
 
 
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerFish(PlayerFishEvent event) {
-        Player player = event.getPlayer();
-        ItemStack item = player.getItemInHand();
-
-        if (item == null) {
-            return;
-        }
-
-        PlayerFishEvent.State state = event.getState();
-        World world = player.getWorld();
-
-        if (state == PlayerFishEvent.State.CAUGHT_ENTITY) {
-            Entity entity = event.getCaught();
-
-            if (entity == null) {
-                return;
-            }
-
-            // Fishing Rod + Fire Aspect = set mobs on fire
-            if (item.containsEnchantment(FIRE_ASPECT)) {
-                entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
-
-                // TODO: fix
-                item.setDurability((short)(item.getDurability() - 1));
-            }
-            
-            // Fishing Rod + Smite = strike mobs with lightning
-            if (item.containsEnchantment(SMITE)) {
-                world.strikeLightning(entity.getLocation());
-            }
-        } else if (state == PlayerFishEvent.State.CAUGHT_FISH) {
-            // Fishing Rod + Flame = catch cooked fish
-            if (item.containsEnchantment(FLAME)) {
-                event.setCancelled(true);
-
-                world.dropItemNaturally(player.getLocation(), new ItemStack(Material.COOKED_FISH, 1));
-            }
-        } else if (state == PlayerFishEvent.State.FAILED_ATTEMPT) {
-            // Fishing Rod + Silk Touch = catch more reliably
-            if (item.containsEnchantment(SILK_TOUCH)) {
-                // probability
-                // TODO: configurable levels, maybe to 100?
-                // 4 = always
-                int n = 4 - item.getEnchantmentLevel(SILK_TOUCH);
-                if (n < 1) {
-                    n = 1;
-                }
-
-                if (random.nextInt(n) == 0) {
-                    // TODO: integrate with Flame to catch cooked, too
-                    world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, 1));
-                }
-            }
-        }
-    }
-
     // Get time to burn entity for given enchantment level
     private int getFireTicks(int level) {
          // TODO: configurable ticks per level
@@ -776,6 +718,142 @@ class EnchantMoreListener implements Listener {
 
             player.teleport(dest);
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerFish(PlayerFishEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getItemInHand();
+
+        if (item == null) {
+            return;
+        }
+
+        PlayerFishEvent.State state = event.getState();
+        World world = player.getWorld();
+
+        if (state == PlayerFishEvent.State.CAUGHT_ENTITY) {
+            Entity entity = event.getCaught();
+
+            if (entity == null) {
+                return;
+            }
+
+            // Fishing Rod + Fire Aspect = set mobs on fire
+            if (item.containsEnchantment(FIRE_ASPECT)) {
+                entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
+
+                // TODO: fix
+                item.setDurability((short)(item.getDurability() - 1));
+            }
+            
+            // Fishing Rod + Smite = strike mobs with lightning
+            if (item.containsEnchantment(SMITE)) {
+                world.strikeLightning(entity.getLocation());
+            }
+        } else if (state == PlayerFishEvent.State.CAUGHT_FISH) {
+            // Fishing Rod + Flame = catch cooked fish
+            if (item.containsEnchantment(FLAME)) {
+                event.setCancelled(true);
+
+                // replace raw with cooked (TODO: play well with all other enchantments)
+                world.dropItemNaturally(player.getLocation(), new ItemStack(Material.COOKED_FISH, 1));
+            }
+
+            // Fishing Rod + Looting = catch extra fish
+            if (item.containsEnchantment(LOOTING)) {
+                // one extra per level
+                world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, item.getEnchantmentLevel(FORTUNE)));
+            }
+
+            // Fishing Rod + Fortune = catch junk
+            if (item.containsEnchantment(FORTUNE)) {
+                int quantity  = item.getEnchantmentLevel(FORTUNE);
+
+                Material m;
+
+                // TODO: configurable
+                switch(random.nextInt(19)) {
+                case 0: m = Material.MONSTER_EGGS; break;       // hidden silverfish block
+                case 1:
+                default:
+                case 2: m = Material.DIRT; break;
+                case 3: 
+                case 4: m = Material.WOOD; break;
+                case 5: m = Material.SPONGE; break;
+                case 6: m = Material.DEAD_BUSH; break;
+                case 7: m = Material.EYE_OF_ENDER; break;
+                case 8: m = Material.DIAMOND; break;
+                case 9:
+                case 10:
+                case 11: m = Material.IRON_INGOT; break;
+                case 12:
+                case 13: m = Material.GOLD_INGOT; break;
+                case 14: m = Material.CHAINMAIL_CHESTPLATE; break;
+                case 15: 
+                case 16: m = Material.WATER_BUCKET; break;
+                case 17: m = Material.BOAT; break;
+                case 18: m = Material.SLIME_BALL; break;
+                case 19: m = Material.FERMENTED_SPIDER_EYE; break;
+                }
+
+                world.dropItemNaturally(player.getLocation(), new ItemStack(m, quantity));
+
+                // TODO: should also cancel fish event as to not drop?
+            }
+
+
+
+        } else if (state == PlayerFishEvent.State.FAILED_ATTEMPT) {
+            // Fishing Rod + Silk Touch = catch more reliably
+            if (item.containsEnchantment(SILK_TOUCH)) {
+                // probability
+                // TODO: configurable levels, maybe to 100?
+                // 4 = always
+                int n = 4 - item.getEnchantmentLevel(SILK_TOUCH);
+                if (n < 1) {
+                    n = 1;
+                }
+
+                if (random.nextInt(n) == 0) {
+                    // TODO: integrate with Flame to catch cooked, too
+                    world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, 1));
+                }
+            }
+        } else if (state == PlayerFishEvent.State.FISHING) {
+            // Fishing Rod + Efficiency = fish faster
+            if (item.containsEnchantment(EFFICIENCY)) {
+               
+                // 13 seconds for level 1, down to 1 for level 7
+                int delayTicks = (15 - item.getEnchantmentLevel(EFFICIENCY) * 2) * 20;
+                if (delayTicks < 0) {
+                    delayTicks = 0;
+                }
+                // TODO: add some randomness
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreFishTask(player, world), delayTicks);
+
+                // TODO: cancel task if stop fishing (change state)
+            }
+        }
+    }
+}
+
+// Task to efficiently drop fish after some time of fishing
+class EnchantMoreFishTask implements Runnable {
+    Player player;
+    World world;
+
+    public EnchantMoreFishTask(Player p, World w) {
+        player = p;
+        world = w;
+    }
+
+
+    public void run() {
+        world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, 1));
+
+        // TODO: reel in fishing line?
     }
 }
 
