@@ -266,6 +266,7 @@ class EnchantMoreListener implements Listener {
             if (item.containsEnchantment(POWER)) {
                 // Note: this also works for bedrock!
                 block.breakNaturally(item);
+                // no extra damage
             }
         }
     }
@@ -281,27 +282,17 @@ class EnchantMoreListener implements Listener {
         // TODO: if reaches max, break? set to air or not?
     }
 
-    // Return whether is a wooden block
-    private boolean isWoodenBlock(Material m, byte data) {
-        return m == Material.WOOD || 
-            m == Material.WOOD_PLATE || 
-            m == Material.WOOD_STAIRS ||
-            m == Material.WOODEN_DOOR || 
-            m == Material.LOG ||
-            (m == Material.STEP && data == 2) ||      // wooden slab
-            (m == Material.DOUBLE_STEP && data == 2);// wooden double slab
-    }
 
     // Attempt to grow organic structure
     private void growStructure(Location loc, Player player) {
         int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
         World world = loc.getWorld();
 
-        net.minecraft.server.ItemDye bonemealDye = new net.minecraft.server.ItemDye(15);
+        // Use bonemeal (white dye/ink) to grow
         CraftItemStack bonemealStack = (new CraftItemStack(Material.INK_SACK, 1, (short)15));
 
-
-        bonemealDye.a(bonemealStack.getHandle(), ((CraftPlayer)player).getHandle(), ((CraftWorld)world).getHandle(), x, y, z, 0/*unused*/);
+        // 'a' unobfuscated = onItemUse
+        net.minecraft.server.Item.INK_SACK.a(bonemealStack.getHandle(), ((CraftPlayer)player).getHandle(), ((CraftWorld)world).getHandle(), x, y, z, 0/*unused*/);
     }
 
     private boolean isHoe(Material m) {
@@ -368,6 +359,16 @@ class EnchantMoreListener implements Listener {
         return isExcavatable(m.getId());
     }
 
+    // Return whether is a wooden block
+    private boolean isWoodenBlock(Material m, byte data) {
+        return m == Material.WOOD || 
+            m == Material.WOOD_PLATE || 
+            m == Material.WOOD_STAIRS ||
+            m == Material.WOODEN_DOOR || 
+            m == Material.LOG ||
+            (m == Material.STEP && data == 2) ||      // wooden slab
+            (m == Material.DOUBLE_STEP && data == 2);// wooden double slab
+    }
 
 
 
