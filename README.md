@@ -53,8 +53,6 @@ accessible through enchanting tables.
 * Sword + Protection = resistance when blocking 
 
 ## Limitations
-* Tool damage does not always increase after usage
-
 * Not all enchantments reasonably combine with one another
 
 * Some effects are overpowered; be careful!

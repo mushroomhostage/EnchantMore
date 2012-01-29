@@ -45,6 +45,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.CraftWorld;
 
 import net.minecraft.server.MobEffect;
+import net.minecraft.server.MobEffectList;
 import net.minecraft.server.FurnaceRecipes;
 import net.minecraft.server.ItemDye;
 //import net.minecraft.server.ItemStack;        // import conflict
@@ -407,6 +408,10 @@ class EnchantMoreListener implements Listener {
                         9,      // confusion  - http://wiki.vg/Protocol#Effects
                         20*10*item.getEnchantmentLevel(RESPIRATION),  // length
                         1));    // amplifier
+                    // TODO: can we used the predefined effects (w/ duration, amplifier) in MobEffectList?
+                    // as suggested here: http://forums.bukkit.org/threads/potion-events.57086/#post-936679
+                    // however, b() takes a MobEffect, but MobEffectList.CONFUSIOn is a MobEffectList
+                    (((CraftPlayer)entity).getHandle()).b(MobEffectList.CONFUSION);
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
