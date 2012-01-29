@@ -105,9 +105,9 @@ class EnchantMoreListener implements Listener {
 
         World world = block.getWorld();
 
-        // Shears + Silk Touch = cut grass (secondary effect)
+        // Shears + Power = cut grass (secondary effect)
         if (item.getType() == Material.SHEARS) {
-            if (item.containsEnchantment(SILK_TOUCH)) {
+            if (item.containsEnchantment(POWER)) {
                 if (block.getType() == Material.GRASS) {
                     block.setType(Material.DIRT);
                 }
@@ -543,8 +543,7 @@ class EnchantMoreListener implements Listener {
             }
 
         } else if (item.getType() == Material.SHEARS) {
-            // Shears + Silk Touch = collect cobweb, dead bush; cut grass
-            // see also secondary effect above
+            // Shears + Silk Touch = collect cobweb, dead bush
             if (item.containsEnchantment(SILK_TOUCH)) {
                 if (block.getType() == Material.DEAD_BUSH ||
                     block.getType() == Material.WEB) {
@@ -572,7 +571,8 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            // Shears + Power = hedge trimmer
+            // Shears + Power = hedge trimmer; cut grass
+            // see also secondary effect above
             if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
                 breakContiguous(block, item, 50 * item.getEnchantmentLevel(POWER));
             }
