@@ -231,6 +231,7 @@ class EnchantMoreListener implements Listener {
 
                         world.dropItemNaturally(block.getRelative(BlockFace.UP).getLocation(), drop);
                     }
+                    // no extra damage
                 }
             }
 
@@ -252,13 +253,13 @@ class EnchantMoreListener implements Listener {
                         }
                     }
                 }
-               
+                damage(item);
             }
 
             // Hoe + Respiration = grow
             if (item.containsEnchantment(RESPIRATION) && action == Action.LEFT_CLICK_BLOCK) {
                 growStructure(block.getLocation(), player);
-                // TODO: use durability
+                damage(item);
             }
         } else if (isPickaxe(item.getType())) {
             // Pickaxe + Power = instantly break anything (including bedrock)
