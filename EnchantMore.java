@@ -442,11 +442,13 @@ class EnchantMoreListener implements Listener {
                 world.dropItemNaturally(player.getLocation(), new ItemStack(Material.COOKED_FISH, 1));
             }
         } else if (state == PlayerFishEvent.State.FAILED_ATTEMPT) {
-            // TODO
-
-            player.sendMessage("fail");
+            // Fishing Rod + Silk Touch = always catch
             if (item.containsEnchantment(SILK_TOUCH)) {
-                // TODO: always (or more reliably) catch fish
+                // always catch fish
+                // TODO: nerf to just be more reliable? or only if was reeling in a fish?
+               
+                // TODO: integrate with Flame to catch cooked, too
+                world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, 1));
             }
         }
     }
