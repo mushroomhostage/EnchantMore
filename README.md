@@ -62,4 +62,7 @@ accessible through enchanting tables.
 ## Notes
 [Slot data](http://wiki.vg/Slot\_Data) protocol reference
 
+Other relevant plugins pertaining to enchantments you may be interested in:
+* [Sublimation](http://dev.bukkit.org/server-mods/sublimation/) - silk touch ice, no longer overpowered
+* [SilkSpawners](http://dev.bukkit.org/server-mods/silkspawners/) - pickup and move mob spawners with silk touch
 

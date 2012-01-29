@@ -185,35 +185,31 @@ class EnchantMoreListener implements Listener {
 
         } else if (isHoe(item.getType())) {
             // Hoe + Aqua Affinity = auto-hydrate
-            if (item.containsEnchantment(AQUA_AFFINITY) && world.getEnvironment() != World.Environment.NETHER) {
-                int n = item.getEnchantmentLevel(AQUA_AFFINITY);
+            if (item.containsEnchantment(AQUA_AFFINITY)) {
+                // As long as not in hell, hydrate nearby
+                if (world.getEnvironment() != World.Environment.NETHER) {
+                    int n = item.getEnchantmentLevel(AQUA_AFFINITY);
 
-                // Used to hydate directly below (replace dirt->water), but
-                // http://www.minecraftwiki.net/wiki/Farmland
-                // "2. The water must be on the same level or 1 block above farmland block level"
-                /*
-                Block below = block.getRelative(BlockFace.DOWN, n);
-                
-                if (below.getType() == Material.DIRT) {
-                    // as long as not in hell, hydrate
-                    if (world.getEnvironment() != World.Environment.NETHER) {
-                        below.setType(Material.STATIONARY_WATER);
-                    }
-                }*/
-
-                // Change adjacent air blocks to water
-                for (int dx = -1; dx <= 1; dx += 1) {
-                    for (int dz = -1; dz <= 1; dz += 1) {
-                        Block near = block.getRelative(dx * n, 0, dz * n);
-                        if (near.getType() == Material.AIR) {
-                            near.setType(Material.STATIONARY_WATER);
+                    // Change adjacent air blocks to water
+                    for (int dx = -1; dx <= 1; dx += 1) {
+                        for (int dz = -1; dz <= 1; dz += 1) {
+                            Block near = block.getRelative(dx * n, 0, dz * n);
+                            if (near.getType() == Material.AIR) {
+                                near.setType(Material.STATIONARY_WATER);
+                            }
                         }
                     }
+                } else {
+                    world.playEffect(block.getLocation(), Effect.SMOKE, 0); // TODO: direction
                 }
 
-                // Speed up wetting to maximum
-                // Note, if we didn't add water nearby and there wasn't, it may dry out
-                block.setData((byte)8);   
+                // If soil, moisten thoroughly
+                // This works in The Nether, though it does not add water and will dry out eventually
+                if (block.getType() == Material.SOIL) {
+                    block.setData((byte)8);   
+                }
+
+                damage(item);
             }
 
             // Hoe + Fortune = chance to drop seeds
