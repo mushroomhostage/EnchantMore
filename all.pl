@@ -32,6 +32,7 @@ my %valid = (
     Fortune => $TOOL
     );
 
+my @items = (@$ARMOR, @$SWORD, @$BOW, @$TOOL, "Fishing_Rod", "Shears", "Hoe", "Flint_&_Steel");
 
 for my $key (keys %valid) {
     my @valids = @{$valid{$key}};
