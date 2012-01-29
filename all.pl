@@ -33,3 +33,8 @@ my %valid = (
     );
 
 
+for my $key (keys %valid) {
+    my @valids = @{$valid{$key}};
+
+    print $key, "\t", join(" ", @valids), "\n";
+}
