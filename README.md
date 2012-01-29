@@ -6,7 +6,8 @@ and new enchantment effects on axes, bows, and other tools?
 ## Features
 * 36 new item/enchantment effects
 * Items appear as expected (glowing + descriptive tooltip), no client mods required - [screenshot](http://imgur.com/BNqBi)
-* Only adds functionality, does not 
+* Only adds functionality, does not change any – all your existing enchanted tools work as expected
+* 
 
 **Important**: to enchant items, you currently need to use an inventory editor or another enchanting plugin,
 such as [Tim The Enchanter](http://dev.bukkit.org/server-mods/enchanter/). New enchantments are *not* yet 

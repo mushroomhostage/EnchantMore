@@ -128,6 +128,7 @@ class EnchantMoreListener implements Listener {
                     12, // fireResistance - http://wiki.vg/Protocol#Effects
                     20*10*item.getEnchantmentLevel(FIRE_PROTECTION), // length
                     1)); // amplifier
+                // no extra damage
             }
 
             // Flint & Steel + Aqua Affinity = vaporize water
@@ -161,6 +162,7 @@ class EnchantMoreListener implements Listener {
                         }
                     }
                 }
+                // no extra damage
             }
 
             // Flint & Steel + Sharpness = firey explosion
@@ -168,6 +170,8 @@ class EnchantMoreListener implements Listener {
                 float power = (item.getEnchantmentLevel(SHARPNESS) - 1) * 1.0f;
 
                 world.createExplosion(block.getLocation(), power, true);
+
+                damage(item);
             }
 
             // Flint & Steel + Efficiency = burn faster (turn wood to grass)
@@ -176,6 +180,7 @@ class EnchantMoreListener implements Listener {
                     block.setType(Material.LEAVES);
                     // TODO: data? just leaving as before, but type may be unexpected
                 }
+                // no extra damage
             }
 
         } else if (isHoe(item.getType())) {
@@ -185,8 +190,10 @@ class EnchantMoreListener implements Listener {
                 Block below = block.getRelative(BlockFace.DOWN, item.getEnchantmentLevel(AQUA_AFFINITY));
                 
                 if (below.getType() == Material.DIRT) {
-                    // TODO: do not place in Nether?
-                    below.setType(Material.STATIONARY_WATER);
+                    // as long as not in hell, hydrate
+                    if (world.getEnvironment() != World.Environment.NETHER) {
+                        below.setType(Material.STATIONARY_WATER);
+                    }
                 }
             }
 
