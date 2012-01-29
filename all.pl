@@ -2,15 +2,34 @@
 use strict;
 use warnings;
 
-our %enchs = (
-    Armor => [qw(Protection Fire_Protection Feather_Falling Blast_Protection Projectile_Protection Respiration Aqua_Affinity)],
-    Sword => [qw(Sharpness Smite Bane_of_Arthropods Knockback Fire_Aspect Looting)],
-    Bow => [qw(Power Punch Flame Infinity)],
-    Tool => [qw(Efficiency Silk_Touch Unbreaking Fortune)]);
+my $ARMOR = [qw(Helmet Chestplate Leggings Boots)];
+my $SWORD = ["Sword"];
+my $BOW = ["Bow"];
+my $TOOL = [qw(Pickaxe Shovel Axe)];
+my %valid = (
+    Protection => $ARMOR,
+    Fire_Protection => $ARMOR,
+    Feather_Falling => ["Boots"],
+    Blast_Protection => $ARMOR,
+    Respiration => ["Helmet"],
+    Aqua_Affinity => ["Helmet"],
 
-our %items = (
-    Armor => [qw(Helmet Chestplate Leggings Boots)],
-    Sword => ["Sword"],
-    Bow => ["Bow"],
-    Tool => [qw(Axe
+    Sharpness => $SWORD,
+    Smite => $SWORD,
+    Bane_of_Arthropods => $SWORD,
+    Knockback => $SWORD,
+    Fire_Aspect => $SWORD,
+    Looting => $SWORD,
+
+    Power => $BOW,
+    Punch => $BOW,
+    Flame => $BOW,
+    Infinity => $BOW,
+
+    Efficiency => $TOOL,
+    Silk_Touch => $TOOL,
+    Unbreaking => $TOOL,
+    Fortune => $TOOL
+    );
+
 
