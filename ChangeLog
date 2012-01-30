@@ -1,8 +1,10 @@
 X 0.2
-    + Add Bow + Bane of Arthropods = poison
-    * Fix Flint & Steel + Fire Protection to now combine with Fire Aspect
-    * Fix IllegalArgumentException when using Axe + Flame on saplings (etc)
     * Add Bow + Aqua Affinity = freeze water, stun players
+    + Add Bow + Bane of Arthropods = poison
+    * Fix Hoe + Respiration to grow saplings, wheat
+    * Fix Flint & Steel + Fire Protection to now combine with Fire Aspect
+    * Fix Axe + Flame on saplings (etc.) causing IllegalArgumentException
+    * Tested with CraftBukkit 1.1-R2
 
 2012-01-29  0.1
     * Initial release

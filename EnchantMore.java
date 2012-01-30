@@ -246,9 +246,15 @@ class EnchantMoreListener implements Listener {
             }
 
             // Hoe + Respiration = grow
-            if (item.containsEnchantment(RESPIRATION) && action == Action.LEFT_CLICK_BLOCK) {
+            // Note, left-click will also destroy sensitive plants (wheat, saplings, though interestingly not shrooms),
+            // so it will only work on blocks like grass (which does not break instantly). For 
+            // this reason, also allow right-click for grow, even though it means you cannot till.
+            if (item.containsEnchantment(RESPIRATION)) {
                 growStructure(block.getLocation(), player);
                 damage(item);
+
+                // no need to cancel?
+                //event.setCancelled(true);
             }
         } else if (isPickaxe(item.getType())) {
             // Pickaxe + Power = instantly break anything (including bedrock)
