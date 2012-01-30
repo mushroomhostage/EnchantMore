@@ -2,10 +2,14 @@
 use strict;
 use warnings;
 
+use Data::Dumper;
+
+my %all;
+
 my $ARMOR = [qw(Helmet Chestplate Leggings Boots)];
-my $SWORD = ["Sword"];
-my $BOW = ["Bow"];
+my $WEAPON = [qw(Sword Bow)];
 my $TOOL = [qw(Pickaxe Shovel Axe)];
+
 my %valid = (
     Protection => $ARMOR,
     Fire_Protection => $ARMOR,
@@ -14,17 +18,17 @@ my %valid = (
     Respiration => ["Helmet"],
     Aqua_Affinity => ["Helmet"],
 
-    Sharpness => $SWORD,
-    Smite => $SWORD,
-    Bane_of_Arthropods => $SWORD,
-    Knockback => $SWORD,
-    Fire_Aspect => $SWORD,
-    Looting => $SWORD,
+    Sharpness => ["Sword"],
+    Smite => ["Sword"],
+    Bane_of_Arthropods => ["Sword"],
+    Knockback => ["Sword"],
+    Fire_Aspect => ["Sword"],
+    Looting => ["Sword"],
 
-    Power => $BOW,
-    Punch => $BOW,
-    Flame => $BOW,
-    Infinity => $BOW,
+    Power => ["Bow"],
+    Punch => ["Bow"],
+    Flame => ["Bow"],
+    Infinity => ["Bow"],
 
     Efficiency => $TOOL,
     Silk_Touch => $TOOL,
@@ -32,10 +36,38 @@ my %valid = (
     Fortune => $TOOL
     );
 
-my @items = (@$ARMOR, @$SWORD, @$BOW, @$TOOL, "Fishing_Rod", "Shears", "Hoe", "Flint_&_Steel");
+my @items = (@$ARMOR, @$WEAPON, @$TOOL, "Fishing_Rod", "Shears", "Hoe", "Flint_&_Steel");
 
-for my $key (keys %valid) {
-    my @valids = @{$valid{$key}};
+# Part of the unmodified game
+for my $ench (keys %valid) {
+    for my $item (@items) {
+        $all{"$item + $ench"} = "?";  # nothing
+    }
 
-    print $key, "\t", join(" ", @valids), "\n";
+    my @valids = @{$valid{$ench}};
+    for my $item (@valids) {
+        $all{"$item + $ench"} = "(vanilla)";
+    }
+}
+
+# EnchantMore stuff
+my @defined = map { 
+        my ($item, $ench, $effect) = m/^\s*([^+]+)\s*[+]([^=]+)\s*[=]\s*(.*)/; 
+        $item =~ s/^\s+//; $item =~ s/\s+$//;
+        $ench =~ s/^\s+//; $ench =~ s/\s+$//;
+        $effect =~ s/^\s+//; $effect =~ s/\s+$//;
+        { ITEM => $item, ENCH => $ench, EFFECT => $effect } 
+    } map { s/^[*] //g; $_ } `./list.sh`;
+
+for my $d (@defined) {
+    my ($item) = $d->{ITEM};
+    my ($ench) = $d->{ENCH};
+    my ($effect) = $d->{EFFECT};
+    $all{"$item + $ench"} = $effect;
+}
+
+
+for my $ie (sort keys %all) {
+    my $effect = $all{$ie};
+    print "$ie = $effect\n";
 }

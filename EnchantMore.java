@@ -166,7 +166,7 @@ class EnchantMoreListener implements Listener {
                 // no extra damage
             }
 
-            // Flint & Steel + Sharpness = firey explosion
+            // Flint & Steel + Sharpness = fiery explosion
             if (item.containsEnchantment(SHARPNESS)) {
                 float power = (item.getEnchantmentLevel(SHARPNESS) - 1) * 1.0f;
 
@@ -792,7 +792,7 @@ class EnchantMoreListener implements Listener {
             world.strikeLightning(dest);
         }
 
-        // Bow + Fire Aspect = firey explosions
+        // Bow + Fire Aspect = fiery explosions
         if (item.containsEnchantment(FIRE_ASPECT)) {
             float power = 1.0f * item.getEnchantmentLevel(FIRE_ASPECT);
 

@@ -1,4 +1,5 @@
 X 0.2
+    * Fix IllegalArgumentException when using Axe + Flame on saplings (etc)
     * Add Bow + Aqua Affinity = freeze water, stun players
 
 2012-01-29  0.1
