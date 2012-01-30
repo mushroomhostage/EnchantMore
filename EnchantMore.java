@@ -579,7 +579,9 @@ class EnchantMoreListener implements Listener {
                 for (ItemStack rawDrop: rawDrops) {
                     ItemStack smeltedDrop = smelt(rawDrop);
 
-                    world.dropItemNaturally(block.getLocation(), smeltedDrop);
+                    if (smeltedDrop != null && smeltedDrop.getType() != Material.AIR) {
+                        world.dropItemNaturally(block.getLocation(), smeltedDrop);
+                    }
                 }
 
 
