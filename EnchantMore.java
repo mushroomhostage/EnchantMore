@@ -716,6 +716,9 @@ class EnchantMoreListener implements Listener {
         // Set data of farm-related block
         if (item != null && item.containsEnchantment(SILK_TOUCH)) {
             if (isFarmBlock(item.getType())) {
+                plugin.log.info("data"+item.getEnchantmentLevel(SILK_TOUCH));
+                // broken in 1.1-R2??
+                // TODO
                 block.setData((byte)item.getEnchantmentLevel(SILK_TOUCH));
             }
         }
