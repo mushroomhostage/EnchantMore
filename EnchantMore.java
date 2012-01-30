@@ -123,12 +123,9 @@ class EnchantMoreListener implements Listener {
                 damage(item, 9);
             }
 
-            // Flint & Steel + Fire Protection = player fire resistance
+            // Flint & Steel + Fire Protection = fire resistance
             if (item.containsEnchantment(FIRE_PROTECTION)) {
-                ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                    12, // fireResistance - http://wiki.vg/Protocol#Effects
-                    20*10*item.getEnchantmentLevel(FIRE_PROTECTION), // length
-                    1)); // amplifier
+                applyPlayerEffect(player, EFFECT_FIRE_RESISTANCE, item.getEnchantmentLevel(FIRE_PROTECTION));
                 // no extra damage
             }
 
@@ -423,10 +420,7 @@ class EnchantMoreListener implements Listener {
                 // Flint & Steel + Fire Protection = player fire resistance (secondary)
                 // We apply this for lighting blocks, too; this one is for attacking mobs
                 if (item.containsEnchantment(FIRE_PROTECTION)) {
-                    ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                        12, // fireResistance - http://wiki.vg/Protocol#Effects
-                        20*10*item.getEnchantmentLevel(FIRE_PROTECTION), // length
-                        1)); // amplifier
+                    applyPlayerEffect(player, EFFECT_FIRE_RESISTANCE, item.getEnchantmentLevel(FIRE_PROTECTION));
                     // no extra damage
                 }
 
@@ -439,10 +433,7 @@ class EnchantMoreListener implements Listener {
 
                 // Confusion effect on players
                 if (entity instanceof CraftPlayer) {
-                    ((CraftPlayer)entity).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                        9,      // confusion  - http://wiki.vg/Protocol#Effects
-                        20*10*item.getEnchantmentLevel(RESPIRATION),  // length
-                        1));    // amplifier
+                    applyPlayerEffect((CraftPlayer)entity, EFFECT_CONFUSION, item.getEnchantmentLevel(RESPIRATION));
 
                     damage(item);
                 }
@@ -451,10 +442,7 @@ class EnchantMoreListener implements Listener {
             // Shears + Smite = gouge eyes (blindness effect on player)
             if (item.containsEnchantment(SMITE)) {
                 if (entity instanceof CraftPlayer) {
-                    ((CraftPlayer)entity).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                        15,     // blindness
-                        20*10*item.getEnchantmentLevel(SMITE),  // length
-                        1));    // amplifier
+                    applyPlayerEffect((CraftPlayer)entity, EFFECT_BLINDNESS, item.getEnchantmentLevel(SMITE));
 
                     damage(item);
                 }
@@ -497,20 +485,14 @@ class EnchantMoreListener implements Listener {
             // BLOCKED: Sword + Flame = night vision when blocking 
             // The visual effect plays (navy blue swirly particles), but doesn't actually do anything as of Minecraft 1.1
             if (item.containsEnchantment(FLAME)) {
-                ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                    16,     // nightVision
-                    20*10*item.getEnchantmentLevel(FLAME),  // length
-                    10));    // amplifier
+                applyPlayerEffect(player, EFFECT_NIGHT_VISION, item.getEnchantmentLevel(FLAME));
                 damage(item);
             }
 
             // BLOCKED: Sword + Infinity = invisibility when blocking 
             // Also has no implemented effect in Minecraft 1.1. Maybe a plugin could use?
             if (item.containsEnchantment(INFINITE)) {
-                ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                    14,     // invisibility
-                    20*2*item.getEnchantmentLevel(INFINITE),  // length
-                    10));    // amplifier
+                applyPlayerEffect(player, EFFECT_INVISIBILITY, item.getEnchantmentLevel(INFINITE));
                 damage(item);
             }
             */
@@ -518,10 +500,7 @@ class EnchantMoreListener implements Listener {
 
             // Sword + Protection = resistance when blocking 
             if (item.containsEnchantment(PROTECTION)) {
-                 ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                    11,     // resistance
-                    20*10*item.getEnchantmentLevel(PROTECTION),  // length
-                    10));    // amplifier
+                applyPlayerEffect(player, EFFECT_RESISTANCE, item.getEnchantmentLevel(PROTECTION));
                 damage(item);
             }
         }
@@ -857,11 +836,7 @@ class EnchantMoreListener implements Listener {
             List<Entity> victims = arrow.getNearbyEntities(r, r, r);
             for (Entity victim: victims) {
                 if (victim instanceof CraftPlayer) {
-                    CraftPlayer victimPlayer = (CraftPlayer)victim;
-                    (victimPlayer).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                        2, // moveSlowdown - http://wiki.vg/Protocol#Effects
-                        20*10*r, // length
-                        1)); // amplifier
+                    applyPlayerEffect((CraftPlayer)victim, EFFECT_MOVE_SLOW_DOWN, r);
                 }
             }
 
@@ -879,11 +854,7 @@ class EnchantMoreListener implements Listener {
             List<Entity> victims = arrow.getNearbyEntities(r, r, r);
             for (Entity victim: victims) {
                 if (victim instanceof CraftPlayer) {
-                    CraftPlayer victimPlayer = (CraftPlayer)victim;
-                    (victimPlayer).getHandle().addEffect(new net.minecraft.server.MobEffect(
-                        19, // moveSlowdown - http://wiki.vg/Protocol#Effects
-                        20*10*r, // length
-                        1)); // amplifier
+                    applyPlayerEffect((CraftPlayer)victim, EFFECT_POISON, r);
                 }
             }
 
