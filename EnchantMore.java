@@ -134,15 +134,6 @@ class EnchantMoreListener implements Listener {
 
             // Flint & Steel + Aqua Affinity = vaporize water
             if (item.containsEnchantment(AQUA_AFFINITY)) {
-                // Can't actually click on water, the click "goes through" as if it was air
-                // Not like buckets filled or lily pads placements
-                /* 
-                if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
-                    block.setType(Material.AIR);
-                    plugin.log.info("water");
-                }
-                */
-
                 // Find water within ignited cube area
                 int r = item.getEnchantmentLevel(AQUA_AFFINITY);
 
@@ -372,7 +363,39 @@ class EnchantMoreListener implements Listener {
             (m == Material.DOUBLE_STEP && data == 2);// wooden double slab
     }
 
+    // http://wiki.vg/Protocol#Effects
+    private static final int EFFECT_MOVE_SPEED = 1;
+    private static final int EFFECT_MOVE_SLOW_DOWN = 2;
+    private static final int EFFECT_DIG_SPEED = 3;
+    private static final int EFFECT_DIG_SLOW_DOWN = 4;
+    private static final int EFFECT_DAMAGE_BOOST = 5;
+    private static final int EFFECT_HEAL = 6;
+    private static final int EFFECT_HARM = 7;
+    private static final int EFFECT_JUMP = 8;
+    private static final int EFFECT_CONFUSION = 9;
+    private static final int EFFECT_REGENERATION = 10;
+    private static final int EFFECT_RESISTANCE = 11;
+    private static final int EFFECT_FIRE_RESISTANCE = 12;
+    private static final int EFFECT_WATER_BREATHING = 13;
+    private static final int EFFECT_INVISIBILITY = 14;  // sadly, no effect in 1.1
+    private static final int EFFECT_BLINDNESS = 15;
+    private static final int EFFECT_NIGHTVISION = 16;   // sadly, no effect in 1.1
+    private static final int EFFECT_HUNGER = 17;
+    private static final int EFFECT_WEAKNESS = 18;
+    private static final int EFFECT_POISON = 19;
 
+
+    private void applyPlayerEffect(Player player, int effect, int level) {
+        ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
+            effect,             // http://wiki.vg/Protocol#Effects
+            20 * 10 * level,    // duration in ticks
+            1));                // amplifier
+
+        // TODO: can we used the predefined effects (w/ duration, amplifier) in MobEffectList?
+        // as suggested here: http://forums.bukkit.org/threads/potion-events.57086/#post-936679
+        // however, b() takes a MobEffect, but MobEffectList.CONFUSIOn is a MobEffectList
+        //(((CraftPlayer)entity).getHandle()).b(MobEffectList.CONFUSION);
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
@@ -396,6 +419,17 @@ class EnchantMoreListener implements Listener {
                 entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
                 damage(item);
+
+                // Flint & Steel + Fire Protection = player fire resistance (secondary)
+                // We apply this for lighting blocks, too; this one is for attacking mobs
+                if (item.containsEnchantment(FIRE_PROTECTION)) {
+                    ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
+                        12, // fireResistance - http://wiki.vg/Protocol#Effects
+                        20*10*item.getEnchantmentLevel(FIRE_PROTECTION), // length
+                        1)); // amplifier
+                    // no extra damage
+                }
+
             }
 
             // Flint & Steel + Respiration = smoke inhalation (confusion effect on player)
@@ -409,10 +443,6 @@ class EnchantMoreListener implements Listener {
                         9,      // confusion  - http://wiki.vg/Protocol#Effects
                         20*10*item.getEnchantmentLevel(RESPIRATION),  // length
                         1));    // amplifier
-                    // TODO: can we used the predefined effects (w/ duration, amplifier) in MobEffectList?
-                    // as suggested here: http://forums.bukkit.org/threads/potion-events.57086/#post-936679
-                    // however, b() takes a MobEffect, but MobEffectList.CONFUSIOn is a MobEffectList
-                    //(((CraftPlayer)entity).getHandle()).b(MobEffectList.CONFUSION);
 
                     damage(item);
                 }
@@ -820,6 +850,8 @@ class EnchantMoreListener implements Listener {
                     }
                 }
             }
+            
+            // TODO: only poison hit player!
 
             // stun nearby players
             List<Entity> victims = arrow.getNearbyEntities(r, r, r);
@@ -828,7 +860,7 @@ class EnchantMoreListener implements Listener {
                     CraftPlayer victimPlayer = (CraftPlayer)victim;
                     (victimPlayer).getHandle().addEffect(new net.minecraft.server.MobEffect(
                         2, // moveSlowdown - http://wiki.vg/Protocol#Effects
-                        20*10*item.getEnchantmentLevel(AQUA_AFFINITY), // length
+                        20*10*r, // length
                         1)); // amplifier
                 }
             }
@@ -836,7 +868,26 @@ class EnchantMoreListener implements Listener {
             // no extra damage
         }
 
-        // TODO: phase, fire arrow through blocks
+        // TODO: phase, arrow through blocks
+
+        // Bow + Bane of Arthropods = poison
+        if (item.containsEnchantment(BANE)) {
+            // TODO: only poison hit player!
+
+            // poison nearby players
+            int r = item.getEnchantmentLevel(BANE);
+            List<Entity> victims = arrow.getNearbyEntities(r, r, r);
+            for (Entity victim: victims) {
+                if (victim instanceof CraftPlayer) {
+                    CraftPlayer victimPlayer = (CraftPlayer)victim;
+                    (victimPlayer).getHandle().addEffect(new net.minecraft.server.MobEffect(
+                        19, // moveSlowdown - http://wiki.vg/Protocol#Effects
+                        20*10*r, // length
+                        1)); // amplifier
+                }
+            }
+
+        }
 
         // Bow + Feather Falling = teleport
         if (item.containsEnchantment(FEATHER_FALLING)) {

@@ -1,4 +1,6 @@
 X 0.2
+    + Add Bow + Bane of Arthropods = poison
+    * Fix Flint & Steel + Fire Protection to now combine with Fire Aspect
     * Fix IllegalArgumentException when using Axe + Flame on saplings (etc)
     * Add Bow + Aqua Affinity = freeze water, stun players
 
