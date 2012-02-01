@@ -98,13 +98,20 @@ class EnchantMoreListener implements Listener {
         if (item == null) {
             return;
         }
+        
+        World world = player.getWorld();
+
+        if (item.getType() == Material.BOW && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
+            // Bow + Efficiency = instant shoot
+            if (item.containsEnchantment(EFFICIENCY)) {
+                player.shootArrow();
+            }
+        }
 
         if (block == null) {
-            // TODO: we might need to handle non-block (air) events
             return;
         }
 
-        World world = block.getWorld();
 
         // Shears + Power = cut grass (secondary effect)
         if (item.getType() == Material.SHEARS) {
@@ -854,6 +861,8 @@ class EnchantMoreListener implements Listener {
 
         // TODO: phase, arrow through blocks
 
+        // TODO: fire protection = remove water (like flint & steel aqua affinity)
+
         // Bow + Bane of Arthropods = poison
         if (item.containsEnchantment(BANE)) {
             // TODO: only poison hit player!
@@ -954,6 +963,7 @@ class EnchantMoreListener implements Listener {
                 case 17: m = Material.BOAT; break;
                 case 18: m = Material.SLIME_BALL; break;
                 case 19: m = Material.FERMENTED_SPIDER_EYE; break;
+                // TODO: leather boot
                 }
 
                 world.dropItemNaturally(player.getLocation(), new ItemStack(m, quantity));
