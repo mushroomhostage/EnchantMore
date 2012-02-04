@@ -1,7 +1,8 @@
 X 0.2
-    * Add Bow + Efficiency = instant shoot
     * Add Bow + Aqua Affinity = freeze water, stun players
     + Add Bow + Bane of Arthropods = poison
+    * Add Bow + Efficiency = instant shoot
+    * Add Sword + Flame = strike lightning 100+ meters away
     * Fix Hoe + Respiration to grow saplings and crops using right-click
     * Fix Flint & Steel + Fire Protection to now combine with Fire Aspect
     * Fix Axe + Flame on saplings (etc.) causing IllegalArgumentException

@@ -101,16 +101,32 @@ class EnchantMoreListener implements Listener {
         
         World world = player.getWorld();
 
+        // Actions not requiring a block
+
         if (item.getType() == Material.BOW && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
             // Bow + Efficiency = instant shoot
             if (item.containsEnchantment(EFFICIENCY)) {
                 player.shootArrow();
+            }
+        } else if (isSword(item.getType())) {
+            if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+                // Sword + Flame = strike lightning 100+ meters away
+                if (item.containsEnchantment(FLAME)) {
+                    int maxDistance = 100;  // TODO: configurable
+                    Block target = player.getTargetBlock(null, maxDistance * item.getEnchantmentLevel(FLAME));
+
+                    if (target != null) {
+                        world.strikeLightning(target.getLocation());
+                    }
+                }
             }
         }
 
         if (block == null) {
             return;
         }
+
+        // Everything else below requires a block
 
 
         // Shears + Power = cut grass (secondary effect)
@@ -271,7 +287,7 @@ class EnchantMoreListener implements Listener {
             }
 
             damage(item);
-        }
+        } 
     }
 
    
@@ -516,6 +532,7 @@ class EnchantMoreListener implements Listener {
                 applyPlayerEffect(player, EFFECT_RESISTANCE, item.getEnchantmentLevel(PROTECTION));
                 damage(item);
             }
+
         }
     }
 
