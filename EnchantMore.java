@@ -1025,6 +1025,32 @@ class EnchantMoreListener implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.NORMAL) 
+    public void onEntityShootBow(EntityShootBowEvent event) {
+        ItemStack bow = event.getBow();
+
+        if (bow == null) {
+            // shot by skeleton
+            return;
+        }
+
+        Entity projectile = event.getProjectile();
+        if (!(projectile instanceof Arrow)) {
+            return;
+        }
+
+        // Bow + Sharpness = increase velocity
+        if (bow.containsEnchantment(SHARPNESS)) {
+            double factor = 2.0 * bow.getEnchantmentLevel(SHARPNESS);   // TODO: configurable factor
+
+            // TODO: instead of scalar multiplication, therefore also multiplying the 'shooting inaccuracy'
+            // offset, should we instead try to straighten out the alignment vector?
+            projectile.setVelocity(projectile.getVelocity().multiply(factor));
+
+            event.setProjectile(projectile);
+        }
+    }
 }
 
 // Task to efficiently drop fish after some time of fishing
