@@ -73,4 +73,8 @@ Other relevant plugins of interest pertaining to enchantments:
 * [Sublimation](http://dev.bukkit.org/server-mods/sublimation/) - silk touch ice, no longer overpowered
 * [SilkSpawners](http://dev.bukkit.org/server-mods/silkspawners/) - pickup and move mob spawners with silk touch
 
+Got a cool idea for a new effect? I can't promise I'll implement everything, but all suggestions are welcome!
+Feel free to discuss your ideas below, or open a [ticket](http://dev.bukkit.org/server-mods/enchantmore/tickets/)
+for more specific requests. Including the specific item + enchantment name is appreciated, preferably
+from the available [wanted effects](http://dev.bukkit.org/server-mods/enchantmore/pages/wanted-effects/) list.
 

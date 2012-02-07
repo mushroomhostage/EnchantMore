@@ -147,6 +147,7 @@ class EnchantMoreListener implements Listener {
                     }
                 }
             }
+            // TODO: Aqua Affinity = slowness
         }
 
         if (block == null) {
@@ -547,6 +548,7 @@ class EnchantMoreListener implements Listener {
 
             // BLOCKED: Sword + Infinity = invisibility when blocking 
             // Also has no implemented effect in Minecraft 1.1. Maybe a plugin could use?
+            // TODO: use Vanish API in dev builts of Bukkit, that VanishNoPacket uses
             if (item.containsEnchantment(INFINITE)) {
                 applyPlayerEffect(player, EFFECT_INVISIBILITY, item.getEnchantmentLevel(INFINITE));
                 damage(item);
@@ -699,6 +701,8 @@ class EnchantMoreListener implements Listener {
         } else if (item.getType() == Material.SHEARS) {
             // Shears + Silk Touch = collect cobweb, dead bush
             if (item.containsEnchantment(SILK_TOUCH)) {
+                // Note: you can collect dead bush with shears on 12w05a!
+                // http://www.reddit.com/r/Minecraft/comments/pc2rs/just_noticed_dead_bush_can_be_collected_with/
                 if (block.getType() == Material.DEAD_BUSH ||
                     block.getType() == Material.WEB) {
 
