@@ -105,7 +105,7 @@ class EnchantMoreListener implements Listener {
     final Enchantment FLAME = Enchantment.ARROW_FIRE;
     final Enchantment INFINITE = Enchantment.ARROW_INFINITE;
 
-    Random random;
+    static Random random;
    
     EnchantMore plugin;
 
@@ -945,21 +945,32 @@ class EnchantMoreListener implements Listener {
         if (item.containsEnchantment(KNOCKBACK)) {
             class ArrowTask implements Runnable {
                 Arrow arrow;
+                int chance;
 
-                public ArrowTask(Arrow arrow) {
+                public ArrowTask(Arrow arrow, int chance) {
                     this.arrow = arrow;
+                    this.chance = chance;
                 }
 
                 public void run() {
+                    int n = EnchantMoreListener.random.nextInt(chance);
+                    if (n != 0) {
+                        return;  // no luck this time
+                    }
+
                     Block block = getArrowHit(arrow);
 
-                    if (block.getType() != Material.BEDROCK) {
-                        block.setType(Material.AIR);
+                    if (block.getType() == Material.BEDROCK) {
+                        return; // bad news
                     }
+                    // TODO: factor in hardness of material somehow?
+
+                    block.setType(Material.AIR);
                 }
             }
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowTask(arrow));
+            int chance = 4 - item.getEnchantmentLevel(KNOCKBACK);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowTask(arrow, chance));
         }
 
         // TODO: phase, arrow through blocks
