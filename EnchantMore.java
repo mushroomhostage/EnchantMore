@@ -148,6 +148,16 @@ class EnchantMoreListener implements Listener {
                 }
             }
             // TODO: Aqua Affinity = slowness
+        } else if (isShovel(item.getType())) {
+            // Shovel + Silk Touch II = harvest fire (secondary)
+            if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2 &&
+                (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
+                Block target = player.getTargetBlock(null, 3 * item.getEnchantmentLevel(SILK_TOUCH));
+
+                if (target.getType() == Material.FIRE) {
+                    world.dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1));
+                }
+            }
         }
 
         if (block == null) {
@@ -697,7 +707,7 @@ class EnchantMoreListener implements Listener {
                     // no extra damage
                 }
 
-                // Shovel + Silk Touch II = harvest fallen snow
+                // Shovel + Silk Touch II = harvest fallen snow, fire
                 if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
                     if (block.getType() == Material.SNOW) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
@@ -713,7 +723,7 @@ class EnchantMoreListener implements Listener {
                     if (block.getType() == Material.ICE) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
                         block.setType(Material.AIR);
-                        // craftbukkit 1.1-R3+MLP+MCF+IC2+BC2+RP2 NPE: at net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
+                        // TODO craftbukkit 1.1-R3+MLP+MCF+IC2+BC2+RP2 NPE: at net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
                         // if we don't do this, so do it
                         event.setCancelled(true); 
                         // no extra damage
