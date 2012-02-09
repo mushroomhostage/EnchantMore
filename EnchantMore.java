@@ -941,23 +941,16 @@ class EnchantMoreListener implements Listener {
             // no extra damage
         }
 
-        // Bow + Knockback = punch holes
+        // Bow + Knockback = pierce blocks
         if (item.containsEnchantment(KNOCKBACK)) {
             class ArrowTask implements Runnable {
                 Arrow arrow;
-                int chance;
 
-                public ArrowTask(Arrow arrow, int chance) {
+                public ArrowTask(Arrow arrow) {
                     this.arrow = arrow;
-                    this.chance = chance;
                 }
 
                 public void run() {
-                    int n = EnchantMoreListener.random.nextInt(chance);
-                    if (n != 0) {
-                        return;  // no luck this time
-                    }
-
                     Block block = getArrowHit(arrow);
 
                     if (block.getType() == Material.BEDROCK) {
@@ -965,12 +958,18 @@ class EnchantMoreListener implements Listener {
                     }
                     // TODO: factor in hardness of material somehow?
 
+                    // Pierce block, destorying it
                     block.setType(Material.AIR);
+
+                    // if we don't remove, the arrow will fall down, then hit another
+                    // block, and another..until it reaches bedrock!
+                    arrow.remove();
+
+                    // TODO: pierce multiple blocks somehow?
                 }
             }
 
-            int chance = 4 - item.getEnchantmentLevel(KNOCKBACK);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowTask(arrow, chance));
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowTask(arrow));
         }
 
         // TODO: phase, arrow through blocks
@@ -1169,8 +1168,6 @@ class EnchantMoreListener implements Listener {
             int x = fieldX.getInt(entityArrow);
             int y = fieldY.getInt(entityArrow);
             int z = fieldZ.getInt(entityArrow);
-
-            plugin.log.info("getArrowHit x="+x+", y="+y+", z="+z);
 
             return world.getBlockAt(x, y, z);
         } catch (Exception e) {
