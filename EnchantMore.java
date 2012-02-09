@@ -65,6 +65,7 @@ import org.bukkit.enchantments.*;
 import org.bukkit.*;
 
 import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.craftbukkit.entity.CraftArrow;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftSpider;
 import org.bukkit.craftbukkit.entity.CraftCaveSpider;
@@ -76,6 +77,7 @@ import net.minecraft.server.MobEffectList;
 import net.minecraft.server.FurnaceRecipes;
 import net.minecraft.server.ItemDye;
 //import net.minecraft.server.ItemStack;        // import conflict
+import net.minecraft.server.EntityArrow;
 
 class EnchantMoreListener implements Listener {
 
@@ -927,6 +929,7 @@ class EnchantMoreListener implements Listener {
             }
             
             // TODO: only poison hit player!
+            plugin.log.info("BOW+AA hit: " + getArrowLocation(arrow));
 
             // stun nearby players
             List<Entity> victims = arrow.getNearbyEntities(r, r, r);
@@ -1112,6 +1115,34 @@ class EnchantMoreListener implements Listener {
             projectile.setVelocity(projectile.getVelocity().multiply(factor));
 
             event.setProjectile(projectile);
+        }
+    }
+
+    // Get the location an arrow hit
+    // see http://forums.bukkit.org/threads/on-how-to-get-the-block-an-arrow-lands-in.55768/#post-954542
+    public Location getArrowLocation(Arrow arrow) {
+        World world = arrow.getWorld();
+
+        net.minecraft.server.EntityArrow entityArrow = ((CraftArrow)arrow).getHandle();
+
+        try {
+            // saved to NBT tag as xTile,yTile,zTile
+            Field fieldX = net.minecraft.server.EntityArrow.class.getDeclaredField("e");
+            Field fieldY = net.minecraft.server.EntityArrow.class.getDeclaredField("f");
+            Field fieldZ = net.minecraft.server.EntityArrow.class.getDeclaredField("g");
+
+            fieldX.setAccessible(true);
+            fieldY.setAccessible(true);
+            fieldZ.setAccessible(true);
+
+            int x = fieldX.getInt(entityArrow);
+            int y = fieldX.getInt(entityArrow);
+            int z = fieldX.getInt(entityArrow);
+
+            return new Location(world, (double)x, (double)y, (double)z);
+        } catch (Exception e) {
+            plugin.log.info("getArrowLocation("+arrow+" reflection failed: "+e);
+            throw new IllegalArgumentException(e);
         }
     }
 }
