@@ -656,11 +656,13 @@ class EnchantMoreListener implements Listener {
                 // no extra damage
             }
 
-            // Axe + Power = fell tree
-            if (isAxe(item.getType()) && item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
-                // Chop tree
-                breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
-                // no extra damage
+            if (isAxe(item.getType())) {
+                // Axe + Power = fell tree
+                if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
+                    // Chop tree
+                    breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+                    // no extra damage
+                }
             }
 
             if (isShovel(item.getType())) {
@@ -698,9 +700,23 @@ class EnchantMoreListener implements Listener {
                 // Shovel + Silk Touch II = harvest fallen snow
                 if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
                     if (block.getType() == Material.SNOW) {
-                        world.dropItemNaturally(block.getLocation(), new ItemStack(Material.SNOW, 1));
+                        world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
                         block.setType(Material.AIR);
                         event.setCancelled(true);   // do not drop snowballs
+                    }
+                }
+
+            }
+            // Pickaxe + Silk Touch II = harvest ice
+            if (isPickaxe(item.getType())) {
+                if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
+                    if (block.getType() == Material.ICE) {
+                        world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
+                        block.setType(Material.AIR);
+                        // craftbukkit 1.1-R3+MLP+MCF+IC2+BC2+RP2 NPE: at net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
+                        // if we don't do this, so do it
+                        event.setCancelled(true); 
+                        // no extra damage
                     }
                 }
             }
