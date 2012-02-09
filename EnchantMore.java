@@ -62,6 +62,7 @@ import org.bukkit.configuration.*;
 import org.bukkit.configuration.file.*;
 import org.bukkit.scheduler.*;
 import org.bukkit.enchantments.*;
+import org.bukkit.util.*;
 import org.bukkit.*;
 
 import org.bukkit.craftbukkit.entity.CraftEntity;
@@ -128,7 +129,7 @@ class EnchantMoreListener implements Listener {
             return;
         }
         
-        World world = player.getWorld();
+        final World world = player.getWorld();
 
         // Actions not requiring a block
 
@@ -471,7 +472,7 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
-        World world = player.getWorld();
+        final World world = player.getWorld();
         
         if (item.getType() == Material.FLINT_AND_STEEL) {
             if (entity == null) {
@@ -638,7 +639,7 @@ class EnchantMoreListener implements Listener {
         Player player = event.getPlayer();
         Block block = event.getBlock();
         ItemStack item = player.getItemInHand();
-        World world = player.getWorld();
+        final World world = player.getWorld();
 
         if (item == null) {
             return;
@@ -830,7 +831,7 @@ class EnchantMoreListener implements Listener {
         Player player = event.getPlayer();
         Entity entity = event.getEntity();
         ItemStack tool = player.getItemInHand();
-        World world = player.getWorld();
+        final World world = player.getWorld();
 
         if (tool == null) {
             return;
@@ -880,7 +881,7 @@ class EnchantMoreListener implements Listener {
         }
 
         Location dest = arrow.getLocation();
-        World world = dest.getWorld();
+        final World world = dest.getWorld();
 
         // Bow + Looting = steal 
         if (item.containsEnchantment(LOOTING)) {
@@ -943,14 +944,17 @@ class EnchantMoreListener implements Listener {
 
         // Bow + Knockback = pierce blocks
         if (item.containsEnchantment(KNOCKBACK)) {
-            class ArrowTask implements Runnable {
+            class ArrowPierceTask implements Runnable {
                 Arrow arrow;
+                int depth;
 
-                public ArrowTask(Arrow arrow) {
+                public ArrowPierceTask(Arrow arrow, int depth) {
                     this.arrow = arrow;
+                    this.depth = depth;
                 }
 
                 public void run() {
+                    Vector velocity = arrow.getVelocity().clone();  // TODO: unit vector?
                     Block block = getArrowHit(arrow);
 
                     if (block.getType() == Material.BEDROCK) {
@@ -958,18 +962,31 @@ class EnchantMoreListener implements Listener {
                     }
                     // TODO: factor in hardness of material somehow?
 
-                    // Pierce block, destorying it
+                    // Pierce block, destroying it
                     block.setType(Material.AIR);
+                    // TODO: should it drop items?
+                  
+                    // Trace through multiple blocks in same direction, up to enchantment level
+                    if (depth > 1) {
+                        Vector start = new Vector(block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
+                        BlockIterator it = new BlockIterator(world, start, velocity, 0, depth);
+                        while (it.hasNext()) {
+                            Block b = it.next();
+                            if (b.getType() != Material.BEDROCK) {
+                                b.setType(Material.AIR);
+                                // TODO: figure out how to refresh lighting here
+                                //b.setData(b.getData(), true);
+                            }
+                        }
+                    }
 
                     // if we don't remove, the arrow will fall down, then hit another
                     // block, and another..until it reaches bedrock!
                     arrow.remove();
-
-                    // TODO: pierce multiple blocks somehow?
                 }
             }
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowTask(arrow));
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowPierceTask(arrow, item.getEnchantmentLevel(KNOCKBACK)));
         }
 
         // TODO: phase, arrow through blocks
