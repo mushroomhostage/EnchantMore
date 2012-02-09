@@ -157,17 +157,15 @@ class EnchantMoreListener implements Listener {
         // Everything else below requires a block
 
 
-        // Shears + Power = cut grass (secondary effect)
         if (item.getType() == Material.SHEARS) {
+            // Shears + Power = cut grass (secondary effect)
             if (item.containsEnchantment(POWER)) {
                 if (block.getType() == Material.GRASS) {
                     block.setType(Material.DIRT);
                 }
                 damage(item);
             }
-
         } else if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
-        
             // Flint & Steel + Smite = strike lightning
             if (item.containsEnchantment(SMITE)) {
                 world.strikeLightning(block.getLocation());
@@ -315,7 +313,17 @@ class EnchantMoreListener implements Listener {
             }
 
             damage(item);
-        } 
+        } else if (isShovel(item.getType())) {
+            // Shovel + Silk Touch II = harvest fallen snow
+            // TODO: only when breaks!
+            if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
+                if (block.getType() == Material.SNOW) {
+                    world.dropItemNaturally(block.getLocation(), new ItemStack(Material.SNOW, 1));
+                    block.setType(Material.AIR);
+                    event.setCancelled(true);   // do not drop snowballs
+                }
+            }
+        }
     }
 
    
