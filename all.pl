@@ -40,13 +40,15 @@ my @items = (@$ARMOR, @$WEAPON, @$TOOL, "Fishing_Rod", "Shears", "Hoe", "Flint_&
 
 # Part of the unmodified game
 for my $ench (keys %valid) {
+    my ($ench_name);
+    ($ench_name = $ench) =~ tr/_/ /;
     for my $item (@items) {
-        $all{"$item + $ench"} = "?";  # nothing
+        $all{"$item + $ench_name"} = "?";  # nothing
     }
 
     my @valids = @{$valid{$ench}};
     for my $item (@valids) {
-        $all{"$item + $ench"} = "(vanilla)";
+        $all{"$item + $ench_name"} = "(vanilla)";
     }
 }
 
