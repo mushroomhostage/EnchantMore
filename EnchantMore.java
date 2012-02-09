@@ -929,7 +929,6 @@ class EnchantMoreListener implements Listener {
             }
             
             // TODO: only poison hit player!
-            plugin.log.info("BOW+AA hit: " + getArrowLocation(arrow));
 
             // stun nearby players
             List<Entity> victims = arrow.getNearbyEntities(r, r, r);
@@ -940,6 +939,27 @@ class EnchantMoreListener implements Listener {
             }
 
             // no extra damage
+        }
+
+        // Bow + Knockback = punch holes
+        if (item.containsEnchantment(KNOCKBACK)) {
+            class ArrowTask implements Runnable {
+                Arrow arrow;
+
+                public ArrowTask(Arrow arrow) {
+                    this.arrow = arrow;
+                }
+
+                public void run() {
+                    Block block = getArrowHit(arrow);
+
+                    if (block.getType() != Material.BEDROCK) {
+                        block.setType(Material.AIR);
+                    }
+                }
+            }
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowTask(arrow));
         }
 
         // TODO: phase, arrow through blocks
@@ -1118,9 +1138,9 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    // Get the location an arrow hit
+    // Get the block an arrow hit
     // see http://forums.bukkit.org/threads/on-how-to-get-the-block-an-arrow-lands-in.55768/#post-954542
-    public Location getArrowLocation(Arrow arrow) {
+    public Block getArrowHit(Arrow arrow) {
         World world = arrow.getWorld();
 
         net.minecraft.server.EntityArrow entityArrow = ((CraftArrow)arrow).getHandle();
@@ -1136,12 +1156,14 @@ class EnchantMoreListener implements Listener {
             fieldZ.setAccessible(true);
 
             int x = fieldX.getInt(entityArrow);
-            int y = fieldX.getInt(entityArrow);
-            int z = fieldX.getInt(entityArrow);
+            int y = fieldY.getInt(entityArrow);
+            int z = fieldZ.getInt(entityArrow);
 
-            return new Location(world, (double)x, (double)y, (double)z);
+            plugin.log.info("getArrowHit x="+x+", y="+y+", z="+z);
+
+            return world.getBlockAt(x, y, z);
         } catch (Exception e) {
-            plugin.log.info("getArrowLocation("+arrow+" reflection failed: "+e);
+            plugin.log.info("getArrowHit("+arrow+" reflection failed: "+e);
             throw new IllegalArgumentException(e);
         }
     }
