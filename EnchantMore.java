@@ -313,17 +313,7 @@ class EnchantMoreListener implements Listener {
             }
 
             damage(item);
-        } else if (isShovel(item.getType())) {
-            // Shovel + Silk Touch II = harvest fallen snow
-            // TODO: only when breaks!
-            if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
-                if (block.getType() == Material.SNOW) {
-                    world.dropItemNaturally(block.getLocation(), new ItemStack(Material.SNOW, 1));
-                    block.setType(Material.AIR);
-                    event.setCancelled(true);   // do not drop snowballs
-                }
-            }
-        }
+        } 
     }
 
    
@@ -673,39 +663,47 @@ class EnchantMoreListener implements Listener {
                 // no extra damage
             }
 
-            // Shovel + Power = excavation (dig large area, no drops)
-            if (isShovel(item.getType()) && item.containsEnchantment(POWER) && 
-                isExcavatable(block.getType())) {
+            if (isShovel(item.getType())) {
+                // Shovel + Power = excavation (dig large area, no drops)
+                if (item.containsEnchantment(POWER) && isExcavatable(block.getType())) {
+                    // Clear out those annoying veins of gravel (or dirt)
 
-                // Clear out those annoying veins of gravel (or dirt)
+                    // too slow
+                    //breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
 
-                // too slow
-                //breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+                    // Dig a cube out, but no drops
+                    int r = item.getEnchantmentLevel(POWER);
 
-                // Dig a cube out, but no drops
-                int r = item.getEnchantmentLevel(POWER);
+                    Location loc = block.getLocation();
+                    int x0 = loc.getBlockX();
+                    int y0 = loc.getBlockY();
+                    int z0 = loc.getBlockZ();
+                   
+                    for (int dx = -r; dx <= r; dx += 1) {
+                        for (int dy = -r; dy <= r; dy += 1) {
+                            for (int dz = -r; dz <= r; dz += 1) {
+                                int x = dx + x0, y = dy + y0, z = dz + z0;
 
-                Location loc = block.getLocation();
-                int x0 = loc.getBlockX();
-                int y0 = loc.getBlockY();
-                int z0 = loc.getBlockZ();
-               
-                for (int dx = -r; dx <= r; dx += 1) {
-                    for (int dy = -r; dy <= r; dy += 1) {
-                        for (int dz = -r; dz <= r; dz += 1) {
-                            int x = dx + x0, y = dy + y0, z = dz + z0;
-
-                            int type = world.getBlockTypeIdAt(x, y, z);
-                            if (isExcavatable(type)) {
-                                Block b = world.getBlockAt(x, y, z);
-                                b.setType(Material.AIR);
+                                int type = world.getBlockTypeIdAt(x, y, z);
+                                if (isExcavatable(type)) {
+                                    Block b = world.getBlockAt(x, y, z);
+                                    b.setType(Material.AIR);
+                                }
                             }
                         }
                     }
+                    // no extra damage
                 }
-                // no extra damage
-            }
 
+                // Shovel + Silk Touch II = harvest fallen snow
+                if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
+                    if (block.getType() == Material.SNOW) {
+                        world.dropItemNaturally(block.getLocation(), new ItemStack(Material.SNOW, 1));
+                        block.setType(Material.AIR);
+                        event.setCancelled(true);   // do not drop snowballs
+                    }
+                }
+            }
         } else if (item.getType() == Material.SHEARS) {
             // Shears + Silk Touch = collect cobweb, dead bush
             if (item.containsEnchantment(SILK_TOUCH)) {
