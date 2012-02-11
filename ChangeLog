@@ -2,7 +2,8 @@ X   0.3
     * Add Bow + Knockback = pierce blocks
     * Add Shovel + Silk Touch II = harvest fallen snow, fire
     * Add Pickaxe + Silk Touch II = harvest ice
-    * Change strike lightning 100+ meters away to Sword + Power (was Sword + Flame) (sorry)
+    * Merge functionality of older [Sublimation](http://dev.bukkit.org/server-mods/sublimation/) project (add sublimateIce option)
+    * Change strike lightning 100+ meters away to Sword + Power (was Sword + Flame)
 
 2012-02-03  0.2
     * Add Bow + Sharpness = increase velocity

@@ -79,6 +79,7 @@ import net.minecraft.server.FurnaceRecipes;
 import net.minecraft.server.ItemDye;
 //import net.minecraft.server.ItemStack;        // import conflict
 import net.minecraft.server.EntityArrow;
+import net.minecraft.server.EnumSkyBlock;
 
 class EnchantMoreListener implements Listener {
 
@@ -1245,12 +1246,44 @@ class EnchantMoreFishTask implements Runnable {
     }
 }
 
+class EnchantMorePlayerMoveListener implements Listener {
+    EnchantMore plugin;
+
+    public EnchantMorePlayerMoveListener(EnchantMore plugin) {
+        this.plugin = plugin;
+
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Location to = event.getTo();
+        World world = to.getWorld();
+
+        int x = to.getBlockX();
+        int y = to.getBlockY();
+        int z = to.getBlockZ();
+
+        // TODO: light up player like a torch 
+        // http://forums.bukkit.org/threads/make-a-player-light-up-like-they-are-a-torch.58749/#post-952252
+
+        ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.SKY, x, y, z);
+        ((CraftWorld)world).getHandle().notify(x, y, z);
+
+        plugin.log.info("move x="+x+", y="+y+", z="+z);
+
+        //world.getBlockAt(x, y, z).setType(Material.GLOWSTONE);
+    }
+}
+
 public class EnchantMore extends JavaPlugin {
     Logger log = Logger.getLogger("Minecraft");
-    EnchantMoreListener listener;
 
     public void onEnable() {
-        listener = new EnchantMoreListener(this);
+        new EnchantMoreListener(this);
+
+        // TODO: option to disable
+        new EnchantMorePlayerMoveListener(this);
     }
     
     public void onDisable() {
