@@ -1422,7 +1422,7 @@ class EnchantMorePlayerMoveListener implements Listener {
                 Location from = event.getFrom();
 
                 if (to.getBlockX() != from.getBlockX() &&       // only if moved a block
-                    to.getBlockZ() != from.getBlockZ() &&
+                    to.getBlockZ() != from.getBlockZ() //&&
 
                     /* TODO don't set player on fire!
                     from.getBlockX() != player.getLocation().getBlockX() &&
