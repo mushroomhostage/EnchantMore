@@ -1305,8 +1305,9 @@ public class EnchantMore extends JavaPlugin {
     public void onEnable() {
         new EnchantMoreListener(this);
 
-        // TODO: option to disable
-        new EnchantMorePlayerMoveListener(this);
+        if (getConfig().getBoolean("moveListener", true)) {
+            new EnchantMorePlayerMoveListener(this);
+        }
     }
     
     public void onDisable() {
