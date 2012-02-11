@@ -1379,6 +1379,9 @@ class EnchantMorePlayerMoveListener implements Listener {
                 /*
                 ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.SKY, x, y-2, z);
                 ((CraftWorld)world).getHandle().notify(x, y, z);*/
+                // TODO: send map chunk packet with new lightning update, instead of glowstone hack
+                // TODO: and send it periodically, scheduled task on item switch
+                //   (scheduled once, but start another if still has in hand) important for lag prevention
 
                 // weak temporary glowstone lamp headlight
                 Block block = world.getBlockAt(x, y + 3, z);
@@ -1410,7 +1413,8 @@ class EnchantMorePlayerMoveListener implements Listener {
                     player.setVelocity(velocity);
 
                     // TODO: mitigate? only launch once, so can't really fly, just a boost?
-                    // cool down period?
+                    // TODO: setSprinting(false)
+                    // cool down period? 
 
                     // TODO: damage the boots? use up or infinite??
                 }
