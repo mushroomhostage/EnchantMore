@@ -180,19 +180,19 @@ class EnchantMoreListener implements Listener {
                 damage(item);
             }
         } else if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
-            // Flint & Steel + Smite = strike lightning
+            // Flint & Steel + Smite = strike lightning ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/8-fishing-rod-smite-strike-lightning/))
             if (item.containsEnchantment(SMITE)) {
                 world.strikeLightning(block.getLocation());
                 damage(item, 9);
             }
 
-            // Flint & Steel + Fire Protection = fire resistance
+            // Flint & Steel + Fire Protection = fire resistance ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/10-flint-steel-fire-protection-fire-resistance/))
             if (item.containsEnchantment(FIRE_PROTECTION)) {
                 applyPlayerEffect(player, EFFECT_FIRE_RESISTANCE, item.getEnchantmentLevel(FIRE_PROTECTION));
                 // no extra damage
             }
 
-            // Flint & Steel + Aqua Affinity = vaporize water
+            // Flint & Steel + Aqua Affinity = vaporize water ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/9-flint-steel-aqua-affinity-vaporize-water/))
             if (item.containsEnchantment(AQUA_AFFINITY)) {
                 // Find water within ignited cube area
                 int r = item.getEnchantmentLevel(AQUA_AFFINITY);
@@ -236,7 +236,7 @@ class EnchantMoreListener implements Listener {
             }
 
         } else if (isHoe(item.getType())) {
-            // Hoe + Aqua Affinity = auto-hydrate
+            // Hoe + Aqua Affinity = auto-hydrate ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/11-hoe-aqua-affinity-auto-hydrate/))
             if (item.containsEnchantment(AQUA_AFFINITY)) {
                 // As long as not in hell, hydrate nearby
                 if (world.getEnvironment() != World.Environment.NETHER) {
@@ -308,7 +308,7 @@ class EnchantMoreListener implements Listener {
                 damage(item);
             }
 
-            // Hoe + Respiration = grow
+            // Hoe + Respiration = grow ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/12-hoe-respiration-grow/))
             // Note, left-click will also destroy sensitive plants (wheat, saplings, though interestingly not shrooms),
             // so it will only work on blocks like grass (which does not break instantly). For 
             // this reason, also allow right-click for grow, even though it means you cannot till.
@@ -650,9 +650,9 @@ class EnchantMoreListener implements Listener {
             isShovel(item.getType()) ||
             isAxe(item.getType())) {
 
-            // Pickaxe + Flame = auto-smelt
-            // Shovel + Flame = auto-smelt
-            // Axe + Flame = auto-smelt
+            // Pickaxe + Flame = auto-smelt ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
+            // Shovel + Flame = auto-smelt ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
+            // Axe + Flame = auto-smelt ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
             if (item.containsEnchantment(FLAME)) {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
 
@@ -671,7 +671,7 @@ class EnchantMoreListener implements Listener {
             }
 
             if (isAxe(item.getType())) {
-                // Axe + Power = fell tree
+                // Axe + Power = fell tree ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
                     // Chop tree
                     breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
@@ -901,7 +901,7 @@ class EnchantMoreListener implements Listener {
         Location dest = arrow.getLocation();
         final World world = dest.getWorld();
 
-        // Bow + Looting = steal 
+        // Bow + Looting = steal ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/6-bow-looting-steal/))
         if (item.containsEnchantment(LOOTING)) {
             double s = 5.0 * item.getEnchantmentLevel(LOOTING);
 
@@ -918,7 +918,7 @@ class EnchantMoreListener implements Listener {
             world.strikeLightning(dest);
         }
 
-        // Bow + Fire Aspect = fiery explosions
+        // Bow + Fire Aspect = fiery explosions ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/5-bow-fire-aspect-fiery-explosions/))
         if (item.containsEnchantment(FIRE_ASPECT)) {
             float power = 1.0f * item.getEnchantmentLevel(FIRE_ASPECT);
 
@@ -1026,7 +1026,7 @@ class EnchantMoreListener implements Listener {
 
         }
 
-        // Bow + Feather Falling = teleport
+        // Bow + Feather Falling = teleport ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/4-bow-feather-falling-teleport/))
         if (item.containsEnchantment(FEATHER_FALLING)) {
             // use up the arrow (TODO: not at higher levels?) or set no pickup?
             arrow.remove();
@@ -1082,7 +1082,7 @@ class EnchantMoreListener implements Listener {
                 world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, item.getEnchantmentLevel(FORTUNE)));
             }
 
-            // Fishing Rod + Fortune = catch junk
+            // Fishing Rod + Fortune = catch junk ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/7-fishing-rod-fortune-catch-sunken-treasure/))
             if (item.containsEnchantment(FORTUNE)) {
                 int quantity  = item.getEnchantmentLevel(FORTUNE);
 
