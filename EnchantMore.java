@@ -1236,6 +1236,16 @@ class EnchantMoreListener implements Listener {
         }
 
         Player player = (Player)entity;
+
+        ItemStack chestplate = player.getInventory().getChestplate();
+
+        // Chestplate + Infinity = god mode
+        if (chestplate != null && chestplate.containsEnchantment(INFINITE)) {
+            // no damage ever
+            // TODO: also need to cancel death? can die elsewhere?
+            event.setCancelled(true);
+        }
+
         EntityDamageEvent.DamageCause cause = event.getCause();
 
         if (cause == EntityDamageEvent.DamageCause.LAVA ||
@@ -1265,10 +1275,9 @@ class EnchantMoreListener implements Listener {
             EntityDamageByEntityEvent e2 = (EntityDamageByEntityEvent)event;
             Entity damager = e2.getDamager();
 
-            if (damager instanceof Arrow) {
+            if (damager instanceof Arrow) { // TODO: all projectiles?
                 Arrow arrow = (Arrow)damager;
 
-                ItemStack chestplate = player.getInventory().getChestplate();
                 // Chestplate + Knockback = reflect arrows
                 if (chestplate != null && chestplate.containsEnchantment(KNOCKBACK)) {
                     event.setCancelled(true);   // stop arrow damage
@@ -1390,16 +1399,21 @@ class EnchantMorePlayerMoveListener implements Listener {
         ItemStack boots = player.getInventory().getBoots();
 
         // Boots + Power = sprint launch flying
-        if (boots != null && boots.containsEnchantment(EnchantMoreListener.POWER)) {
-            if (player.isSprinting()) {
-                Vector velocity = event.getTo().getDirection().normalize().multiply(boots.getEnchantmentLevel(EnchantMoreListener.POWER));
+        if (boots != null) {
+            if (boots.containsEnchantment(EnchantMoreListener.POWER)) {
+                if (player.isSprinting()) {
+                    Vector velocity = event.getTo().getDirection().normalize().multiply(boots.getEnchantmentLevel(EnchantMoreListener.POWER));
 
-                // may get kicked for flying TODO: enable flying for user
-                player.setVelocity(velocity);
+                    // may get kicked for flying TODO: enable flying for user
+                    player.setVelocity(velocity);
 
-                // TODO: mitigate? only launch once, so can't really fly, just a boost?
-                // cool down period?
+                    // TODO: mitigate? only launch once, so can't really fly, just a boost?
+                    // cool down period?
+
+                    // TODO: damage the boots? use up or infinite??
+                }
             }
+            // TODO: boots set on fire? http://dev.bukkit.org/server-mods/firelord/
         }
     }
 }
