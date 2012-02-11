@@ -1211,6 +1211,23 @@ class EnchantMoreListener implements Listener {
         }
     }
     
+    /*
+    // TODO: attempt to cancel burning when swimming in lava - no effect
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onEntityCombust(EntityCombustEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player)entity;
+
+        ItemStack helmet = player.getInventory().getHelmet();
+        if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
+            event.setCancelled(true);
+        }
+    }*/
+
     @EventHandler(priority = EventPriority.NORMAL) 
     public void onEntityDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
@@ -1239,47 +1256,21 @@ class EnchantMoreListener implements Listener {
             }
         }
 
-        /*
-        if (event instanceof EntityDamageByEntityEvent) {
-            plugin.log.info("by entity");
-        }*/
-    }
+        if (event instanceof EntityDamageByEntityEvent) {    // note: do not register directly
+            EntityDamageByEntityEvent e2 = (EntityDamageByEntityEvent)event;
+            Entity damager = e2.getDamager();
 
-    /*
-    // TODO: attempt to cancel burning when swimming in lava - no effect
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onEntityCombust(EntityCombustEvent event) {
-        Entity entity = event.getEntity();
-        if (!(entity instanceof Player)) {
-            return;
-        }
+            if (damager instanceof Arrow) {
+                Arrow arrow = (Arrow)damager;
 
-        Player player = (Player)entity;
-
-        ItemStack helmet = player.getInventory().getHelmet();
-        if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
-            event.setCancelled(true);
-        }
-    }*/
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        Entity damager = event.getDamager();
-        Entity defender = event.getEntity();
-
-        plugin.log.info("dmg "+damager+" on "+defender);
-
-        if (!(defender instanceof Player)) {
-            return;
-        }
-
-        Player player = (Player)defender;
-        if (damager instanceof Arrow) {
-            Arrow arrow = (Arrow)damager;
-
-            plugin.log.info("player "+player+" hit by arrow "+arrow);
-
-            // TODO: Chestplate + Knockback = reflect arrows
+                ItemStack chestplate = player.getInventory().getChestplate();
+                // Chestplate + Knockback = reflect arrows
+                if (chestplate != null && chestplate.containsEnchantment(KNOCKBACK)) {
+                    event.setCancelled(true);   // stop arrow damage
+                    // TODO: should we actually create a new arrow with the opposite velocity vector?
+                    player.shootArrow();        // reflect arrow
+                }
+            }
         }
     }
 }
