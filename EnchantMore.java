@@ -1210,23 +1210,76 @@ class EnchantMoreListener implements Listener {
             throw new IllegalArgumentException(e);
         }
     }
-
+    
     @EventHandler(priority = EventPriority.NORMAL) 
     public void onEntityDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof Player) {
-            Player player = (Player)entity;
-            EntityDamageEvent.DamageCause cause = event.getCause();
+        if (!(entity instanceof Player)) {
+            return;
+        }
 
-            if (cause == EntityDamageEvent.DamageCause.LAVA) {
-                ItemStack helmet = player.getInventory().getHelmet();
-                // Helmet + Fire Aspect = swim in lava
-                if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
-                    event.setDamage(0);
+        Player player = (Player)entity;
+        EntityDamageEvent.DamageCause cause = event.getCause();
 
-                    player.setFireTicks(0);
-                }
+        if (cause == EntityDamageEvent.DamageCause.LAVA ||
+            cause == EntityDamageEvent.DamageCause.FIRE ||
+            cause == EntityDamageEvent.DamageCause.FIRE_TICK) {
+            ItemStack helmet = player.getInventory().getHelmet();
+            // Helmet + Fire Aspect = swim in lava
+            if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
+                event.setCancelled(true);   // stop knockback and damage
+                //event.setDamage(0);
+                player.setFireTicks(0);     // cool off immediately after exiting lava
+
+                // TODO: can we display air meter under lava? 
+                /*
+                player.setMaximumAir(20*10);
+                player.setRemainingAir(20*10);
+                */
             }
+        }
+
+        /*
+        if (event instanceof EntityDamageByEntityEvent) {
+            plugin.log.info("by entity");
+        }*/
+    }
+
+    /*
+    // TODO: attempt to cancel burning when swimming in lava - no effect
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onEntityCombust(EntityCombustEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player)entity;
+
+        ItemStack helmet = player.getInventory().getHelmet();
+        if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
+            event.setCancelled(true);
+        }
+    }*/
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        Entity defender = event.getEntity();
+
+        plugin.log.info("dmg "+damager+" on "+defender);
+
+        if (!(defender instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player)defender;
+        if (damager instanceof Arrow) {
+            Arrow arrow = (Arrow)damager;
+
+            plugin.log.info("player "+player+" hit by arrow "+arrow);
+
+            // TODO: Chestplate + Knockback = reflect arrows
         }
     }
 }
@@ -1315,6 +1368,9 @@ class EnchantMorePlayerMoveListener implements Listener {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block), 10);
             }
         }
+        // TODO: Boots + Efficiency = no slow down walking on soul sand, ice 
+        // idea from http://dev.bukkit.org/server-mods/elemental-armor/
+        // how to speed up? or potion speed effect?
     }
 }
 
