@@ -394,14 +394,6 @@ class EnchantMoreListener implements Listener {
             m == Material.WOOD_AXE;
     }
 
-    public static boolean isBoots(Material m) {
-        return m == Material.DIAMOND_BOOTS ||
-            m == Material.GOLD_BOOTS ||
-            m == Material.IRON_BOOTS ||
-            m == Material.LEATHER_BOOTS ||
-            m == Material.CHAINMAIL_BOOTS;      // never forget the chainmail
-    }
-
     // Get whether material is a farm-related block, either land or growing crops
     public static boolean isFarmBlock(Material m) {
         return m == Material.SOIL ||     // Farmland
@@ -1395,10 +1387,10 @@ class EnchantMorePlayerMoveListener implements Listener {
         // GoldenEnchant? "golden pants = super speed & flying while holding shift" for 1.8 beta
         //  also on player move, but if sprinting multiples velocity vector
         //  odd diamond block enchant deal
-        else if (EnchantMoreListener.isBoots(item.getType())) {
-            if (item.containsEnchantment(EnchantMoreListener.EFFICIENCY)) {
-                player.setVelocity(player.getVelocity().multiply(2));
-            }
+        ItemStack boots = player.getInventory().getBoots();
+
+        if (boots != null && boots.containsEnchantment(EnchantMoreListener.EFFICIENCY)) {
+            player.setVelocity(player.getVelocity().multiply(2));
         }
     }
 }
