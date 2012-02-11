@@ -85,27 +85,27 @@ class EnchantMoreListener implements Listener {
 
     // Better enchantment names more closely matching in-game display
     // TODO: replace with ItemStackX
-    final Enchantment PROTECTION = Enchantment.PROTECTION_ENVIRONMENTAL;
-    final Enchantment FIRE_PROTECTION = Enchantment.PROTECTION_FIRE;
-    final Enchantment FEATHER_FALLING = Enchantment.PROTECTION_FALL;
-    final Enchantment BLAST_PROTECTION = Enchantment.PROTECTION_EXPLOSIONS;
-    final Enchantment PROJECTILE_PROTECTION = Enchantment.PROTECTION_PROJECTILE;
-    final Enchantment RESPIRATION = Enchantment.OXYGEN;
-    final Enchantment AQUA_AFFINITY = Enchantment.WATER_WORKER;
-    final Enchantment SHARPNESS = Enchantment.DAMAGE_ALL;
-    final Enchantment SMITE = Enchantment.DAMAGE_UNDEAD;
-    final Enchantment BANE = Enchantment.DAMAGE_ARTHROPODS;
-    final Enchantment KNOCKBACK = Enchantment.KNOCKBACK;
-    final Enchantment FIRE_ASPECT = Enchantment.FIRE_ASPECT;
-    final Enchantment LOOTING = Enchantment.LOOT_BONUS_MOBS;
-    final Enchantment EFFICIENCY = Enchantment.DIG_SPEED;
-    final Enchantment SILK_TOUCH = Enchantment.SILK_TOUCH;
-    final Enchantment UNBREAKING = Enchantment.DURABILITY;
-    final Enchantment FORTUNE = Enchantment.LOOT_BONUS_BLOCKS;
-    final Enchantment POWER = Enchantment.ARROW_DAMAGE;
-    final Enchantment PUNCH = Enchantment.ARROW_KNOCKBACK;
-    final Enchantment FLAME = Enchantment.ARROW_FIRE;
-    final Enchantment INFINITE = Enchantment.ARROW_INFINITE;
+    final static Enchantment PROTECTION = Enchantment.PROTECTION_ENVIRONMENTAL;
+    final static Enchantment FIRE_PROTECTION = Enchantment.PROTECTION_FIRE;
+    final static Enchantment FEATHER_FALLING = Enchantment.PROTECTION_FALL;
+    final static Enchantment BLAST_PROTECTION = Enchantment.PROTECTION_EXPLOSIONS;
+    final static Enchantment PROJECTILE_PROTECTION = Enchantment.PROTECTION_PROJECTILE;
+    final static Enchantment RESPIRATION = Enchantment.OXYGEN;
+    final static Enchantment AQUA_AFFINITY = Enchantment.WATER_WORKER;
+    final static Enchantment SHARPNESS = Enchantment.DAMAGE_ALL;
+    final static Enchantment SMITE = Enchantment.DAMAGE_UNDEAD;
+    final static Enchantment BANE = Enchantment.DAMAGE_ARTHROPODS;
+    final static Enchantment KNOCKBACK = Enchantment.KNOCKBACK;
+    final static Enchantment FIRE_ASPECT = Enchantment.FIRE_ASPECT;
+    final static Enchantment LOOTING = Enchantment.LOOT_BONUS_MOBS;
+    final static Enchantment EFFICIENCY = Enchantment.DIG_SPEED;
+    final static Enchantment SILK_TOUCH = Enchantment.SILK_TOUCH;
+    final static Enchantment UNBREAKING = Enchantment.DURABILITY;
+    final static Enchantment FORTUNE = Enchantment.LOOT_BONUS_BLOCKS;
+    final static Enchantment POWER = Enchantment.ARROW_DAMAGE;
+    final static Enchantment PUNCH = Enchantment.ARROW_KNOCKBACK;
+    final static Enchantment FLAME = Enchantment.ARROW_FIRE;
+    final static Enchantment INFINITE = Enchantment.ARROW_INFINITE;
 
     static Random random;
    
@@ -827,19 +827,8 @@ class EnchantMoreListener implements Listener {
                 // Workaround type not changing, until fix is in a build:
                 // "Allow plugins to change ID and Data during BlockPlace event." Fixes BUKKIT-674
                 // https://github.com/Bukkit/CraftBukkit/commit/f29b84bf1579cf3af31ea3be6df0bc8917c1de0b
-                class AirTask implements Runnable {
-                    Block block;
 
-                    public AirTask(Block block) {
-                        this.block = block;
-                    }
-
-                    public void run() {
-                        block.setType(Material.AIR);
-                    }
-                }
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new AirTask(block));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block));
             }
         }
     }
@@ -1246,6 +1235,18 @@ class EnchantMoreFishTask implements Runnable {
     }
 }
 
+class EnchantMoreAirTask implements Runnable {
+    Block block;
+
+    public EnchantMoreAirTask(Block block) {
+        this.block = block;
+    }
+
+    public void run() {
+        block.setType(Material.AIR);
+    }
+}
+
 class EnchantMorePlayerMoveListener implements Listener {
     EnchantMore plugin;
 
@@ -1257,22 +1258,44 @@ class EnchantMorePlayerMoveListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
-        Location to = event.getTo();
-        World world = to.getWorld();
+        Player player = event.getPlayer();
+        ItemStack item = player.getItemInHand();
 
-        int x = to.getBlockX();
-        int y = to.getBlockY();
-        int z = to.getBlockZ();
+        if (item == null) { 
+            return;
+        }
 
-        // TODO: light up player like a torch 
-        // http://forums.bukkit.org/threads/make-a-player-light-up-like-they-are-a-torch.58749/#post-952252
+        // Sword + Flame = temporary glowstone headlamp
+        // (note: only checking DIAMOND_SWORD not isSword() for efficiency)
+        if (item.getType() == Material.DIAMOND_SWORD && item.containsEnchantment(EnchantMoreListener.FLAME)) {
+            Location to = event.getTo();
+            World world = to.getWorld();
 
-        ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.SKY, x, y, z);
-        ((CraftWorld)world).getHandle().notify(x, y, z);
+            int x = to.getBlockX();
+            int y = to.getBlockY();
+            int z = to.getBlockZ();
 
-        plugin.log.info("move x="+x+", y="+y+", z="+z);
+            Location from = event.getFrom();
+            if (from.getBlockX() == x && from.getBlockY() == y && from.getBlockZ() == z) {
+                // not moving from block
+                return;
+            }
 
-        //world.getBlockAt(x, y, z).setType(Material.GLOWSTONE);
+            // TODO: light up player like a torch 
+            // http://forums.bukkit.org/threads/make-a-player-light-up-like-they-are-a-torch.58749/#post-952252
+            /*
+            ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.SKY, x, y-2, z);
+            ((CraftWorld)world).getHandle().notify(x, y, z);*/
+
+            // weak temporary glowstone lamp headlight
+            Block block = world.getBlockAt(x, y + 3, z);
+            if (block.getType() == Material.AIR) {
+                block.setType(Material.GLOWSTONE);
+
+                // TODO: configurable timeout. want to disappear fast enough so can't mine easily
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block), 10);
+            }
+        }
     }
 }
 
