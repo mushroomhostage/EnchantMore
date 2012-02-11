@@ -711,6 +711,7 @@ class EnchantMoreListener implements Listener {
                 }
 
                 // Shovel + Silk Touch II = harvest fallen snow, fire
+                // (fire elsewhere)
                 if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
                     if (block.getType() == Material.SNOW) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
@@ -722,7 +723,7 @@ class EnchantMoreListener implements Listener {
             }
             // Pickaxe + Silk Touch II = harvest ice
             if (isPickaxe(item.getType())) {
-                if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
+                if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", 2)) {
                     if (block.getType() == Material.ICE) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
                         block.setType(Material.AIR);
@@ -797,6 +798,7 @@ class EnchantMoreListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockPlace(BlockPlaceEvent event) {
         Block block = event.getBlockPlaced();
+        World world = block.getWorld();
         Player player = event.getPlayer();
 
         // Item to place as a block
@@ -813,6 +815,32 @@ class EnchantMoreListener implements Listener {
             }
         }
 
+        if (block != null && block.getType() == Material.ICE) {
+            if (world.getEnvironment() == World.Environment.NETHER && plugin.getConfig().getBoolean("sublimateIce", false)) {
+                // sublimate ice to vapor
+                block.setType(Material.AIR);
+
+                // turn into smoke
+                world.playEffect(block.getLocation(), Effect.SMOKE, 0);
+
+                // Workaround type not changing, until fix is in a build:
+                // "Allow plugins to change ID and Data during BlockPlace event." Fixes BUKKIT-674
+                // https://github.com/Bukkit/CraftBukkit/commit/f29b84bf1579cf3af31ea3be6df0bc8917c1de0b
+                class AirTask implements Runnable {
+                    Block block;
+
+                    public AirTask(Block block) {
+                        this.block = block;
+                    }
+
+                    public void run() {
+                        block.setType(Material.AIR);
+                    }
+                }
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new AirTask(block));
+            }
+        }
     }
 
 
