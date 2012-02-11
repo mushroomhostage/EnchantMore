@@ -1267,8 +1267,22 @@ class EnchantMoreListener implements Listener {
                 // Chestplate + Knockback = reflect arrows
                 if (chestplate != null && chestplate.containsEnchantment(KNOCKBACK)) {
                     event.setCancelled(true);   // stop arrow damage
-                    // TODO: should we actually create a new arrow with the opposite velocity vector?
                     player.shootArrow();        // reflect arrow
+
+                    // TODO: should we actually create a new arrow with the opposite velocity vector?
+                    // not right
+                    /*
+                    Location location = player.getLocation();
+                    World world = location.getWorld();
+                    Vector velocity = arrow.getVelocity().multiply(-1);
+                    float speed = 0.6f;  // "A recommend speed is 0.6"
+                    float spread = 12f;  // "A recommend spread is 12"
+
+
+                    world.spawnArrow(location, velocity, speed, spread);
+                    */
+
+                    damage(chestplate);
                 }
             }
         }
