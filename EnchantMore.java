@@ -1286,6 +1286,7 @@ class EnchantMoreListener implements Listener {
                     player.shootArrow();        // reflect arrow
 
                     // TODO: should we actually create a new arrow with the opposite velocity vector?
+                    // I think so.. bounce, not reshoot
                     // not right
                     /*
                     Location location = player.getLocation();
@@ -1300,6 +1301,8 @@ class EnchantMoreListener implements Listener {
 
                     damage(chestplate);
                 }
+                // TODO: Sword + Projectile Protection = reflect arrows while blocking
+                // make it as ^^ is, nerf above (sword direction control, chestplate not)
             }
         }
     }
