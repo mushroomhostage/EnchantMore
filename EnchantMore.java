@@ -1210,6 +1210,25 @@ class EnchantMoreListener implements Listener {
             throw new IllegalArgumentException(e);
         }
     }
+
+    @EventHandler(priority = EventPriority.NORMAL) 
+    public void onEntityDamage(EntityDamageEvent event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof Player) {
+            Player player = (Player)entity;
+            EntityDamageEvent.DamageCause cause = event.getCause();
+
+            if (cause == EntityDamageEvent.DamageCause.LAVA) {
+                ItemStack helmet = player.getInventory().getHelmet();
+                // Helmet + Fire Aspect = swim in lava
+                if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
+                    event.setDamage(0);
+
+                    player.setFireTicks(0);
+                }
+            }
+        }
+    }
 }
 
 // Task to efficiently drop fish after some time of fishing
