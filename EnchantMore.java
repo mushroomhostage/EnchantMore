@@ -1379,7 +1379,7 @@ class EnchantMorePlayerMoveListener implements Listener {
                 }
             }
         }
-        // TODO: Boots + Efficiency = no slow down walking on soul sand, ice 
+        // TODO: Boots + Efficiency  = no slow down walking on soul sand, ice 
         // idea from http://dev.bukkit.org/server-mods/elemental-armor/
         // how to speed up? or potion speed effect?
         // http://forums.bukkit.org/threads/req-useful-gold-armor-read-first.59430/
@@ -1389,8 +1389,17 @@ class EnchantMorePlayerMoveListener implements Listener {
         //  odd diamond block enchant deal
         ItemStack boots = player.getInventory().getBoots();
 
-        if (boots != null && boots.containsEnchantment(EnchantMoreListener.EFFICIENCY)) {
-            player.setVelocity(player.getVelocity().multiply(2));
+        // Boots + Power = sprint launch flying
+        if (boots != null && boots.containsEnchantment(EnchantMoreListener.POWER)) {
+            if (player.isSprinting()) {
+                Vector velocity = event.getTo().getDirection().normalize().multiply(boots.getEnchantmentLevel(EnchantMoreListener.POWER));
+
+                // may get kicked for flying TODO: enable flying for user
+                player.setVelocity(velocity);
+
+                // TODO: mitigate? only launch once, so can't really fly, just a boost?
+                // cool down period?
+            }
         }
     }
 }
