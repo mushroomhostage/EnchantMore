@@ -140,8 +140,8 @@ class EnchantMoreListener implements Listener {
             }
         } else if (isSword(item.getType())) {
             if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-                // Sword + Flame = strike lightning 100+ meters away
-                if (item.containsEnchantment(FLAME)) {
+                // Sword + Power = strike lightning 100+ meters away
+                if (item.containsEnchantment(POWER)) {
                     int maxDistance = 100;  // TODO: configurable
                     Block target = player.getTargetBlock(null, maxDistance * item.getEnchantmentLevel(FLAME));
 
