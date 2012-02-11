@@ -657,6 +657,8 @@ class EnchantMoreListener implements Listener {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
 
                 for (ItemStack rawDrop: rawDrops) {
+                    // note: original smelted idea from Firelord tools http://dev.bukkit.org/server-mods/firelord/
+                    // also see Superheat plugin? either way, coded this myself..
                     ItemStack smeltedDrop = smelt(rawDrop);
 
                     if (smeltedDrop != null && smeltedDrop.getType() != Material.AIR) {
@@ -1398,8 +1400,8 @@ class EnchantMorePlayerMoveListener implements Listener {
         //  odd diamond block enchant deal
         ItemStack boots = player.getInventory().getBoots();
 
-        // Boots + Power = sprint launch flying
         if (boots != null) {
+            // Boots + Power = sprint launch flying
             if (boots.containsEnchantment(EnchantMoreListener.POWER)) {
                 if (player.isSprinting()) {
                     Vector velocity = event.getTo().getDirection().normalize().multiply(boots.getEnchantmentLevel(EnchantMoreListener.POWER));
@@ -1413,7 +1415,15 @@ class EnchantMorePlayerMoveListener implements Listener {
                     // TODO: damage the boots? use up or infinite??
                 }
             }
-            // TODO: boots set on fire? http://dev.bukkit.org/server-mods/firelord/
+
+            // Boots + Flame = set ground on fire
+            if (boots.containsEnchantment(EnchantMoreListener.FLAME)) {
+                Location location = player.getLocation();
+                
+                location.getBlock().setType(Material.FIRE);
+
+                // http://dev.bukkit.org/server-mods/firelord/ "The boots set the ground on fire!"
+            }
         }
     }
 }
