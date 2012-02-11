@@ -354,7 +354,7 @@ class EnchantMoreListener implements Listener {
         net.minecraft.server.Item.INK_SACK.a(bonemealStack.getHandle(), ((CraftPlayer)player).getHandle(), ((CraftWorld)world).getHandle(), x, y, z, 0/*unused*/);
     }
 
-    private boolean isHoe(Material m) {
+    public static boolean isHoe(Material m) {
         return m == Material.DIAMOND_HOE ||
             m == Material.GOLD_HOE || 
             m == Material.IRON_HOE ||
@@ -362,7 +362,7 @@ class EnchantMoreListener implements Listener {
             m == Material.WOOD_HOE;
     }
 
-    private boolean isSword(Material m) {
+    public static boolean isSword(Material m) {
         return m == Material.DIAMOND_SWORD ||   
             m == Material.GOLD_SWORD ||
             m == Material.IRON_SWORD ||
@@ -370,7 +370,7 @@ class EnchantMoreListener implements Listener {
             m == Material.WOOD_SWORD;
     }
 
-    private boolean isPickaxe(Material m) {
+    public static boolean isPickaxe(Material m) {
         return m == Material.DIAMOND_PICKAXE ||
             m == Material.GOLD_PICKAXE ||
             m == Material.IRON_PICKAXE ||
@@ -378,7 +378,7 @@ class EnchantMoreListener implements Listener {
             m == Material.WOOD_PICKAXE;
     }
 
-    private boolean isShovel(Material m) {
+    public static boolean isShovel(Material m) {
         return m == Material.DIAMOND_SPADE ||
             m == Material.GOLD_SPADE ||
             m == Material.IRON_SPADE ||
@@ -386,7 +386,7 @@ class EnchantMoreListener implements Listener {
             m == Material.WOOD_SPADE;
     }
 
-    private boolean isAxe(Material m) {
+    public static boolean isAxe(Material m) {
         return m == Material.DIAMOND_AXE ||
             m == Material.GOLD_AXE ||
             m == Material.IRON_AXE ||
@@ -394,8 +394,16 @@ class EnchantMoreListener implements Listener {
             m == Material.WOOD_AXE;
     }
 
+    public static boolean isBoots(Material m) {
+        return m == Material.DIAMOND_BOOTS ||
+            m == Material.GOLD_BOOTS ||
+            m == Material.IRON_BOOTS ||
+            m == Material.LEATHER_BOOTS ||
+            m == Material.CHAINMAIL_BOOTS;      // never forget the chainmail
+    }
+
     // Get whether material is a farm-related block, either land or growing crops
-    private boolean isFarmBlock(Material m) {
+    public static boolean isFarmBlock(Material m) {
         return m == Material.SOIL ||     // Farmland
             m == Material.CROPS ||    // wheat TODO: update wiki, calls 'Wheat Seeds' though in-game 'Crops'
             m == Material.SUGAR_CANE_BLOCK ||
@@ -406,7 +414,7 @@ class EnchantMoreListener implements Listener {
     }
 
     // Get whether able to be excavated by shovel
-    private boolean isExcavatable(int m) {
+    public static boolean isExcavatable(int m) {
         return m == Material.DIRT.getId() ||
             m == Material.GRASS.getId() ||
             m == Material.GRAVEL.getId() ||
@@ -414,12 +422,12 @@ class EnchantMoreListener implements Listener {
             m == Material.NETHERRACK.getId(); // not normally diggable, but why not?
     }
 
-    private boolean isExcavatable(Material m) {
+    public static boolean isExcavatable(Material m) {
         return isExcavatable(m.getId());
     }
 
     // Return whether is a wooden block
-    private boolean isWoodenBlock(Material m, byte data) {
+    public static boolean isWoodenBlock(Material m, byte data) {
         return m == Material.WOOD || 
             m == Material.WOOD_PLATE || 
             m == Material.WOOD_STAIRS ||
@@ -1253,6 +1261,11 @@ class EnchantMoreListener implements Listener {
                 player.setMaximumAir(20*10);
                 player.setRemainingAir(20*10);
                 */
+
+                // similar: http://dev.bukkit.org/server-mods/goldenchant/
+                // "golden chestplate = immunity to fire and lava damage" [like my Helmet + Fire Aspect]
+                // "golden helmet = breath underwater" [seems to overlap with Respiration, meh]
+                // "golden shoes = no fall damage" [ditto for Feather Falling]
             }
         }
 
@@ -1343,39 +1356,50 @@ class EnchantMorePlayerMoveListener implements Listener {
         }
 
         // Sword + Flame = temporary glowstone headlamp
-        // (note: only checking DIAMOND_SWORD not isSword() for efficiency)
-        if (item.getType() == Material.DIAMOND_SWORD && item.containsEnchantment(EnchantMoreListener.FLAME)) {
-            Location to = event.getTo();
-            World world = to.getWorld();
+        if (EnchantMoreListener.isSword(item.getType())) {
+            if (item.containsEnchantment(EnchantMoreListener.FLAME)) {
+                Location to = event.getTo();
+                World world = to.getWorld();
 
-            int x = to.getBlockX();
-            int y = to.getBlockY();
-            int z = to.getBlockZ();
+                int x = to.getBlockX();
+                int y = to.getBlockY();
+                int z = to.getBlockZ();
 
-            Location from = event.getFrom();
-            if (from.getBlockX() == x && from.getBlockY() == y && from.getBlockZ() == z) {
-                // not moving from block
-                return;
-            }
+                Location from = event.getFrom();
+                if (from.getBlockX() == x && from.getBlockY() == y && from.getBlockZ() == z) {
+                    // not moving from block
+                    return;
+                }
 
-            // TODO: light up player like a torch 
-            // http://forums.bukkit.org/threads/make-a-player-light-up-like-they-are-a-torch.58749/#post-952252
-            /*
-            ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.SKY, x, y-2, z);
-            ((CraftWorld)world).getHandle().notify(x, y, z);*/
+                // TODO: light up player like a torch 
+                // http://forums.bukkit.org/threads/make-a-player-light-up-like-they-are-a-torch.58749/#post-952252
+                /*
+                ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.SKY, x, y-2, z);
+                ((CraftWorld)world).getHandle().notify(x, y, z);*/
 
-            // weak temporary glowstone lamp headlight
-            Block block = world.getBlockAt(x, y + 3, z);
-            if (block.getType() == Material.AIR) {
-                block.setType(Material.GLOWSTONE);
+                // weak temporary glowstone lamp headlight
+                Block block = world.getBlockAt(x, y + 3, z);
+                if (block.getType() == Material.AIR) {
+                    block.setType(Material.GLOWSTONE);
 
-                // TODO: configurable timeout. want to disappear fast enough so can't mine easily
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block), 10);
+                    // TODO: configurable timeout. want to disappear fast enough so can't mine easily
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block), 10);
+                }
             }
         }
         // TODO: Boots + Efficiency = no slow down walking on soul sand, ice 
         // idea from http://dev.bukkit.org/server-mods/elemental-armor/
         // how to speed up? or potion speed effect?
+        // http://forums.bukkit.org/threads/req-useful-gold-armor-read-first.59430/
+        // GoldenSprint? faster while sneaking? "feels too laggy" - listens to player move
+        // GoldenEnchant? "golden pants = super speed & flying while holding shift" for 1.8 beta
+        //  also on player move, but if sprinting multiples velocity vector
+        //  odd diamond block enchant deal
+        else if (EnchantMoreListener.isBoots(item.getType())) {
+            if (item.containsEnchantment(EnchantMoreListener.EFFICIENCY)) {
+                player.setVelocity(player.getVelocity().multiply(2));
+            }
+        }
     }
 }
 
