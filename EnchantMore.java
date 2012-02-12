@@ -1467,6 +1467,20 @@ class EnchantMorePlayerMoveListener implements Listener {
                 // https://github.com/FriedTaco/godPowers/blob/master/godPowers/src/com/FriedTaco/taco/godPowers/Jesus.java
                 // creates a block underneath you, quite complex
             }*/
+
+            // TODO: Boots + Knockback = bounce on land
+            if (boots.containsEnchantment(EnchantMoreListener.KNOCKBACK)) {
+                if (event.getTo().getY() < event.getFrom().getY()) {
+                    Block block = event.getTo().getBlock();
+                    Block land = block.getRelative(BlockFace.DOWN);
+
+                    plugin.log.info("land="+land);
+                    if (land.getType() != Material.AIR) {
+                        int n = boots.getEnchantmentLevel(EnchantMoreListener.KNOCKBACK);
+                        player.setVelocity(event.getPlayer().getVelocity().multiply(-n));
+                    }
+                }
+            }
         }
     }
 }
