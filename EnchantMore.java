@@ -1268,7 +1268,7 @@ class EnchantMoreListener implements Listener {
                 */
 
                 // similar: http://dev.bukkit.org/server-mods/goldenchant/
-                // "golden chestplate = immunity to fire and lava damage" [like my Helmet + Fire Aspect]
+                // "golden chestplate = immunity to fire and lava damage" [like my Helmet with Fire Aspect]
                 // "golden helmet = breath underwater" [seems to overlap with Respiration, meh]
                 // "golden shoes = no fall damage" [ditto for Feather Falling]
             }
@@ -1305,6 +1305,28 @@ class EnchantMoreListener implements Listener {
                 // TODO: Sword + Projectile Protection = reflect arrows while blocking
                 // make it as ^^ is, nerf above (sword direction control, chestplate not)
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerAnimation(PlayerAnimationEvent event) {
+        if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        ItemStack weapon = player.getItemInHand();
+        if (weapon == null) {
+            return;
+        }
+
+        // Sword + Blast Protection =
+        if (isSword(weapon.getType()) && weapon.containsEnchantment(BLAST_PROTECTION)) {
+            World world = player.getWorld();
+            Location location = player.getLocation().add(0, 2, 0);
+           
+            plugin.log.info("spawn");
+            world.spawn(location, SmallFireball.class);
         }
     }
 }
