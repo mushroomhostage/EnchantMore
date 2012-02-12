@@ -1450,18 +1450,23 @@ class EnchantMorePlayerMoveListener implements Listener {
             }
 
             // TODO: Boots + Aqua Affinity = walk on water
+            /*
             if (boots.containsEnchantment(EnchantMoreListener.AQUA_AFFINITY)) {
                 World world = event.getTo().getWorld();
                 Block block = event.getTo().getBlock();
-                // get water block
-                do {
-                    block = block.getRelative(BlockFace.UP);
-                } while (block.getType() == Material.WATER || block.getType() == Material.STATIONARY_WATER);
 
-                Location meniscus = new Location(world, event.getTo().getX(), block.getLocation().getY() - 1, event.getTo().getZ());
-
-                event.setTo(meniscus);
-            }
+                if (block.getType() == Material.WATER || block.getType() == Material.STATIONARY_WATER) {
+                    // why does this reset pitch/yaw?
+                    //Location meniscus = new Location(world, event.getTo().getX(), block.getLocation().getY(), event.getTo().getZ());
+                    //Location meniscus = new Location(world, event.getTo().getX(), event.getTo().getY(), event.getTo().getZ());
+                    //event.setTo(meniscus);
+                    // really annoying, keeps bouncing, can't move fast
+                    event.setTo(event.getTo().clone().add(0, 0.1, 0));
+                }
+                // see also: God Powers jesus raft
+                // https://github.com/FriedTaco/godPowers/blob/master/godPowers/src/com/FriedTaco/taco/godPowers/Jesus.java
+                // creates a block underneath you, quite complex
+            }*/
         }
     }
 }
