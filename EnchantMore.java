@@ -1331,6 +1331,67 @@ class EnchantMoreListener implements Listener {
         }
     }
     */
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItem(event.getNewSlot());
+
+        if (item != null && isSword(item.getType())) {
+            // Sword + Flame = create permanent lit path
+            if (item.containsEnchantment(FLAME)) {
+                EnchantMoreFlameLightTask task = new EnchantMoreFlameLightTask(plugin, player);
+
+                // run once to kick off, it will re-schedule itself if appropriate
+                // (note need to schedule to run, so will run after item actually changes in hand)
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreFlameLightTask(plugin, player));
+            }
+        }
+    }
+}
+
+// Task to light up player, as long as its holding the right tool
+class EnchantMoreFlameLightTask implements Runnable {
+    Player player;
+    EnchantMore plugin;
+
+    public EnchantMoreFlameLightTask(EnchantMore plugin, Player player) {
+        this.plugin = plugin;
+        this.player = player;
+    }
+
+    public void run() {
+        ItemStack item = player.getItemInHand();
+
+        if (item != null && EnchantMoreListener.isSword(item.getType())) {
+            if (item.containsEnchantment(EnchantMoreListener.FLAME)) {
+                Location to = player.getLocation();
+                World world = to.getWorld();
+
+                int x = to.getBlockX();
+                int y = to.getBlockY();
+                int z = to.getBlockZ();
+
+                // Light up player like a torch 
+                // http://forums.bukkit.org/threads/make-a-player-light-up-like-they-are-a-torch.58749/#post-952252
+                // http://dev.bukkit.org/server-mods/head-lamp/
+                ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.BLOCK, x, y+2, z, 15);
+                //((CraftWorld)world).getHandle().notify(x, y+2, z);
+                // Force update
+                Location below = new Location(world, x, y+1, z);
+                below.getBlock().setType(below.getBlock().getType());
+                below.getBlock().setData(below.getBlock().getData());
+
+                // Schedule another task to update again
+                // This won't be scheduled if they didn't have the right tool, so it'll die off
+                //plugin.log.info("LIT");
+
+                // Updates faster if higher level
+                int period = 20 * 2 / item.getEnchantmentLevel(EnchantMoreListener.FLAME);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreFlameLightTask(plugin, player), period);
+            }
+        }
+    }
 }
 
 // Task to efficiently drop fish after some time of fishing
@@ -1386,37 +1447,6 @@ class EnchantMorePlayerMoveListener implements Listener {
             return;
         }
 
-        // Sword + Flame = create permanent lit path
-        if (EnchantMoreListener.isSword(item.getType())) {
-            if (item.containsEnchantment(EnchantMoreListener.FLAME)) {
-                Location to = event.getTo();
-                World world = to.getWorld();
-
-                int x = to.getBlockX();
-                int y = to.getBlockY();
-                int z = to.getBlockZ();
-
-                Location from = event.getFrom();
-                /*
-                if (from.getBlockX() == x && from.getBlockY() == y && from.getBlockZ() == z) {
-                    // not moving from block
-                    return;
-                }*/
-
-                // Light up player like a torch 
-                // http://forums.bukkit.org/threads/make-a-player-light-up-like-they-are-a-torch.58749/#post-952252
-                // http://dev.bukkit.org/server-mods/head-lamp/
-                ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.BLOCK, x, y+2, z, 15);
-                //((CraftWorld)world).getHandle().notify(x, y+2, z);
-                // Force update
-                Location below = new Location(world, x, y+1, z);
-                below.getBlock().setType(below.getBlock().getType());
-                below.getBlock().setData(below.getBlock().getData());
-
-                // TODO: and send it periodically, scheduled task on item switch
-                //   (scheduled once, but start another if still has in hand) important for lag prevention
-            }
-        }
         // TODO: Boots + Efficiency  = no slow down walking on soul sand, ice 
         // idea from http://dev.bukkit.org/server-mods/elemental-armor/
         // how to speed up? or potion speed effect?
