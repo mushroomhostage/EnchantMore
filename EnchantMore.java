@@ -246,7 +246,8 @@ class EnchantMoreListener implements Listener {
                     for (int dx = -1; dx <= 1; dx += 1) {
                         for (int dz = -1; dz <= 1; dz += 1) {
                             Block near = block.getRelative(dx * n, 0, dz * n);
-                            if (near.getType() == Material.AIR) {
+                            // if either air or flowing water, make stationary water
+                            if (near.getType() == Material.AIR || near.getType() == Material.WATER) {
                                 near.setType(Material.STATIONARY_WATER);
                             }
                         }
@@ -1446,6 +1447,11 @@ class EnchantMorePlayerMoveListener implements Listener {
                     }
                 }
                 // http://dev.bukkit.org/server-mods/firelord/ "The boots set the ground on fire!"
+            }
+
+            if (boots.containsEnchantment(EnchantMoreListener.AQUA_AFFINITY)) {
+                Block block = event.getTo().getBlock();
+                plugin.log.info("block="+block);
             }
         }
     }
