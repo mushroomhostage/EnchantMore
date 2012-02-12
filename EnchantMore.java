@@ -1449,9 +1449,18 @@ class EnchantMorePlayerMoveListener implements Listener {
                 // http://dev.bukkit.org/server-mods/firelord/ "The boots set the ground on fire!"
             }
 
+            // TODO: Boots + Aqua Affinity = walk on water
             if (boots.containsEnchantment(EnchantMoreListener.AQUA_AFFINITY)) {
+                World world = event.getTo().getWorld();
                 Block block = event.getTo().getBlock();
-                plugin.log.info("block="+block);
+                // get water block
+                do {
+                    block = block.getRelative(BlockFace.UP);
+                } while (block.getType() == Material.WATER || block.getType() == Material.STATIONARY_WATER);
+
+                Location meniscus = new Location(world, event.getTo().getX(), block.getLocation().getY() - 1, event.getTo().getZ());
+
+                event.setTo(meniscus);
             }
         }
     }
