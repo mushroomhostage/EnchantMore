@@ -1308,6 +1308,7 @@ class EnchantMoreListener implements Listener {
         }
     }
 
+    /*
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerAnimation(PlayerAnimationEvent event) {
         if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) {
@@ -1320,7 +1321,7 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
-        // Sword + Blast Protection =
+        // TODO: Sword + Blast Protection = shoot fireballs
         if (isSword(weapon.getType()) && weapon.containsEnchantment(BLAST_PROTECTION)) {
             World world = player.getWorld();
             Location location = player.getLocation().add(0, 2, 0);
@@ -1329,6 +1330,7 @@ class EnchantMoreListener implements Listener {
             world.spawn(location, SmallFireball.class);
         }
     }
+    */
 }
 
 // Task to efficiently drop fish after some time of fishing
