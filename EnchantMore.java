@@ -1468,7 +1468,8 @@ class EnchantMorePlayerMoveListener implements Listener {
                 // creates a block underneath you, quite complex
             }*/
 
-            // TODO: Boots + Knockback = bounce on land
+            // TODO: Boots + Knockback = bounce on fall
+            /*
             if (boots.containsEnchantment(EnchantMoreListener.KNOCKBACK)) {
                 if (event.getTo().getY() < event.getFrom().getY()) {
                     Block block = event.getTo().getBlock();
@@ -1481,6 +1482,7 @@ class EnchantMorePlayerMoveListener implements Listener {
                     }
                 }
             }
+            */
         }
     }
 }
