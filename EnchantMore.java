@@ -1306,6 +1306,28 @@ class EnchantMoreListener implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onEntityDeath(EntityDeathEvent event) {
+        if (!(event instanceof PlayerDeathEvent)) { // note: not registered directly
+            return;
+        }
+
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player)entity;
+
+        ItemStack chestplate = player.getInventory().getChestplate();
+        // Chestplate + Infinity = god mode (no death) (secondary)
+        // Since all damage is cancelled this should not happen, but just in case
+        if (chestplate != null && chestplate.containsEnchantment(INFINITE)) {
+            event.setCancelled(true);
+        }
+    }
+
 }
 
 // Task to efficiently drop fish after some time of fishing
