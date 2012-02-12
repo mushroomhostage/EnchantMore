@@ -1430,22 +1430,22 @@ class EnchantMorePlayerMoveListener implements Listener {
                 Location from = event.getFrom();
                 World world = from.getWorld();
 
-                int dx = (int)Math.signum(from.getX() - to.getX());
-                int dz = (int)Math.signum(from.getZ() - to.getZ());
+                // get from where coming from
+                int dx = from.getBlockX() - to.getBlockX();
+                int dz = from.getBlockZ() - to.getBlockZ();
 
-                dx *= boots.getEnchantmentLevel(EnchantMoreListener.FLAME);
-                dz *= boots.getEnchantmentLevel(EnchantMoreListener.FLAME);
+                // a few blocks behind, further if higher level
+                dx *= boots.getEnchantmentLevel(EnchantMoreListener.FLAME) + 1;
+                dz *= boots.getEnchantmentLevel(EnchantMoreListener.FLAME) + 1;
 
-                plugin.log.info("dx="+dx+", dz="+dz);
-
+                // if moved from block (try not to set player on fire)
                 if (dx != 0 || dz != 0) {
-                    Block block = world.getBlockAt(from.getBlockX() + dx, to.getBlockY(), from.getBlockZ() - dz);
+                    Block block = world.getBlockAt(from.getBlockX() + dx, to.getBlockY(), from.getBlockZ() + dz);
                     if (block.getType() == Material.AIR) {
                         block.setType(Material.FIRE);
                     }
                 }
                 // http://dev.bukkit.org/server-mods/firelord/ "The boots set the ground on fire!"
-                // TODO: should really get square _behind_ player
             }
         }
     }
