@@ -1242,7 +1242,7 @@ class EnchantMoreListener implements Listener {
 
         ItemStack chestplate = player.getInventory().getChestplate();
 
-        // Chestplate + Infinity = god mode
+        // Chestplate + Infinity = god mode (no damage)
         if (chestplate != null && chestplate.containsEnchantment(INFINITE)) {
             // no damage ever
             // TODO: also need to cancel death? can die elsewhere?
@@ -1393,6 +1393,19 @@ class EnchantMoreListener implements Listener {
                 // (note need to schedule to run, so will run after item actually changes in hand)
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreFlameLightTask(plugin, player));
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        ItemStack boots = player.getInventory().getBoots();
+
+        // Boots + Punch = shift to hover jump
+        if (boots != null && boots.containsEnchantment(PUNCH)) {
+            int n = boots.getEnchantmentLevel(PUNCH);
+
+            player.setVelocity(new Vector(0, n, 0));
         }
     }
 }

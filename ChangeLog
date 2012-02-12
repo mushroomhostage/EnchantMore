@@ -1,7 +1,8 @@
 0.4
     * Add Boots + Power = sprint launch flying
-    * Add Chestplate + Infinity = god mode
+    * Add Boots + Punch = shift to hover jump
     * Add Boots + Flame = firewalker (set ground on fire)
+    * Add Chestplate + Infinity = god mode (no damage)
     * Improve Hoe + Aqua Affinity = auto-hydrate, now can make flowing water stationary
     * Improve Sword + Flame, now creates a lit path (light level 15), no more temp glowstone
 
