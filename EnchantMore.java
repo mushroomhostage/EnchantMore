@@ -552,7 +552,7 @@ class EnchantMoreListener implements Listener {
             }
         }  else if (isSword(item.getType())) {
             /*
-            // BLOCKED: Sword + Flame = night vision when blocking 
+            // BLOCKED: Sword + ? = night vision when blocking 
             // The visual effect plays (navy blue swirly particles), but doesn't actually do anything as of Minecraft 1.1
             if (item.containsEnchantment(FLAME)) {
                 applyPlayerEffect(player, EFFECT_NIGHT_VISION, item.getEnchantmentLevel(FLAME));
@@ -1386,7 +1386,7 @@ class EnchantMorePlayerMoveListener implements Listener {
             return;
         }
 
-        // Sword + Flame = temporary glowstone headlamp
+        // Sword + Flame = create permanent lit path
         if (EnchantMoreListener.isSword(item.getType())) {
             if (item.containsEnchantment(EnchantMoreListener.FLAME)) {
                 Location to = event.getTo();
@@ -1403,8 +1403,9 @@ class EnchantMorePlayerMoveListener implements Listener {
                     return;
                 }*/
 
-                // TODO: light up player like a torch 
+                // Light up player like a torch 
                 // http://forums.bukkit.org/threads/make-a-player-light-up-like-they-are-a-torch.58749/#post-952252
+                // http://dev.bukkit.org/server-mods/head-lamp/
                 ((CraftWorld)world).getHandle().a(net.minecraft.server.EnumSkyBlock.BLOCK, x, y+2, z, 15);
                 //((CraftWorld)world).getHandle().notify(x, y+2, z);
                 // Force update
@@ -1412,20 +1413,8 @@ class EnchantMorePlayerMoveListener implements Listener {
                 below.getBlock().setType(below.getBlock().getType());
                 below.getBlock().setData(below.getBlock().getData());
 
-
-                // TODO: send map chunk packet with new lightning update, instead of glowstone hack
                 // TODO: and send it periodically, scheduled task on item switch
                 //   (scheduled once, but start another if still has in hand) important for lag prevention
-
-                // weak temporary glowstone lamp headlight
-                /*
-                Block block = world.getBlockAt(x, y + 3, z);
-                if (block.getType() == Material.AIR) {
-                    block.setType(Material.GLOWSTONE);
-
-                    // TODO: configurable timeout. want to disappear fast enough so can't mine easily
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block), 10);
-                }*/
             }
         }
         // TODO: Boots + Efficiency  = no slow down walking on soul sand, ice 
@@ -1455,7 +1444,7 @@ class EnchantMorePlayerMoveListener implements Listener {
                 }
             }
 
-            // Boots + Flame = set ground on fire
+            // Boots + Flame = firewalker (set ground on fire)
             if (boots.containsEnchantment(EnchantMoreListener.FLAME)) {
                 Location to = event.getTo();
                 Location from = event.getFrom();
