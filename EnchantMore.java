@@ -150,7 +150,23 @@ class EnchantMoreListener implements Listener {
                         world.strikeLightning(target.getLocation());
                     }
                 }
+            } else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+                // TODO: Sword + Blast Protection = blocking summons summon fireballs
+                if (item.containsEnchantment(BLAST_PROTECTION)) {
+                    // http://forums.bukkit.org/threads/summoning-a-fireball.40724/#post-738436
+                    Location loc = event.getPlayer().getLocation();
+                    Block b = event.getPlayer().getTargetBlock(null, 100 * item.getEnchantmentLevel(BLAST_PROTECTION));
+                    if (b != null) {
+                        Location target = b.getLocation();
+                        Location from = lookAt(loc, target);
+                        Entity fireball = from.getWorld().spawn(from, Fireball.class);
+                        fireball.setVelocity(new Vector(0, -1, 0)); // TODO
+                    } else {
+                        plugin.log.info("no target?");
+                    }
+                }
             }
+
             // TODO: Aqua Affinity = slowness
         } else if (isShovel(item.getType())) {
             // Shovel + Silk Touch II = harvest fire (secondary)
@@ -340,6 +356,31 @@ class EnchantMoreListener implements Listener {
     public static void damage(ItemStack tool, int amount) {
         tool.setDurability((short)(tool.getDurability() + amount));
         // TODO: if reaches max, break? set to air or not?
+    }
+
+    // Aim function 
+    // see http://forums.bukkit.org/threads/summoning-a-fireball.40724/#post-738436
+    public static Location lookAt(Location from, Location to) {
+        Location loc = from.clone();
+
+        double dx = to.getX() - from.getX();
+        double dy = to.getY() - from.getY();
+        double dz = to.getZ() - from.getZ();
+        if (dx != 0) {
+            if (dx < 0) {
+                loc.setYaw((float)(1.5 * Math.PI));
+            } else {
+                loc.setYaw((float)(0.5 * Math.PI));
+            }
+            loc.setYaw((float)loc.getYaw() - (float)Math.atan(dz / dx));
+        } else if (dz < 0) {
+            loc.setYaw((float)Math.PI);
+        }
+        double dxz = Math.sqrt(dx * dx + dz * dz);
+        loc.setPitch((float)-Math.atan(dy / dxz));
+        loc.setYaw(-loc.getYaw() * 180f / (float)Math.PI);
+        loc.setPitch(loc.getPitch() * 180f / (float)Math.PI);
+        return loc;
     }
 
 
@@ -1308,30 +1349,6 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    /*
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerAnimation(PlayerAnimationEvent event) {
-        if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) {
-            return;
-        }
-
-        Player player = event.getPlayer();
-        ItemStack weapon = player.getItemInHand();
-        if (weapon == null) {
-            return;
-        }
-
-        // TODO: Sword + Blast Protection = shoot fireballs
-        if (isSword(weapon.getType()) && weapon.containsEnchantment(BLAST_PROTECTION)) {
-            World world = player.getWorld();
-            Location location = player.getLocation().add(0, 2, 0);
-           
-            plugin.log.info("spawn");
-            world.spawn(location, SmallFireball.class);
-        }
-    }
-    */
-
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
@@ -1474,7 +1491,7 @@ class EnchantMorePlayerMoveListener implements Listener {
         ItemStack boots = player.getInventory().getBoots();
 
         if (boots != null) {
-            // Boots + Power = sprint launch flying
+            // Boots + Power = witch's broom (sprint launch flying)
             if (boots.containsEnchantment(EnchantMoreListener.POWER)) {
                 if (player.isSprinting()) {
                     Vector velocity = event.getTo().getDirection().normalize().multiply(boots.getEnchantmentLevel(EnchantMoreListener.POWER));
