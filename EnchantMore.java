@@ -150,7 +150,7 @@ class EnchantMoreListener implements Listener {
                         world.strikeLightning(target.getLocation());
                     }
                 }
-            } else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+            } /*else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
                 // TODO: Sword + Blast Protection = blocking summons summon fireballs
                 if (item.containsEnchantment(BLAST_PROTECTION)) {
                     // http://forums.bukkit.org/threads/summoning-a-fireball.40724/#post-738436
@@ -165,7 +165,7 @@ class EnchantMoreListener implements Listener {
                         plugin.log.info("no target?");
                     }
                 }
-            }
+            }*/
 
             // TODO: Aqua Affinity = slowness
         } else if (isShovel(item.getType())) {
@@ -358,6 +358,7 @@ class EnchantMoreListener implements Listener {
         // TODO: if reaches max, break? set to air or not?
     }
 
+    /*
     // Aim function 
     // see http://forums.bukkit.org/threads/summoning-a-fireball.40724/#post-738436
     public static Location lookAt(Location from, Location to) {
@@ -381,7 +382,7 @@ class EnchantMoreListener implements Listener {
         loc.setYaw(-loc.getYaw() * 180f / (float)Math.PI);
         loc.setPitch(loc.getPitch() * 180f / (float)Math.PI);
         return loc;
-    }
+    }*/
 
 
     // Attempt to grow organic structure
@@ -1355,7 +1356,7 @@ class EnchantMoreListener implements Listener {
         ItemStack item = player.getInventory().getItem(event.getNewSlot());
 
         if (item != null && isSword(item.getType())) {
-            // Sword + Flame = create permanent lit path
+            // Sword + Flame = create semi-permanent lit path
             if (item.containsEnchantment(FLAME)) {
                 // Task to light up player, as long as its holding the right tool
                 class EnchantMoreFlameLightTask implements Runnable {
@@ -1491,7 +1492,7 @@ class EnchantMorePlayerMoveListener implements Listener {
         ItemStack boots = player.getInventory().getBoots();
 
         if (boots != null) {
-            // Boots + Power = witch's broom (sprint launch flying)
+            // Boots + Power = witch's broom (sprint flying)
             if (boots.containsEnchantment(EnchantMoreListener.POWER)) {
                 if (player.isSprinting()) {
                     Vector velocity = event.getTo().getDirection().normalize().multiply(boots.getEnchantmentLevel(EnchantMoreListener.POWER));
