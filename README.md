@@ -1,11 +1,11 @@
 EnchantMore - enchanted hoes, enchanted fishing rods, enchanted shears and more!
 
-Ever wanted enchanted flint & steel? Or enchanted hoes, shears, fishing rods,
-or new enchantment effects on axes, bows, and other tools? EnchantMore adds
-dozens of new effects, ranging from entertainingly destructive to legitimately useful.
+EnchantMore adds dozens of new item enchantment effects,
+on flint & steel, hoes, shears, fishing rods, and other items --
+ranging from entertainingly destructive to legitimately useful.
 
 ## Features
-* New enchantment/item combinations
+* More than 50 new enchantment/item combinations
 * Items in inventory appear as expected (glowing + descriptive tooltip) 
 * No client mods required
 * Only adds functionality, does not change any -- all your existing enchanted tools work as expected
@@ -19,6 +19,9 @@ items to be tightly controlled.
 ### Available Effects
 * Axe + Flame = auto-smelt ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
 * Axe + Power = fell tree ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
+* Boots + Flame = firewalker (set ground on fire)
+* Boots + Power = witch's broom (sprint flying)
+* Boots + Punch = shift to hover jump
 * Bow + Aqua Affinity = freeze water, stun players
 * Bow + Bane of Arthropods = poison
 * Bow + Efficiency = instant shoot
@@ -28,6 +31,7 @@ items to be tightly controlled.
 * Bow + Looting = steal ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/6-bow-looting-steal/))
 * Bow + Sharpness = increase velocity
 * Bow + Smite = strike lightning
+* Chestplate + Infinity = god mode (no damage)
 * Chestplate + Knockback = reflect arrows
 * Fishing Rod + Efficiency = fish faster
 * Fishing Rod + Fire Aspect = set mobs on fire
@@ -61,9 +65,10 @@ items to be tightly controlled.
 * Shovel + Flame = auto-smelt ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
 * Shovel + Power = excavation (dig large area, no drops)
 * Shovel + Silk Touch II = harvest fallen snow, fire
-* Sword + Flame = temporary glowstone headlamp
+* Sword + Flame = create semi-permanent lit path
 * Sword + Power = strike lightning 100+ meters away
 * Sword + Protection = resistance when blocking 
+
 
 ## Limitations
 * Not all enchantments reasonably combine with one another
