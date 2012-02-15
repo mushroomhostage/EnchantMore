@@ -73,7 +73,11 @@ items to be tightly controlled.
 ## Limitations
 * Not all enchantments reasonably combine with one another
 
-* Some effects are overpowered; be careful!
+* No protection/permission support (yet)
+
+* Some effects are overpowered or unstable; be careful!
+
+For all known issues or to file a new bug see [Tickets](http://dev.bukkit.org/server-mods/enchantmore/tickets/).
 
 ## Notes
 [Slot data](http://wiki.vg/Slot\_Data) protocol reference
