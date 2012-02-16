@@ -40,15 +40,17 @@ my @items = (@$ARMOR, @$WEAPON, @$TOOL, "Fishing_Rod", "Shears", "Hoe", "Flint_&
 
 # Part of the unmodified game
 for my $ench (keys %valid) {
-    my ($ench_name);
+    my ($ench_name, $item_name);
     ($ench_name = $ench) =~ tr/_/ /;
     for my $item (@items) {
-        $all{"$item + $ench_name"} = "?";  # nothing
+        ($item_name = $item) =~ tr/_/ /;
+        $all{"$item_name + $ench_name"} = "?";  # nothing
     }
 
     my @valids = @{$valid{$ench}};
     for my $item (@valids) {
-        $all{"$item + $ench_name"} = "(vanilla)";
+        ($item_name = $item) =~ tr/_/ /;
+        $all{"$item_name + $ench_name"} = "(vanilla)";
     }
 }
 
@@ -69,7 +71,9 @@ for my $d (@defined) {
 }
 
 
-for my $ie (sort keys %all) {
-    my $effect = $all{$ie};
-    print "$ie = $effect\n";
+for my $key (sort keys %all) {
+    my $name = $key;
+    ($name = $key) =~ tr/_/ /;
+    my $effect = $all{$key};
+    print "$name = $effect\n";
 }
