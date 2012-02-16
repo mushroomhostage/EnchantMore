@@ -341,9 +341,9 @@ class EnchantMoreListener implements Listener {
             if (item.containsEnchantment(POWER)) {
                 // Note: this also works for bedrock!
                 block.breakNaturally(item);
-            }
 
-            damage(item);
+                damage(item);
+            }
         } 
     }
 
