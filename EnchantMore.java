@@ -747,6 +747,7 @@ class EnchantMoreListener implements Listener {
                 // Axe + Power = fell tree ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
                     fellTree(block, item, item.getEnchantmentLevel(POWER));
+                    event.setCancelled(true);
                     // Chop tree
                     //breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
                     // no extra damage
