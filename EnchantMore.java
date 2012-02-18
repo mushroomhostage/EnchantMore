@@ -974,7 +974,6 @@ class EnchantMoreListener implements Listener {
                 return matchedInputs;
             // Shapeful.. like sticky pistons -> slime
             } else if (recipeObject instanceof net.minecraft.server.ShapedRecipes) {
-                plugin.log.info("shaped!");
                 net.minecraft.server.ItemStack[] inputs;
                 try {
                     inputs = (net.minecraft.server.ItemStack[])shapedRecipeItemsField.get(recipe);
@@ -983,8 +982,10 @@ class EnchantMoreListener implements Listener {
                     continue;
                 }
                 for (int i = 0; i < inputs.length; i += 1) {
-                    net.minecraft.server.ItemStack inputItem = (net.minecraft.server.ItemStack)inputs[i];
-                    matchedInputs.add((ItemStack)(new CraftItemStack(inputItem)));
+                    ItemStack inputItem = new CraftItemStack((net.minecraft.server.ItemStack)inputs[i]);
+                    
+                    inputItem.setAmount(1);  // some recipes like diamond block have 9 in each input! stop that
+                    matchedInputs.add(inputItem);
                 }
                 return matchedInputs;
             }
