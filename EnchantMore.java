@@ -397,6 +397,8 @@ class EnchantMoreListener implements Listener {
         net.minecraft.server.Item.INK_SACK.a(bonemealStack.getHandle(), ((CraftPlayer)player).getHandle(), ((CraftWorld)world).getHandle(), x, y, z, 0/*unused*/);
     }
 
+    // TODO: would really like to support IC2/RP2 extra items
+    // sapphire, bronze, emerald, ruby tools..
     public static boolean isHoe(Material m) {
         return m == Material.DIAMOND_HOE ||
             m == Material.GOLD_HOE || 
@@ -767,8 +769,8 @@ class EnchantMoreListener implements Listener {
                 }
 
             }
-            // Pickaxe + Silk Touch II = harvest ice
             if (isPickaxe(item.getType())) {
+                // Pickaxe + Silk Touch II = harvest ice
                 if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", 2)) {
                     if (block.getType() == Material.ICE) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
@@ -778,6 +780,25 @@ class EnchantMoreListener implements Listener {
                         event.setCancelled(true); 
                         // no extra damage
                     }
+                }
+
+                // Pickaxe + Looting = deconstruct into constituents (reverse crafting)
+
+                // inspired by Advanced Shears' bookshelves/ladders/jackolatern/stickypiston disassembling
+                // http://forums.bukkit.org/threads/edit-fun-misc-advancedshears-v-1-3-cut-through-more-blocks-and-mobs-953-1060.24746/
+                if (item.containsEnchantment(LOOTING)) {
+                    Collection<ItemStack> finishedDrops = block.getDrops(item);
+                    for (ItemStack finishedDrop: finishedDrops) {
+                        Collection<ItemStack> componentDrops = uncraft(finishedDrop);
+
+                        if (componentDrops != null) {
+                            for (ItemStack drop: componentDrops) {
+                                world.dropItemNaturally(block.getLocation(), drop);
+                            }
+                        }
+                    }
+
+                    //nope block.setType(Material.AIR);
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
@@ -886,6 +907,58 @@ class EnchantMoreListener implements Listener {
         ItemStack smelted = (ItemStack)(new CraftItemStack(smeltNMS));
     
         return smelted;
+    }
+
+    private Collection<ItemStack> uncraft(ItemStack wantedOutput) {
+        Collection<ItemStack> matchedInputs = new ArrayList<ItemStack>();
+        List recipes = net.minecraft.server.CraftingManager.getInstance().b();
+
+        Field shapelessRecipeItemsField;
+        try {
+            shapelessRecipeItemsField = net.minecraft.server.ShapelessRecipes.class.getDeclaredField("b");
+            shapelessRecipeItemsField.setAccessible(true);
+        } catch (Exception e) {
+            plugin.log.info("Failed to reflect crafting manager: " + e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        for (Object recipeObject: recipes) {
+            if (recipeObject instanceof net.minecraft.server.ShapelessRecipes) {
+                net.minecraft.server.ShapelessRecipes recipe = (net.minecraft.server.ShapelessRecipes)recipeObject;
+
+                net.minecraft.server.ItemStack output = recipe.b();  // MCP .getRecipeOutput();
+
+                if (output.id != wantedOutput.getTypeId()) {
+                    continue;
+                }
+
+                if (output.usesData() && output.getData() != wantedOutput.getData().getData()) {
+                    continue;
+                }
+
+                plugin.log.info("out="+output);
+              
+                List inputs;
+                try {
+                    inputs = (List)shapelessRecipeItemsField.get(recipe);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+                for (Object inputObject: inputs) {
+                    net.minecraft.server.ItemStack inputItem = (net.minecraft.server.ItemStack)inputObject;
+                    plugin.log.info(" inp="+inputItem);
+
+                    matchedInputs.add(new ItemStack(inputItem.id, 1, inputItem.getData()));
+
+                }
+                return matchedInputs;
+            }
+        }
+
+        return null;
     }
 
 
