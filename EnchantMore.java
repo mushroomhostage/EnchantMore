@@ -1461,19 +1461,13 @@ class EnchantMoreListener implements Listener {
 
                     // Spawn entity in world
 
-                    // we can't make an entity without spawning in the world, so start it over the player's head
+                    // We can't make an entity without spawning in the world, so start it over the player's head,
+                    // also has the pro/con they'll get the item back if it doesn't land in time
                     Location start = arrow.getLocation().add(0,10,0);
 
-                    Entity payload;
-                    final int SPAWN_EGG_ID = 383;    // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0
-                    if (payloadStack.getTypeId() == SPAWN_EGG_ID) {
-                        payload = world.spawnCreature(start, CreatureType.fromId(payloadStack.getData().getData()));
-                    // TODO: other projectiles! all like dispensers
-                    } else {
-                        payload = world.spawn(start, Item.class);
-                        ((Item)payload).setItemStack(part);
-                    }
-
+                    // Starts out life as an item..
+                    Item payload = world.spawn(start, Item.class);
+                    payload.setItemStack(part);
 
                     plugin.log.info("pa="+arrow.setPassenger(payload));
                 }
