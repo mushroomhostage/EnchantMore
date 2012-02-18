@@ -1595,6 +1595,35 @@ class EnchantMoreListener implements Listener {
             player.setVelocity(new Vector(0, n, 0));
         }
     }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
+    public void onEntityCombust(EntityCombustEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Item)) {
+            return;
+        }
+
+        Item item = (Item)entity;
+        ItemStack itemStack = item.getItemStack();
+
+        if (itemStack != null && isSword(itemStack.getType())) {
+            // Sword + Fire Protection = return to player when dropped in lava
+            if (itemStack.containsEnchantment(FIRE_PROTECTION)) {
+                event.setCancelled(true);
+
+                double range = 10.0 * itemStack.getEnchantmentLevel(FIRE_PROTECTION);
+
+                List<Entity> dests = item.getNearbyEntities(range, range, range);
+                for (Entity dest: dests) {
+                    if (!(dest instanceof Player)) { // or LivingEntity? for fun :)
+                        continue;
+                    }
+                    entity.teleport(dest.getLocation());
+                    break;
+                }
+            }
+        }
+    }
 }
 
 // Task to efficiently drop fish after some time of fishing
