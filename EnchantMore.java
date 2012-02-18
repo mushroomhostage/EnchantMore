@@ -1145,7 +1145,24 @@ class EnchantMoreListener implements Listener {
         if (passenger != null) {
             // Bow + Respiration = (secondary)
             if (bow.containsEnchantment(RESPIRATION)) {
-                passenger.teleport(dest);
+                if (passenger instanceof Item) {
+                    Item item = (Item)passenger;
+                    ItemStack itemStack = item.getItemStack();
+
+                    // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0 
+                    // [ModLoaderMP 1.1 CB1.1R4] Missing Material.MONSTER_EGG, causes NoSuchFieldError
+                    // fixed in r2
+                    final int SPAWN_EGG_ID = 383; 
+
+                    if (itemStack.getTypeId() == SPAWN_EGG_ID) {
+                        int entityId = itemStack.getData().getData();
+
+                        CreatureType creature = CreatureType.ZOMBIE;//fromId(entityId);
+                        world.spawnCreature(dest, creature);
+                    }
+                } else {
+                    passenger.teleport(dest);
+                }
             } 
 
             // Bow + Silk Touch = magnetic arrows (transport nearby entity) (secondary)
