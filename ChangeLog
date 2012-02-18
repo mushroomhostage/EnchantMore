@@ -1,7 +1,8 @@
 X X
     * Add Pickaxe + Looting = deconstruct (reverse crafting)
-    * Add Hoe + Power = move time
     * Add Sword + Fire Protection = return to player when dropped in lava
+    * Add Hoe + Power = move time
+    * Add Hoe + Bane of Arthropods = toggle downfall
     * Improve Pickaxe/Shovel/Axe + Flame = auto-smelt to drop natural item if unsmeltable
     * Improve Axe + Power = fell tree, now breaks more branches depending on enchantment level
     * Fix not ignoring cancelled events (partial fix for ticket 4)

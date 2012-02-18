@@ -180,17 +180,17 @@ class EnchantMoreListener implements Listener {
             }
         } else if (isHoe(item.getType())) {
             // Hoe + Power = move time
-            int sign, amount;
-            switch(item.getType()) {
-            case WOOD_HOE: amount = 1; break;
-            case STONE_HOE: amount = 10; break;
-            default:
-            case IRON_HOE: amount = 100; break;
-            case GOLD_HOE: amount = 10000; break;
-            case DIAMOND_HOE: amount = 1000; break;
-            }
-
             if (item.containsEnchantment(POWER)) {
+                int sign, amount;
+                switch(item.getType()) {
+                case WOOD_HOE: amount = 1; break;
+                case STONE_HOE: amount = 10; break;
+                default:
+                case IRON_HOE: amount = 100; break;
+                case GOLD_HOE: amount = 10000; break;
+                case DIAMOND_HOE: amount = 1000; break;
+                }
+
                 switch(action) {
                 case LEFT_CLICK_AIR:
                 case LEFT_CLICK_BLOCK:
@@ -204,6 +204,11 @@ class EnchantMoreListener implements Listener {
                 }
                 int dt = sign * amount;
                 world.setTime(world.getTime() + dt);
+            }
+
+            // Hoe + Bane of Arthropods = toggle downfall
+            if (item.containsEnchantment(BANE)) {
+                world.setStorm(!world.hasStorm());
             }
         }
 
