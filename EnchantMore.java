@@ -787,18 +787,22 @@ class EnchantMoreListener implements Listener {
                     // partly inspired by Advanced Shears' bookshelves/ladders/jackolatern/stickypiston disassembling
                     // http://forums.bukkit.org/threads/edit-fun-misc-advancedshears-v-1-3-cut-through-more-blocks-and-mobs-953-1060.24746/
                     Collection<ItemStack> finishedDrops = block.getDrops(item);
+                    boolean naturalDrop = true;
                     for (ItemStack finishedDrop: finishedDrops) {
                         Collection<ItemStack> componentDrops = uncraft(finishedDrop);
 
                         if (componentDrops != null) {
                             for (ItemStack drop: componentDrops) {
                                 world.dropItemNaturally(block.getLocation(), drop);
+                                naturalDrop = false;
                             }
                         }
                     }
 
-                    block.setType(Material.AIR);
-                    event.setCancelled(true);
+                    if (!naturalDrop) {
+                        block.setType(Material.AIR);
+                        event.setCancelled(true);
+                    }
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
