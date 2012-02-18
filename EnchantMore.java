@@ -794,7 +794,17 @@ class EnchantMoreListener implements Listener {
                     Collection<ItemStack> finishedDrops = block.getDrops(item);
                     boolean naturalDrop = true;
                     for (ItemStack finishedDrop: finishedDrops) {
-                        Collection<ItemStack> componentDrops = uncraft(finishedDrop);
+                        Collection<ItemStack> componentDrops = uncraft(finishedDrop, true);
+
+                        if (componentDrops == null) {
+                            // If didn't find any recipe, try again without comparing the data values
+                            // (need to compare for dyed wool, but not for sticky pistons).
+                            // Possible bug? getDrops() returns Material.PISTON_STICKY_BASE with data 0,
+                            // but the crafting recipe has data 7 (?) so it doesn't match.
+                            componentDrops = uncraft(finishedDrop, false);
+                        }
+
+                        // TODO: nerf certain recipes? e.g. wood->4 planks, but can turn back plank->wood, dupe
 
                         if (componentDrops != null) {
                             for (ItemStack drop: componentDrops) {
@@ -919,7 +929,7 @@ class EnchantMoreListener implements Listener {
     }
 
     // Get all the items used to craft an item
-    private Collection<ItemStack> uncraft(ItemStack wantedOutput) {
+    private Collection<ItemStack> uncraft(ItemStack wantedOutput, boolean compareData) {
         Collection<ItemStack> matchedInputs = new ArrayList<ItemStack>();
         List recipes = net.minecraft.server.CraftingManager.getInstance().b();
 
@@ -941,7 +951,7 @@ class EnchantMoreListener implements Listener {
         // TODO: load once on first use, cached, then reuse? output -> [input] hash map
         // TODO: if multiple recipes for item, choose random, instead of first?
         for (Object recipeObject: recipes) {
-            net.minecraft.server.CraftingRecipe recipe  = (net.minecraft.server.CraftingRecipe)recipeObject;
+            net.minecraft.server.CraftingRecipe recipe = (net.minecraft.server.CraftingRecipe)recipeObject;
             ItemStack output = (ItemStack)(new CraftItemStack(recipe.b()));  // MCP .getRecipeOutput() on IRecipe
 
             // Is this the crafting output we expect?
@@ -951,9 +961,9 @@ class EnchantMoreListener implements Listener {
             if (output.getType() != wantedOutput.getType()) {
                 continue;
             }
-            if (output.getType().getMaxDurability() != -1) {
-                if (output.getData().getData() != wantedOutput.getData().getData()) {
-                }
+            if (compareData && output.getData().getData() != wantedOutput.getData().getData()) {
+                plugin.log.info("data "+output.getData().getData()+ " vs "+wantedOutput.getData().getData());
+                continue;
             }
 
             // Shapeless.. like colored wool -> dye
@@ -984,7 +994,7 @@ class EnchantMoreListener implements Listener {
                 for (int i = 0; i < inputs.length; i += 1) {
                     ItemStack inputItem = new CraftItemStack((net.minecraft.server.ItemStack)inputs[i]);
                     
-                    inputItem.setAmount(1);  // some recipes like diamond block have 9 in each input! stop that
+                    //inputItem.setAmount(1);  // some recipes like diamond block have 9 in each input! stop that
                     matchedInputs.add(inputItem);
                 }
                 return matchedInputs;
