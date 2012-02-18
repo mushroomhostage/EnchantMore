@@ -924,25 +924,40 @@ class EnchantMoreListener implements Listener {
         List recipes = net.minecraft.server.CraftingManager.getInstance().b();
 
         Field shapelessRecipeItemsField;
+        Field shapedRecipeItemsField;
+
         try {
             shapelessRecipeItemsField = net.minecraft.server.ShapelessRecipes.class.getDeclaredField("b");
+            shapedRecipeItemsField = net.minecraft.server.ShapedRecipes.class.getDeclaredField("d");
             shapelessRecipeItemsField.setAccessible(true);
+            shapedRecipeItemsField.setAccessible(true);
         } catch (Exception e) {
             plugin.log.info("Failed to reflect crafting manager: " + e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
 
+        // Search for recipe
+        // TODO: load once on first use, cached, then reuse? output -> [input] hash map
+        // TODO: if multiple recipes for item, choose random, instead of first?
         for (Object recipeObject: recipes) {
-            if (recipeObject instanceof net.minecraft.server.ShapelessRecipes) {
-                net.minecraft.server.ShapelessRecipes recipe = (net.minecraft.server.ShapelessRecipes)recipeObject;
+            net.minecraft.server.CraftingRecipe recipe  = (net.minecraft.server.CraftingRecipe)recipeObject;
+            ItemStack output = (ItemStack)(new CraftItemStack(recipe.b()));  // MCP .getRecipeOutput() on IRecipe
 
-                ItemStack output = (ItemStack)(new CraftItemStack(recipe.b()));  // MCP .getRecipeOutput();
-
-                if (!output.equals(wantedOutput)) {
-                    continue;
+            // Is this the crafting output we expect?
+            // Note, Bukkit doesn't match sticky piston recipe for some reason with:
+            //  if (!output.equals(wantedOutput))
+            // so check it ourselves (sigh)
+            if (output.getType() != wantedOutput.getType()) {
+                continue;
+            }
+            if (output.getType().getMaxDurability() != -1) {
+                if (output.getData().getData() != wantedOutput.getData().getData()) {
                 }
+            }
 
+            // Shapeless.. like colored wool -> dye
+            if (recipeObject instanceof net.minecraft.server.ShapelessRecipes) {
                 List inputs;
                 try {
                     inputs = (List)shapelessRecipeItemsField.get(recipe);
@@ -957,8 +972,22 @@ class EnchantMoreListener implements Listener {
 
                 }
                 return matchedInputs;
+            // Shapeful.. like sticky pistons -> slime
+            } else if (recipeObject instanceof net.minecraft.server.ShapedRecipes) {
+                plugin.log.info("shaped!");
+                net.minecraft.server.ItemStack[] inputs;
+                try {
+                    inputs = (net.minecraft.server.ItemStack[])shapedRecipeItemsField.get(recipe);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
+                for (int i = 0; i < inputs.length; i += 1) {
+                    net.minecraft.server.ItemStack inputItem = (net.minecraft.server.ItemStack)inputs[i];
+                    matchedInputs.add((ItemStack)(new CraftItemStack(inputItem)));
+                }
+                return matchedInputs;
             }
-            // TODO: shaped recipe!!
         }
 
         return null;
