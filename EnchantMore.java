@@ -701,6 +701,7 @@ class EnchantMoreListener implements Listener {
             if (item.containsEnchantment(FLAME)) {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
 
+                boolean naturalDrop = true;
                 for (ItemStack rawDrop: rawDrops) {
                     // note: original smelted idea from Firelord tools http://dev.bukkit.org/server-mods/firelord/
                     // also see Superheat plugin? either way, coded this myself..
@@ -708,11 +709,15 @@ class EnchantMoreListener implements Listener {
 
                     if (smeltedDrop != null && smeltedDrop.getType() != Material.AIR) {
                         world.dropItemNaturally(block.getLocation(), smeltedDrop);
-                    }
+                        naturalDrop = false;
+                    } 
                 }
 
-
-                block.setType(Material.AIR);
+                naturalDrop = false;
+                if (!naturalDrop) {
+                    block.setType(Material.AIR);
+                    event.setCancelled(true);
+                }
 
                 // no extra damage
             }
