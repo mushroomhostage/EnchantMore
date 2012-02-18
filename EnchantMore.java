@@ -1381,7 +1381,7 @@ class EnchantMoreListener implements Listener {
         ItemStack bow = event.getBow();
 
         if (bow == null) {
-            // shot by skeleton
+            // shot by skeleton, they can't have enchanted bows 
             return;
         }
 
@@ -1389,6 +1389,16 @@ class EnchantMoreListener implements Listener {
         if (!(projectile instanceof Arrow)) {
             return;
         }
+        Arrow arrow = (Arrow)projectile;
+        LivingEntity shooter = arrow.getShooter();
+        if (shooter == null) {
+            // can be null if "shot from dispenser"
+            return;
+        }
+        if (!(shooter instanceof Player)) {
+            return;
+        }
+        Player player = (Player)shooter;
 
         // Bow + Sharpness = increase velocity
         if (bow.containsEnchantment(SHARPNESS)) {
@@ -1399,6 +1409,22 @@ class EnchantMoreListener implements Listener {
             projectile.setVelocity(projectile.getVelocity().multiply(factor));
 
             event.setProjectile(projectile);
+        }
+
+        // Bow + Respiration = 
+        if (bow.containsEnchantment(RESPIRATION)) {
+            World world = player.getWorld();
+            PlayerInventory inventory = player.getInventory();
+            int arrowSlot = inventory.first(Material.ARROW);
+
+            if (arrowSlot != -1) {
+                int payloadSlot = arrowSlot + 1;
+                ItemStack payload = inventory.getItem(payloadSlot);
+                if (payload != null && payload.getType() != Material.AIR) {
+                    //Item item = world.spawn(arrow.getLocation(), 0wi
+                    plugin.log.info("pa="+arrow.setPassenger(world.spawnCreature(arrow.getLocation(), CreatureType.PIG)));
+                }
+            }
         }
     }
 
