@@ -630,17 +630,24 @@ class EnchantMoreListener implements Listener {
     }
 
     private void fellTree(Block start, ItemStack tool, int level) {
-        Block top = start;
+        Block trunk = start;
         do {
-            Block up = top.getRelative(BlockFace.UP);
-            if (up.getType() == Material.LOG) {
-                top = up;
-            } else {
-                break;
-            }
-        } while (true);
+            plugin.log.info("break trunk "+trunk);
+            trunk.breakNaturally();
 
-        plugin.log.info("top "+top);
+            for (int dx = -1; dx <= 1; dx += 1) {
+                for (int dz = -1; dz <= 1; dz += 1) {
+                    Block branch = trunk.getRelative(dx, 0, dz);
+
+                    if (branch != null && branch.getType() == Material.LOG) {
+                        plugin.log.info("break branch "+branch);
+                        branch.breakNaturally();
+                    }
+                }
+            }
+
+            trunk = trunk.getRelative(BlockFace.UP);
+        } while (trunk != null && trunk.getType() == Material.LOG);
     }
 
     // Break all contiguous blocks of the same type
