@@ -178,6 +178,33 @@ class EnchantMoreListener implements Listener {
                     world.dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1));
                 }
             }
+        } else if (isHoe(item.getType())) {
+            // Hoe + Power = move time
+            int sign, amount;
+            switch(item.getType()) {
+            case WOOD_HOE: amount = 1; break;
+            case STONE_HOE: amount = 10; break;
+            default:
+            case IRON_HOE: amount = 100; break;
+            case GOLD_HOE: amount = 10000; break;
+            case DIAMOND_HOE: amount = 1000; break;
+            }
+
+            if (item.containsEnchantment(POWER)) {
+                switch(action) {
+                case LEFT_CLICK_AIR:
+                case LEFT_CLICK_BLOCK:
+                    sign = -1;
+                    break;
+                case RIGHT_CLICK_AIR:
+                case RIGHT_CLICK_BLOCK:
+                default:
+                    sign = 1;
+                    break;
+                }
+                int dt = sign * amount;
+                world.setTime(world.getTime() + dt);
+            }
         }
 
         if (block == null) {
@@ -759,9 +786,6 @@ class EnchantMoreListener implements Listener {
                 // Shovel + Power = excavation (dig large area, no drops)
                 if (item.containsEnchantment(POWER) && isExcavatable(block.getType())) {
                     // Clear out those annoying veins of gravel (or dirt)
-
-                    // too slow
-                    //breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
 
                     // Dig a cube out, but no drops
                     int r = item.getEnchantmentLevel(POWER);
