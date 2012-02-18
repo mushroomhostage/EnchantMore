@@ -760,6 +760,7 @@ class EnchantMoreListener implements Listener {
                             }
                         }
                     }
+                    event.setCancelled(true);
                     // no extra damage
                 }
 
@@ -780,8 +781,9 @@ class EnchantMoreListener implements Listener {
                     if (block.getType() == Material.ICE) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
                         block.setType(Material.AIR);
-                        // TODO craftbukkit 1.1-R3+MLP+MCF+IC2+BC2+RP2 NPE: at net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
+                        // craftbukkit 1.1-R3+MLP+MCF+IC2+BC2+RP2 NPE: at net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
                         // if we don't do this, so do it
+                        // see http://dev.bukkit.org/server-mods/enchantmore/tickets/6-on-modded-craft-bukkit-with-mod-loader-mp-forge-hoe/
                         event.setCancelled(true); 
                         // no extra damage
                     }
@@ -831,6 +833,7 @@ class EnchantMoreListener implements Listener {
                     world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
 
                     block.setType(Material.AIR);
+                    event.setCancelled(true);
                 } 
                 // no extra damage
             }
@@ -849,6 +852,7 @@ class EnchantMoreListener implements Listener {
                     world.dropItemNaturally(block.getLocation(), new ItemStack(dropType, 1));
                     
                     block.setType(Material.AIR);
+                    event.setCancelled(true);
                 }
                 // no extra damage
             }
@@ -875,6 +879,7 @@ class EnchantMoreListener implements Listener {
                     world.dropItemNaturally(block.getLocation(), drop);
                     
                     block.setType(Material.AIR);
+                    event.setCancelled(true);
                 }
                 // no extra damage
             }
