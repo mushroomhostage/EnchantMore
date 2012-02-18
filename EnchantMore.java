@@ -389,7 +389,12 @@ class EnchantMoreListener implements Listener {
 
     public static void damage(ItemStack tool, int amount) {
         tool.setDurability((short)(tool.getDurability() + amount));
-        // TODO: if reaches max, break? set to air or not?
+
+        if (tool.getDurability() >= tool.getType().getMaxDurability()) {
+            // reached max, break
+            tool.setType(Material.AIR);
+        } 
+        // TODO: fix
     }
 
     /*
