@@ -204,11 +204,13 @@ class EnchantMoreListener implements Listener {
                 }
                 int dt = sign * amount;
                 world.setTime(world.getTime() + dt);
+                damage(item);
             }
 
             // Hoe + Bane of Arthropods = toggle downfall
             if (item.containsEnchantment(BANE)) {
                 world.setStorm(!world.hasStorm());
+                damage(item);
             }
         }
 
@@ -1120,6 +1122,14 @@ class EnchantMoreListener implements Listener {
         Location dest = arrow.getLocation();
         final World world = dest.getWorld();
 
+        // Arrows carry payloads
+        // They don't normally have passengers, so no enchantment check needed
+        Entity passenger = arrow.getPassenger();
+        if (passenger != null) {
+            passenger.teleport(dest);
+        }
+
+
         // Bow + Looting = steal ([details](http://dev.bukkit.org/server-mods/enchantmore/images/6-bow-looting-steal/))
         if (item.containsEnchantment(LOOTING)) {
             double s = 5.0 * item.getEnchantmentLevel(LOOTING);
@@ -1419,10 +1429,35 @@ class EnchantMoreListener implements Listener {
 
             if (arrowSlot != -1) {
                 int payloadSlot = arrowSlot + 1;
-                ItemStack payload = inventory.getItem(payloadSlot);
-                if (payload != null && payload.getType() != Material.AIR) {
-                    //Item item = world.spawn(arrow.getLocation(), 0wi
-                    plugin.log.info("pa="+arrow.setPassenger(world.spawnCreature(arrow.getLocation(), CreatureType.PIG)));
+                ItemStack payloadStack = inventory.getItem(payloadSlot);
+                if (payloadStack != null && payloadStack.getType() != Material.AIR) {
+                    // Take item(s)
+                    ItemStack part = payloadStack.clone();
+                    if (payloadStack.getAmount() == 1) {
+                        inventory.clear(payloadSlot);
+                    } else {
+                        payloadStack.setAmount(payloadStack.getAmount() - 1);
+                        inventory.setItem(payloadSlot, payloadStack);
+                    }
+                    part.setAmount(bow.getEnchantmentLevel(RESPIRATION));
+
+                    // Spawn entity in world
+
+                    // we can't make an entity without spawning in the world, so start it over the player's head
+                    Location start = arrow.getLocation().add(0,10,0);
+
+                    Entity payload;
+                    final int SPAWN_EGG_ID = 383;    // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0
+                    if (payloadStack.getTypeId() == SPAWN_EGG_ID) {
+                        payload = world.spawnCreature(start, CreatureType.fromId(payloadStack.getData().getData()));
+                    // TODO: other projectiles! all like dispensers
+                    } else {
+                        payload = world.spawn(start, Item.class);
+                        ((Item)payload).setItemStack(part);
+                    }
+
+
+                    plugin.log.info("pa="+arrow.setPassenger(payload));
                 }
             }
         }
