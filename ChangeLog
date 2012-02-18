@@ -2,6 +2,7 @@ X X
     * Add Pickaxe + Looting = deconstruct (reverse crafting)
     * Improve Pickaxe/Shovel/Axe + Flame = auto-smelt to drop natural item if unsmeltable
     * Fix not ignoring cancelled events (partial fix for ticket 4)
+    * Fix NPE and player disconnect with certain enchantments when using ModLoaderMP (ticket 6)
 
 2012-02-15  0.5.1a
     * Fix durability destruction bug affecting all pickaxes (ticket 7)
