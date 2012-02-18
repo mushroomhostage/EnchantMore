@@ -204,13 +204,13 @@ class EnchantMoreListener implements Listener {
                 }
                 int dt = sign * amount;
                 world.setTime(world.getTime() + dt);
-                damage(item);
+                damage(item, player);
             }
 
             // Hoe + Bane of Arthropods = toggle downfall
             if (item.containsEnchantment(BANE)) {
                 world.setStorm(!world.hasStorm());
-                damage(item);
+                damage(item, player);
             }
         }
 
@@ -227,13 +227,13 @@ class EnchantMoreListener implements Listener {
                 if (block.getType() == Material.GRASS) {
                     block.setType(Material.DIRT);
                 }
-                damage(item);
+                damage(item, player);
             }
         } else if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
             // Flint & Steel + Smite = strike lightning ([details](http://dev.bukkit.org/server-mods/enchantmore/images/8-fishing-rod-smite-strike-lightning/))
             if (item.containsEnchantment(SMITE)) {
                 world.strikeLightning(block.getLocation());
-                damage(item, 9);
+                damage(item, 9, player);
             }
 
             // Flint & Steel + Fire Protection = fire resistance ([details](http://dev.bukkit.org/server-mods/enchantmore/images/10-flint-steel-fire-protection-fire-resistance/))
@@ -273,7 +273,7 @@ class EnchantMoreListener implements Listener {
 
                 world.createExplosion(block.getLocation(), power, true);
 
-                damage(item);
+                damage(item, player);
             }
 
             // Flint & Steel + Efficiency = burn faster (turn wood to grass)
@@ -312,7 +312,7 @@ class EnchantMoreListener implements Listener {
                     block.setData((byte)8);   
                 }
 
-                damage(item);
+                damage(item, player);
             }
 
             // Hoe + Fortune = chance to drop seeds
@@ -356,7 +356,7 @@ class EnchantMoreListener implements Listener {
                         }
                     }
                 }
-                damage(item);
+                damage(item, player);
             }
 
             // Hoe + Respiration = grow ([details](http://dev.bukkit.org/server-mods/enchantmore/images/12-hoe-respiration-grow/))
@@ -365,7 +365,7 @@ class EnchantMoreListener implements Listener {
             // this reason, also allow right-click for grow, even though it means you cannot till.
             if (item.containsEnchantment(RESPIRATION)) {
                 growStructure(block.getLocation(), player);
-                damage(item);
+                damage(item, player);
 
                 // no need to cancel?
                 //event.setCancelled(true);
@@ -376,24 +376,30 @@ class EnchantMoreListener implements Listener {
                 // Note: this also works for bedrock!
                 block.breakNaturally(item);
 
-                damage(item);
+                damage(item, player);
             }
         } 
     }
 
    
     // Use up a tool
-    public static void damage(ItemStack tool, PlayerInventory inventory, int slot) {
-        damage(tool, 1, inventory, slot);
+    public static void damage(ItemStack tool, Player player) {
+        damage(tool, 1, player);
     }
 
     // TODO: is there API to do this?
-    public static void damage(ItemStack tool, int amount, PlayerInventory inventory, int slot) {
+    public static void damage(ItemStack tool, int amount, Player player) {
+        // TODO: and how about "unbreaking"?!
+
         tool.setDurability((short)(tool.getDurability() + amount));
 
         if (tool.getDurability() >= tool.getType().getMaxDurability()) {
             // reached max, break
-            inventory.clear(slot);
+            PlayerInventory inventory = player.getInventory();
+            if (inventory.getItemInHand().getType() == tool.getType()) {
+                inventory.clear(inventory.getHeldItemSlot());
+            } 
+            // if they managed to use a tool not in their hand...well, they get a break
         } 
     }
 
@@ -568,7 +574,7 @@ class EnchantMoreListener implements Listener {
             if (item.containsEnchantment(FIRE_ASPECT)) {
                 entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
-                damage(item);
+                damage(item, player);
 
                 // Flint & Steel + Fire Protection = player fire resistance (secondary)
                 // We apply this for lighting blocks, too; this one is for attacking mobs
@@ -588,7 +594,7 @@ class EnchantMoreListener implements Listener {
                 if (entity instanceof CraftPlayer) {
                     applyPlayerEffect((CraftPlayer)entity, EFFECT_CONFUSION, item.getEnchantmentLevel(RESPIRATION));
 
-                    damage(item);
+                    damage(item, player);
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
@@ -597,7 +603,7 @@ class EnchantMoreListener implements Listener {
                 if (entity instanceof CraftPlayer) {
                     applyPlayerEffect((CraftPlayer)entity, EFFECT_BLINDNESS, item.getEnchantmentLevel(SMITE));
 
-                    damage(item);
+                    damage(item, player);
                 }
             }
 
@@ -613,7 +619,7 @@ class EnchantMoreListener implements Listener {
                         bug.setHealth(bug.getMaxHealth() / 2 - 1);
                     }
 
-                    damage(item);
+                    damage(item, player);
                 }
             }
 
@@ -630,7 +636,7 @@ class EnchantMoreListener implements Listener {
                         // There isn't any "featherless chicken" sprite
                     }
                     
-                    damage(item);
+                    damage(item, player);
                 }
             }
         }  else if (isSword(item.getType())) {
@@ -639,7 +645,7 @@ class EnchantMoreListener implements Listener {
             // The visual effect plays (navy blue swirly particles), but doesn't actually do anything as of Minecraft 1.1
             if (item.containsEnchantment(FLAME)) {
                 applyPlayerEffect(player, EFFECT_NIGHT_VISION, item.getEnchantmentLevel(FLAME));
-                damage(item);
+                damage(item, player);
             }
 
             // BLOCKED: Sword + Infinity = invisibility when blocking 
@@ -647,7 +653,7 @@ class EnchantMoreListener implements Listener {
             // TODO: use Vanish API in dev builts of Bukkit, that VanishNoPacket uses
             if (item.containsEnchantment(INFINITE)) {
                 applyPlayerEffect(player, EFFECT_INVISIBILITY, item.getEnchantmentLevel(INFINITE));
-                damage(item);
+                damage(item, player);
             }
             */
 
@@ -655,7 +661,7 @@ class EnchantMoreListener implements Listener {
             // Sword + Protection = resistance when blocking 
             if (item.containsEnchantment(PROTECTION)) {
                 applyPlayerEffect(player, EFFECT_RESISTANCE, item.getEnchantmentLevel(PROTECTION));
-                damage(item);
+                damage(item, player);
             }
 
         }
@@ -1292,14 +1298,14 @@ class EnchantMoreListener implements Listener {
             if (item.containsEnchantment(FIRE_ASPECT)) {
                 entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
-                damage(item);
+                damage(item, player);
             }
             
             // Fishing Rod + Smite = strike mobs with lightning
             if (item.containsEnchantment(SMITE)) {
                 world.strikeLightning(entity.getLocation());
 
-                damage(item);
+                damage(item, player);
             }
         } else if (state == PlayerFishEvent.State.CAUGHT_FISH) {
             // Fishing Rod + Flame = catch cooked fish
@@ -1582,7 +1588,7 @@ class EnchantMoreListener implements Listener {
                     world.spawnArrow(location, velocity, speed, spread);
                     */
 
-                    damage(chestplate);
+                    damage(chestplate, player);
                 }
                 // TODO: Sword + Projectile Protection = reflect arrows while blocking
                 // make it as ^^ is, nerf above (sword direction control, chestplate not)
@@ -1713,7 +1719,7 @@ class EnchantMoreFishTask implements Runnable {
         if (tool != null && tool.getType() == Material.FISHING_ROD) {
             world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, 1));
 
-            EnchantMoreListener.damage(tool);
+            EnchantMoreListener.damage(tool, player);
         }
 
         // TODO: reel in fishing line?
