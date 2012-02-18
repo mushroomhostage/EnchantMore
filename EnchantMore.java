@@ -383,18 +383,18 @@ class EnchantMoreListener implements Listener {
 
    
     // Use up a tool
-    public static void damage(ItemStack tool) {
-        damage(tool, 1);
+    public static void damage(ItemStack tool, PlayerInventory inventory, int slot) {
+        damage(tool, 1, inventory, slot);
     }
 
-    public static void damage(ItemStack tool, int amount) {
+    // TODO: is there API to do this?
+    public static void damage(ItemStack tool, int amount, PlayerInventory inventory, int slot) {
         tool.setDurability((short)(tool.getDurability() + amount));
 
         if (tool.getDurability() >= tool.getType().getMaxDurability()) {
             // reached max, break
-            tool.setType(Material.AIR);
+            inventory.clear(slot);
         } 
-        // TODO: fix
     }
 
     /*
