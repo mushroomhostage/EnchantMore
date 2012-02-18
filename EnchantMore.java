@@ -655,7 +655,7 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
 
-            // BLOCKED: Sword + Infinity = invisibility when blocking 
+            // BLOCKED: Sword + ? = invisibility when blocking 
             // Also has no implemented effect in Minecraft 1.1. Maybe a plugin could use?
             // TODO: use Vanish API in dev builts of Bukkit, that VanishNoPacket uses
             if (item.containsEnchantment(INFINITE)) {
@@ -1149,6 +1149,8 @@ class EnchantMoreListener implements Listener {
                     Item item = (Item)passenger;
                     ItemStack itemStack = item.getItemStack();
 
+                    item.remove();
+
                     // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0 
                     // [ModLoaderMP 1.1 CB1.1R4] Missing Material.MONSTER_EGG, causes NoSuchFieldError
                     // fixed in r2
@@ -1157,8 +1159,7 @@ class EnchantMoreListener implements Listener {
                     if (itemStack.getTypeId() == SPAWN_EGG_ID) {
                         int entityId = itemStack.getData().getData();
 
-                        CreatureType creature = CreatureType.ZOMBIE;//fromId(entityId);
-                        world.spawnCreature(dest, creature);
+                        world.spawnCreature(dest, creatureTypeFromId(entityId));
                     }
                 } else {
                     passenger.teleport(dest);
@@ -1303,6 +1304,46 @@ class EnchantMoreListener implements Listener {
             arrow.remove();
 
             player.teleport(dest);
+        }
+    }
+
+    // Get a CreatureType from entity ID
+    public CreatureType creatureTypeFromId(int eid) {
+        // Only available in 1.1-R4
+        try {
+            return CreatureType.fromId(eid);
+        } catch (NoSuchMethodError e) {
+        }
+
+        // As a fallback, map ourselves
+        // http://www.minecraftwiki.net/wiki/Data_values#Entity_IDs
+        switch (eid)
+        {
+        case 50: return CreatureType.CREEPER;
+        case 51: return CreatureType.SKELETON;
+        case 52: return CreatureType.SPIDER;
+        case 53: return CreatureType.GIANT;
+        default:
+        case 54: return CreatureType.ZOMBIE;
+        case 55: return CreatureType.SLIME;
+        case 56: return CreatureType.GHAST;
+        case 57: return CreatureType.PIG_ZOMBIE;
+        case 58: return CreatureType.ENDERMAN;
+        case 59: return CreatureType.CAVE_SPIDER;
+        case 60: return CreatureType.SILVERFISH;
+        case 61: return CreatureType.BLAZE;
+        case 62: return CreatureType.MAGMA_CUBE;
+        case 63: return CreatureType.ENDER_DRAGON;
+        case 90: return CreatureType.PIG;
+        case 91: return CreatureType.SHEEP;
+        case 92: return CreatureType.COW;
+        case 93: return CreatureType.CHICKEN;
+        case 94: return CreatureType.SQUID;
+        case 95: return CreatureType.WOLF;
+        case 96: return CreatureType.MUSHROOM_COW;
+        case 97: return CreatureType.SNOWMAN;
+        //case 98: return CreatureType.OCELET;
+        case 120: return CreatureType.VILLAGER;
         }
     }
 
@@ -1554,21 +1595,14 @@ class EnchantMoreListener implements Listener {
         }
     }*/
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
-    public void onEntityDamage(EntityDamageEvent event) {
-        Entity entity = event.getEntity();
-        if (!(entity instanceof Player)) {
-            return;
-        }
-
-        Player player = (Player)entity;
-
-        ItemStack chestplate = player.getInventory().getChestplate();
+    // Player taking damage
+    private void onPlayerDamaged(Player playerDamaged, EntityDamageEvent event) {
+        ItemStack chestplate = playerDamaged.getInventory().getChestplate();
 
         // Chestplate + Infinity = god mode (no damage)
         if (chestplate != null && chestplate.containsEnchantment(INFINITE)) {
             // no damage ever
-            // TODO: also need to cancel death? can die elsewhere?
+            // TODO: also need to cancel death? can die elsewhere? (other plugins)
             event.setCancelled(true);
         }
 
@@ -1577,17 +1611,17 @@ class EnchantMoreListener implements Listener {
         if (cause == EntityDamageEvent.DamageCause.LAVA ||
             cause == EntityDamageEvent.DamageCause.FIRE ||
             cause == EntityDamageEvent.DamageCause.FIRE_TICK) {
-            ItemStack helmet = player.getInventory().getHelmet();
+            ItemStack helmet = playerDamaged.getInventory().getHelmet();
             // Helmet + Fire Aspect = swim in lava
             if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
                 event.setCancelled(true);   // stop knockback and damage
                 //event.setDamage(0);
-                player.setFireTicks(0);     // cool off immediately after exiting lava
+                playerDamaged.setFireTicks(0);     // cool off immediately after exiting lava
 
                 // TODO: can we display air meter under lava? 
                 /*
-                player.setMaximumAir(20*10);
-                player.setRemainingAir(20*10);
+                playerDamaged.setMaximumAir(20*10);
+                playerDamaged.setRemainingAir(20*10);
                 */
 
                 // similar: http://dev.bukkit.org/server-mods/goldenchant/
@@ -1607,13 +1641,13 @@ class EnchantMoreListener implements Listener {
                 // Chestplate + Knockback = reflect arrows
                 if (chestplate != null && chestplate.containsEnchantment(KNOCKBACK)) {
                     event.setCancelled(true);   // stop arrow damage
-                    player.shootArrow();        // reflect arrow
+                    playerDamaged.shootArrow();        // reflect arrow
 
                     // TODO: should we actually create a new arrow with the opposite velocity vector?
                     // I think so.. bounce, not reshoot
                     // not right
                     /*
-                    Location location = player.getLocation();
+                    Location location = playerDamaged.getLocation();
                     World world = location.getWorld();
                     Vector velocity = arrow.getVelocity().multiply(-1);
                     float speed = 0.6f;  // "A recommend speed is 0.6"
@@ -1623,10 +1657,53 @@ class EnchantMoreListener implements Listener {
                     world.spawnArrow(location, velocity, speed, spread);
                     */
 
-                    damage(chestplate, player);
+                    damage(chestplate, playerDamaged);
                 }
                 // TODO: Sword + Projectile Protection = reflect arrows while blocking
                 // make it as ^^ is, nerf above (sword direction control, chestplate not)
+            }
+        }
+    }
+
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
+    public void onEntityDamage(EntityDamageEvent event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof Player) {
+            onPlayerDamaged((Player)entity, event);
+        } else {
+            if (event instanceof EntityDamageByEntityEvent) {
+                Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
+                if (damager instanceof Player) {
+                    Player damagerPlayer = (Player)damager;
+
+                    ItemStack weapon = damagerPlayer.getInventory().getItemInHand();
+
+                    onPlayerAttack(damagerPlayer, weapon, entity, (EntityDamageByEntityEvent)event);
+                }
+            }
+        }
+    }
+
+    // Player causing damage, attacking another entity
+    private void onPlayerAttack(Player attacker, ItemStack weapon, Entity entity, EntityDamageByEntityEvent event) {
+        // TODO: Sword + Infinity = sudden death
+        if (weapon.containsEnchantment(INFINITE)) {
+            if (entity instanceof LivingEntity) {
+                plugin.log.info("KILL");
+                ((LivingEntity)entity).setHealth(0);
+                ((LivingEntity)entity).damage(Integer.MAX_VALUE, attacker);
+
+
+                if (entity instanceof ComplexLivingEntity) {
+                    // just to be sure..
+                    Set<ComplexEntityPart> parts = ((ComplexLivingEntity)entity).getParts();
+                    for (ComplexEntityPart part: parts) {
+                        part.remove();
+                    }
+                }
+
+                entity.remove();
             }
         }
     }
