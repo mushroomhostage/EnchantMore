@@ -1131,26 +1131,33 @@ class EnchantMoreListener implements Listener {
         }
 
         Player player = (Player)shooter;
-        ItemStack item = player.getItemInHand();
+        ItemStack bow = player.getItemInHand();
 
-        if (item == null || item.getType() != Material.BOW) {
+        if (bow == null || bow.getType() != Material.BOW) {
             return;
         }
 
         Location dest = arrow.getLocation();
         final World world = dest.getWorld();
 
-        // Arrows carry payloads
-        // They don't normally have passengers, so no enchantment check needed
+        // Arrows carry payloads, did you know that?
         Entity passenger = arrow.getPassenger();
         if (passenger != null) {
-            passenger.teleport(dest);
+            // Bow + Respiration = (secondary)
+            if (bow.containsEnchantment(RESPIRATION)) {
+                passenger.teleport(dest);
+            } 
+
+            // Bow + Silk Touch = magnetic arrows (transport nearby entity) (secondary)
+            if (bow.containsEnchantment(SILK_TOUCH)) {
+                passenger.teleport(dest);
+            }
         }
 
 
         // Bow + Looting = steal ([details](http://dev.bukkit.org/server-mods/enchantmore/images/6-bow-looting-steal/))
-        if (item.containsEnchantment(LOOTING)) {
-            double s = 5.0 * item.getEnchantmentLevel(LOOTING);
+        if (bow.containsEnchantment(LOOTING)) {
+            double s = 5.0 * bow.getEnchantmentLevel(LOOTING);
 
             List<Entity> loots = arrow.getNearbyEntities(s, s, s);
             for (Entity loot: loots) {
@@ -1161,20 +1168,20 @@ class EnchantMoreListener implements Listener {
         }
 
         // Bow + Smite = strike lightning
-        if (item.containsEnchantment(SMITE)) {
+        if (bow.containsEnchantment(SMITE)) {
             world.strikeLightning(dest);
         }
 
         // Bow + Fire Aspect = fiery explosions ([details](http://dev.bukkit.org/server-mods/enchantmore/images/5-bow-fire-aspect-fiery-explosions/))
-        if (item.containsEnchantment(FIRE_ASPECT)) {
-            float power = 1.0f * item.getEnchantmentLevel(FIRE_ASPECT);
+        if (bow.containsEnchantment(FIRE_ASPECT)) {
+            float power = 1.0f * bow.getEnchantmentLevel(FIRE_ASPECT);
 
             world.createExplosion(dest, power, true);
         }
 
         // Bow + Aqua Affinity = freeze water, stun players
-        if (item.containsEnchantment(AQUA_AFFINITY)) {
-            int r = item.getEnchantmentLevel(AQUA_AFFINITY);
+        if (bow.containsEnchantment(AQUA_AFFINITY)) {
+            int r = bow.getEnchantmentLevel(AQUA_AFFINITY);
 
             // freeze water 
             int x0 = dest.getBlockX();
@@ -1208,7 +1215,7 @@ class EnchantMoreListener implements Listener {
         }
 
         // Bow + Knockback = pierce blocks
-        if (item.containsEnchantment(KNOCKBACK)) {
+        if (bow.containsEnchantment(KNOCKBACK)) {
             class ArrowPierceTask implements Runnable {
                 Arrow arrow;
                 int depth;
@@ -1251,7 +1258,7 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowPierceTask(arrow, item.getEnchantmentLevel(KNOCKBACK)));
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ArrowPierceTask(arrow, bow.getEnchantmentLevel(KNOCKBACK)));
         }
 
         // TODO: phase, arrow through blocks
@@ -1259,11 +1266,11 @@ class EnchantMoreListener implements Listener {
         // TODO: fire protection = remove water (like flint & steel aqua affinity)
 
         // Bow + Bane of Arthropods = poison
-        if (item.containsEnchantment(BANE)) {
+        if (bow.containsEnchantment(BANE)) {
             // TODO: only poison hit player!
 
             // poison nearby players
-            int r = item.getEnchantmentLevel(BANE);
+            int r = bow.getEnchantmentLevel(BANE);
             List<Entity> victims = arrow.getNearbyEntities(r, r, r);
             for (Entity victim: victims) {
                 if (victim instanceof CraftPlayer) {
@@ -1274,7 +1281,7 @@ class EnchantMoreListener implements Listener {
         }
 
         // Bow + Feather Falling = teleport ([details](http://dev.bukkit.org/server-mods/enchantmore/images/4-bow-feather-falling-teleport/))
-        if (item.containsEnchantment(FEATHER_FALLING)) {
+        if (bow.containsEnchantment(FEATHER_FALLING)) {
             // use up the arrow (TODO: not at higher levels?) or set no pickup?
             arrow.remove();
 
@@ -1465,12 +1472,22 @@ class EnchantMoreListener implements Listener {
                     // also has the pro/con they'll get the item back if it doesn't land in time
                     Location start = arrow.getLocation().add(0,10,0);
 
-                    // Starts out life as an item..
-                    Item payload = world.spawn(start, Item.class);
-                    payload.setItemStack(part);
-
-                    plugin.log.info("pa="+arrow.setPassenger(payload));
+                    // Starts out life as an item..attached to the arrow! Cool you can do this
+                    Item payload = world.dropItem(start, part);
+                    arrow.setPassenger(payload);
                 }
+            }
+        }
+
+        // Bow + Silk Touch = magnetic arrows (transport nearby entity)
+        if (bow.containsEnchantment(SILK_TOUCH)) {
+            double range = 10.0 * bow.getEnchantmentLevel(SILK_TOUCH);
+            List<Entity> nearby = player.getNearbyEntities(range, range, range);
+
+            if (nearby.size() != 0) {
+                Entity entity = nearby.get(0);   // TODO: random?
+
+                arrow.setPassenger(entity);
             }
         }
     }
