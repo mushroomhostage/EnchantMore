@@ -119,7 +119,7 @@ class EnchantMoreListener implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         ItemStack item = event.getItem();
@@ -508,7 +508,7 @@ class EnchantMoreListener implements Listener {
         //(((CraftPlayer)entity).getHandle()).b(MobEffectList.CONFUSION);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity entity = event.getRightClicked();
         Player player = event.getPlayer();
@@ -680,7 +680,7 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL) 
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
@@ -881,7 +881,7 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Block block = event.getBlockPlaced();
         World world = block.getWorld();
@@ -962,7 +962,7 @@ class EnchantMoreListener implements Listener {
                 continue;
             }
             if (compareData && output.getData().getData() != wantedOutput.getData().getData()) {
-                plugin.log.info("data "+output.getData().getData()+ " vs "+wantedOutput.getData().getData());
+                //plugin.log.info("data "+output.getData().getData()+ " vs "+wantedOutput.getData().getData());
                 continue;
             }
 
@@ -994,7 +994,7 @@ class EnchantMoreListener implements Listener {
                 for (int i = 0; i < inputs.length; i += 1) {
                     ItemStack inputItem = new CraftItemStack((net.minecraft.server.ItemStack)inputs[i]);
                     
-                    //inputItem.setAmount(1);  // some recipes like diamond block have 9 in each input! stop that
+                    inputItem.setAmount(1);  // some recipes like diamond block have 9 in each input! stop that
                     matchedInputs.add(inputItem);
                 }
                 return matchedInputs;
@@ -1005,7 +1005,7 @@ class EnchantMoreListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerShearEntity(PlayerShearEntityEvent event) {
         Player player = event.getPlayer();
         Entity entity = event.getEntity();
@@ -1036,7 +1036,7 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onProjectileHit(ProjectileHitEvent event) {
         Entity entity = event.getEntity();
 
@@ -1196,7 +1196,7 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerFish(PlayerFishEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getItemInHand();
@@ -1318,7 +1318,7 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL) 
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
     public void onEntityShootBow(EntityShootBowEvent event) {
         ItemStack bow = event.getBow();
 
@@ -1374,7 +1374,7 @@ class EnchantMoreListener implements Listener {
     
     /*
     // TODO: attempt to cancel burning when swimming in lava - no effect
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onEntityCombust(EntityCombustEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
@@ -1389,7 +1389,7 @@ class EnchantMoreListener implements Listener {
         }
     }*/
 
-    @EventHandler(priority = EventPriority.NORMAL) 
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
     public void onEntityDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
@@ -1466,7 +1466,7 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItem(event.getNewSlot());
@@ -1530,7 +1530,7 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         ItemStack boots = player.getInventory().getBoots();
@@ -1588,7 +1588,7 @@ class EnchantMorePlayerMoveListener implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getItemInHand();
