@@ -629,6 +629,20 @@ class EnchantMoreListener implements Listener {
         return 20 * 10 * level;
     }
 
+    private void fellTree(Block start, ItemStack tool, int level) {
+        Block top = start;
+        do {
+            Block up = top.getRelative(BlockFace.UP);
+            if (up.getType() == Material.LOG) {
+                top = up;
+            } else {
+                break;
+            }
+        } while (true);
+
+        plugin.log.info("top "+top);
+    }
+
     // Break all contiguous blocks of the same type
     private int breakContiguous(Block start, ItemStack tool, int limit) {
         Set<Block> result = new HashSet<Block>();
@@ -725,8 +739,9 @@ class EnchantMoreListener implements Listener {
             if (isAxe(item.getType())) {
                 // Axe + Power = fell tree ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
+                    fellTree(block, item, item.getEnchantmentLevel(POWER));
                     // Chop tree
-                    breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
+                    //breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
                     // no extra damage
                 }
             }
