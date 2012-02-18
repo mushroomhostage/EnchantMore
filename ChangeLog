@@ -6,7 +6,7 @@ X X
     * Improve Pickaxe/Shovel/Axe + Flame = auto-smelt to drop natural item if unsmeltable
     * Improve Axe + Power = fell tree, now breaks more branches depending on enchantment level
     * Fix not ignoring cancelled events (partial fix for ticket 4)
-    * Fix item not being broken when damaged by special use
+    * Fix new item/enchantments not respecting Unbreaking and not breaking when used up
     * Fix NPE and player disconnect with certain enchantments when using ModLoaderMP (ticket 6)
     * Fix Axe + Power = fell tree, causing a crash in some situations (ticket 3)
 

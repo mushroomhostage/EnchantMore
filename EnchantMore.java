@@ -387,10 +387,16 @@ class EnchantMoreListener implements Listener {
         damage(tool, 1, player);
     }
 
-    // TODO: is there API to do this?
     public static void damage(ItemStack tool, int amount, Player player) {
-        // TODO: and how about "unbreaking"?!
+        net.minecraft.server.ItemStack nativeTool = ((CraftItemStack)tool).getHandle();
+        net.minecraft.server.EntityLiving nativeEntity = ((CraftPlayer)player).getHandle();
 
+        // Call native methods.. this takes into consideration Unbreaking!
+        nativeTool.damage(amount, nativeEntity);
+
+        tool.setDurability((short)nativeTool.getData());
+
+        /* Lame manual way to do it not supporting Unbreaking
         tool.setDurability((short)(tool.getDurability() + amount));
 
         if (tool.getDurability() >= tool.getType().getMaxDurability()) {
@@ -400,7 +406,8 @@ class EnchantMoreListener implements Listener {
                 inventory.clear(inventory.getHeldItemSlot());
             } 
             // if they managed to use a tool not in their hand...well, they get a break
-        } 
+            // (but should really set stack size to zero)
+        } */
     }
 
     /*
