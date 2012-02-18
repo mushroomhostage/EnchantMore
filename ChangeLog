@@ -1,3 +1,6 @@
+X X
+    * Add Pickaxe + Looting = deconstruct (reverse crafting)
+
 2012-02-15  0.5.1a
     * Fix durability destruction bug affecting all pickaxes (ticket 7)
     * Compile against CraftBukkit 1.1-R4

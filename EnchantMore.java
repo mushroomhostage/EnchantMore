@@ -782,11 +782,10 @@ class EnchantMoreListener implements Listener {
                     }
                 }
 
-                // Pickaxe + Looting = deconstruct into constituents (reverse crafting)
-
-                // inspired by Advanced Shears' bookshelves/ladders/jackolatern/stickypiston disassembling
-                // http://forums.bukkit.org/threads/edit-fun-misc-advancedshears-v-1-3-cut-through-more-blocks-and-mobs-953-1060.24746/
+                // Pickaxe + Looting = deconstruct (reverse crafting)
                 if (item.containsEnchantment(LOOTING)) {
+                    // partly inspired by Advanced Shears' bookshelves/ladders/jackolatern/stickypiston disassembling
+                    // http://forums.bukkit.org/threads/edit-fun-misc-advancedshears-v-1-3-cut-through-more-blocks-and-mobs-953-1060.24746/
                     Collection<ItemStack> finishedDrops = block.getDrops(item);
                     for (ItemStack finishedDrop: finishedDrops) {
                         Collection<ItemStack> componentDrops = uncraft(finishedDrop);
@@ -798,7 +797,8 @@ class EnchantMoreListener implements Listener {
                         }
                     }
 
-                    //nope block.setType(Material.AIR);
+                    block.setType(Material.AIR);
+                    event.setCancelled(true);
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
@@ -909,6 +909,7 @@ class EnchantMoreListener implements Listener {
         return smelted;
     }
 
+    // Get all the items used to craft an item
     private Collection<ItemStack> uncraft(ItemStack wantedOutput) {
         Collection<ItemStack> matchedInputs = new ArrayList<ItemStack>();
         List recipes = net.minecraft.server.CraftingManager.getInstance().b();
@@ -927,18 +928,12 @@ class EnchantMoreListener implements Listener {
             if (recipeObject instanceof net.minecraft.server.ShapelessRecipes) {
                 net.minecraft.server.ShapelessRecipes recipe = (net.minecraft.server.ShapelessRecipes)recipeObject;
 
-                net.minecraft.server.ItemStack output = recipe.b();  // MCP .getRecipeOutput();
+                ItemStack output = (ItemStack)(new CraftItemStack(recipe.b()));  // MCP .getRecipeOutput();
 
-                if (output.id != wantedOutput.getTypeId()) {
+                if (!output.equals(wantedOutput)) {
                     continue;
                 }
 
-                if (output.usesData() && output.getData() != wantedOutput.getData().getData()) {
-                    continue;
-                }
-
-                plugin.log.info("out="+output);
-              
                 List inputs;
                 try {
                     inputs = (List)shapelessRecipeItemsField.get(recipe);
@@ -949,13 +944,12 @@ class EnchantMoreListener implements Listener {
 
                 for (Object inputObject: inputs) {
                     net.minecraft.server.ItemStack inputItem = (net.minecraft.server.ItemStack)inputObject;
-                    plugin.log.info(" inp="+inputItem);
-
-                    matchedInputs.add(new ItemStack(inputItem.id, 1, inputItem.getData()));
+                    matchedInputs.add((ItemStack)(new CraftItemStack(inputItem)));
 
                 }
                 return matchedInputs;
             }
+            // TODO: shaped recipe!!
         }
 
         return null;
