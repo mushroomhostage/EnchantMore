@@ -629,18 +629,21 @@ class EnchantMoreListener implements Listener {
         return 20 * 10 * level;
     }
 
+    // Chop down a tree
     private void fellTree(Block start, ItemStack tool, int level) {
+        // TODO: detect if growing in dirt, really is a tree? (but then must find real trunk)
+        // TODO: check if leaves to see if is a tree? (but then won't if leaves all torn down)
+        // see also ChopTree for a different approach http://dev.bukkit.org/server-mods/choptree/
         Block trunk = start;
         do {
-            plugin.log.info("break trunk "+trunk);
             trunk.breakNaturally();
 
-            for (int dx = -1; dx <= 1; dx += 1) {
-                for (int dz = -1; dz <= 1; dz += 1) {
+            // break branches around trunk up to enchantment level
+            for (int dx = -level; dx <= level; dx += 1) {
+                for (int dz = -level; dz <= level; dz += 1) {
                     Block branch = trunk.getRelative(dx, 0, dz);
 
                     if (branch != null && branch.getType() == Material.LOG) {
-                        plugin.log.info("break branch "+branch);
                         branch.breakNaturally();
                     }
                 }
@@ -748,8 +751,6 @@ class EnchantMoreListener implements Listener {
                 if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
                     fellTree(block, item, item.getEnchantmentLevel(POWER));
                     event.setCancelled(true);
-                    // Chop tree
-                    //breakContiguous(block, item, 100 * item.getEnchantmentLevel(POWER));
                     // no extra damage
                 }
             }
