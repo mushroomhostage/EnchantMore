@@ -1852,57 +1852,30 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    private ConcurrentHashMap<Player, Integer> playerSneakCount = null;
+
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-        if (event.isSneaking()) {
+        if (!event.isSneaking()) {
             return;
         }
-        // released
+        // pressed shift
 
 
         Player player = event.getPlayer();
 
         ItemStack boots = player.getInventory().getBoots();
 
-        // Boots + Punch = hover jump
+        // Boots + Punch = hover jump (double-tap shift)
         if (boots != null && boots.containsEnchantment(PUNCH)) {
-            if (playerSneakCount == null) {
-                playerSneakCount = new ConcurrentHashMap<Player, Integer>();
-            }
-           
-            int count = 0;
+            EnchantMoreHoverJumpTask.bumpSneakCount(player);
 
-            if (playerSneakCount.containsKey(player)) {
-                count = playerSneakCount.get(player);
-            }
-            count += 1;
-            playerSneakCount.put(player, count);
-            plugin.log.info("\t "+count);
-
-            class EnchantMoreSneakTimeoutTask implements Runnable {
-                EnchantMoreListener listener;
-                Player player;
-
-                public EnchantMoreSneakTimeoutTask(EnchantMoreListener listener, Player player) {
-                    this.listener = listener;
-                    this.player = player;
-                }
-
-                public void run() {
-                    listener.plugin.log.info("timeout");
-                    listener.playerSneakCount.put(player, 0);
-                }
-            }
-
-
-            if (count >= 2) {
+            if (EnchantMoreHoverJumpTask.shouldHoverJump(player)) {
                 int n = boots.getEnchantmentLevel(PUNCH);
                 player.setVelocity(player.getVelocity().setY(n));
             }
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreSneakTimeoutTask(this, player), 20*2);
+            EnchantMoreHoverJumpTask.scheduleTimeout(player, this);
         }
     }
 
@@ -1952,6 +1925,74 @@ class EnchantMoreListener implements Listener {
         }
     }
 }
+
+// Task to detect double-shift-taps for hover jumping
+class EnchantMoreHoverJumpTask implements Runnable {
+    static ConcurrentHashMap<Player, Integer> playerSneakCount = null;
+    static ConcurrentHashMap<Player, Integer> playerTimeoutTasks = null;
+
+    EnchantMoreListener listener;
+    Player player;
+
+    public EnchantMoreHoverJumpTask(EnchantMoreListener listener, Player player) {
+        this.listener = listener;
+        this.player = player;
+    }
+
+    // Timeout between taps
+    public void run() {
+        //listener.plugin.log.info("timeout");
+        playerSneakCount.put(player, 0);
+    }
+
+    // Schedule ourselves to run after player has waited too long between shift taps
+    public static void scheduleTimeout(Player player, EnchantMoreListener listener) {
+        if (playerTimeoutTasks == null) {
+            playerTimeoutTasks = new ConcurrentHashMap<Player, Integer>();
+        }
+
+        // Window of time must hit shift twice for hover jump to be activated
+        int timeoutTicks = 20/2;  // 1/2 second = 500 ms
+
+        int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(listener.plugin, new EnchantMoreHoverJumpTask(listener, player), timeoutTicks);
+
+        playerTimeoutTasks.put(player, taskId);
+    }
+
+    // Called each time when player uses Shift
+    public static int bumpSneakCount(Player player) {
+        int count = getSneakCount(player);
+        count += 1;
+
+        playerSneakCount.put(player, count);
+
+        if (playerTimeoutTasks != null && playerTimeoutTasks.containsKey(player)) {
+            int taskId = playerTimeoutTasks.get(player);
+            Bukkit.getScheduler().cancelTask(taskId);
+        }
+
+        return count;
+    }
+
+    private static int getSneakCount(Player player) {
+        if (playerSneakCount == null) {
+            playerSneakCount = new ConcurrentHashMap<Player, Integer>();
+        }
+
+        if (playerSneakCount.containsKey(player)) {
+            return playerSneakCount.get(player);
+        } else {
+            return 0;
+        }
+    }
+
+    // Whether should hover jump = double-tapped Shift
+    public static boolean shouldHoverJump(Player player) {
+        return getSneakCount(player) >= 2;
+    }
+
+}
+
 
 // Task to efficiently drop fish after some time of fishing
 class EnchantMoreFishTask implements Runnable {
