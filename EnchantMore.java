@@ -1159,7 +1159,16 @@ class EnchantMoreListener implements Listener {
                     if (itemStack.getTypeId() == SPAWN_EGG_ID) {
                         int entityId = itemStack.getData().getData();
 
+                        // WARNING: This even spawns enderdragons! Even if Spawn Dragon eggs are blocked 
                         world.spawnCreature(dest, creatureTypeFromId(entityId));
+                    } else if (itemStack.getType() == Material.ARROW) {
+                        float n = 10f;
+                        Vector velocity = new Vector(random.nextFloat() * n, random.nextFloat() * n, random.nextFloat() * n);
+                        float speed = 0.6f;
+                        float spread = 12f;
+                        spread = 0;
+                        plugin.log.info("v = "+velocity);
+                        world.spawnArrow(dest.add(0, 1, 0), velocity, speed, spread);
                     }
                 } else {
                     passenger.teleport(dest);
