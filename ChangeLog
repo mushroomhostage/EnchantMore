@@ -4,6 +4,7 @@ X X
     * Add Hoe + Power = move time
     * Add Hoe + Bane of Arthropods = toggle downfall
     * Add Bow + Silk Touch = magnetic arrows (transport nearby entity)
+    * Add Bow + Respiration = stapled arrows (attach adjacent item in inventory)
     * Improve Pickaxe/Shovel/Axe + Flame = auto-smelt, now drops natural item if unsmeltable
     * Improve Axe + Power = fell tree, now breaks more branches depending on enchantment level
     * Improve Boots + Punch = hover jump, now only jumps when press Shift, not release

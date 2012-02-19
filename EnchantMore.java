@@ -1143,7 +1143,7 @@ class EnchantMoreListener implements Listener {
         // Arrows carry payloads, did you know that?
         Entity passenger = arrow.getPassenger();
         if (passenger != null) {
-            // Bow + Respiration = (secondary)
+            // Bow + Respiration = stapled arrows (attach adjacent item in inventory)
             if (bow.containsEnchantment(RESPIRATION)) {
                 if (passenger instanceof Item) {
                     Item item = (Item)passenger;
@@ -1181,6 +1181,7 @@ class EnchantMoreListener implements Listener {
                     } else if (itemStack.getType() == Material.SNOW_BALL) {
                         world.spawn(dest, Snowball.class);
                     } else if (isSplashPotion(itemStack)) {
+                        // Splash potion = throw
                         // TODO: replace with potion API in 1.1-R4
                         net.minecraft.server.World nativeWorld = ((CraftWorld)world).getHandle();
                         net.minecraft.server.EntityPotion potion = new net.minecraft.server.EntityPotion(nativeWorld, 
@@ -1188,7 +1189,13 @@ class EnchantMoreListener implements Listener {
                             itemStack.getDurability());
                         //potion.a(0, 0.1, 0, 1.375f, 6.0f);
                         nativeWorld.addEntity(potion);
-                    // TODO: blocks! build
+                    } else if (itemStack.getType().isBlock()) {
+                        // Blocks = build
+                        Block hitBlock = dest.getBlock();
+
+                        if (hitBlock.getType() != Material.BEDROCK) {
+                            hitBlock.setType(itemStack.getType());
+                        }
                     } else {
                         passenger.teleport(dest);
                     }
@@ -1550,7 +1557,7 @@ class EnchantMoreListener implements Listener {
             event.setProjectile(projectile);
         }
 
-        // Bow + Respiration = 
+        // Bow + Respiration = stapled arrows (secondary) (see above)
         if (bow.containsEnchantment(RESPIRATION)) {
             World world = player.getWorld();
             PlayerInventory inventory = player.getInventory();
@@ -1569,8 +1576,6 @@ class EnchantMoreListener implements Listener {
                         inventory.setItem(payloadSlot, payloadStack);
                     }
                     part.setAmount(bow.getEnchantmentLevel(RESPIRATION));
-
-                    // Spawn entity in world
 
                     // We can't make an entity without spawning in the world, so start it over the player's head,
                     // also has the pro/con they'll get the item back if it doesn't land in time
