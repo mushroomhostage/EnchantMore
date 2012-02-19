@@ -5,6 +5,7 @@ X X
     * Add Hoe + Bane of Arthropods = toggle downfall
     * Add Bow + Silk Touch = magnetic arrows (transport nearby entity)
     * Add Bow + Respiration = stapled arrows (attach adjacent item in inventory)
+    * Add Shears + Power = hedge/trimmer builder effect, right-click to leaves to build
     * Improve Pickaxe/Shovel/Axe + Flame = auto-smelt, now drops natural item if unsmeltable
     * Improve Axe + Power = fell tree, now breaks more branches depending on enchantment level
     * Improve Boots + Punch = hover jump, now only jumps when press Shift, not release

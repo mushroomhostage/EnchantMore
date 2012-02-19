@@ -222,10 +222,42 @@ class EnchantMoreListener implements Listener {
 
 
         if (item.getType() == Material.SHEARS) {
-            // Shears + Power = cut grass (secondary effect)
+            // Shears + Power = cut grass, build hedges (secondary effect)
             if (item.containsEnchantment(POWER)) {
+                int n = item.getEnchantmentLevel(POWER);
+                // on grass: cut into dirt
                 if (block.getType() == Material.GRASS) {
                     block.setType(Material.DIRT);
+                // on leaves: build hedges
+                } else if (block.getType() == Material.LEAVES) {
+                    int leavesSlot = player.getInventory().first(Material.LEAVES);
+                    if (leavesSlot != -1) {
+                        ItemStack leavesStack = player.getInventory().getItem(leavesSlot);
+
+                        for (int dx = -n; dx <= n; dx += 1) {
+                            for (int dy = -n; dy <= n; dy += 1) {
+                                for (int dz = -n; dz <= n; dz += 1) {
+                                    Block b = block.getRelative(dx, dy, dz);
+                                    if (b.getType() == Material.AIR && leavesStack.getAmount() > 0) {
+                                        b.setType(leavesStack.getType());
+
+                                        byte data = leavesStack.getData().getData();
+                                        data |= 4;  // permanent, player-placed leaves, never decay
+                                        b.setData(data);
+
+                                        leavesStack.setAmount(leavesStack.getAmount() - 1);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (leavesStack.getAmount() == 0) {
+                            player.getInventory().clear(leavesSlot);
+                        } else {
+                            player.getInventory().setItem(leavesSlot, leavesStack);
+                        }
+                        player.updateInventory();
+                    }
                 }
                 damage(item, player);
             }
@@ -894,7 +926,7 @@ class EnchantMoreListener implements Listener {
                 // no extra damage
             }
 
-            // Shears + Power = hedge trimmer; cut grass
+            // Shears + Power = hedge trimmer/builder; cut grass
             // see also secondary effect above
             if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
                 event.setCancelled(true);
