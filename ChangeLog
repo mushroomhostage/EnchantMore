@@ -9,10 +9,12 @@ X X
     * Improve Axe + Power = fell tree, now breaks more branches depending on enchantment level
     * Improve Boots + Punch = hover jump, now only jumps when press Shift, not release
     * Improve Boots + Punch = hover jump, now preserves horizontal momentum
+    * Change Shears + Power = hedge trimmer, now cuts in fixed shape instead of all contiguous
     * Fix not ignoring cancelled events (partial fix for ticket 4)
     * Fix new item/enchantments not respecting Unbreaking and not breaking when used up
     * Fix NPE and player disconnect with certain enchantments when using ModLoaderMP (ticket 6)
     * Fix Axe + Power = fell tree, causing a crash in some situations (ticket 3)
+    * Fix Shears + Power = hedge trimmer, causing a crash in some situations (ticket 2)
 
 2012-02-15  0.5.1a
     * Fix durability destruction bug affecting all pickaxes (ticket 7)

@@ -705,51 +705,15 @@ class EnchantMoreListener implements Listener {
         } while (trunk != null && trunk.getType() == Material.LOG);
     }
 
-    // Break all contiguous blocks of the same type
-    private int breakContiguous(Block start, ItemStack tool, int limit) {
-        Set<Block> result = new HashSet<Block>();
+    private void hedgeTrimmer(Block start, ItemStack tool, int level) {
+        // TODO: do a sphere! or other shapes! topiary
+        for (int dx = -level; dx <= level; dx += 1) {
+            for (int dy = -level; dy <= level; dy += 1) {
+                for (int dz = -level; dz <= level; dz += 1) {
+                    Block leaf = start.getRelative(dx, dy, dz);
 
-        plugin.log.info("collectContiguous starting");
-        collectContiguous(start, limit, result);
-        plugin.log.info("collectContiguous returned with "+result.size());
-
-        for (Block block: result) {
-            // TODO: accumulate same type to optimize drops?
-            //drops.addAll(block.getDrops(tool));
-
-            //block.setType(Material.AIR);
-            block.breakNaturally(tool);  // no, infinite recurse
-            //plugin.log.info("break"+block);
-        }
-
-        return result.size();
-    }
-
-    // Recursively find all contiguous blocks 
-    // TODO: faster?
-    private void collectContiguous(Block start, int limit, Set<Block> result) {
-        if (limit < 0) {
-            return;
-        }
-
-        result.add(start);
-
-        for (int dx = -1; dx <= 1; dx += 1) {
-            for (int dy = -1; dy <= 1; dy += 1) {
-                for (int dz = -1; dz <= 1; dz += 1) {
-                    if (dx == 0 && dy == 0 && dz == 0) {
-                        continue;
-                    }
-                    Block other = start.getRelative(dx, dy, dz);
-
-                    limit -= 1;
-                    if (limit < 0) {
-                        return;
-                    }
-
-                    // Follow same type _and_ data (different leaves, etc.)
-                    if (other.getType() == start.getType() && other.getData() == start.getData()) {
-                        collectContiguous(other, limit - 1, result);
+                    if (leaf != null && leaf.getType() == Material.LEAVES) {
+                        leaf.breakNaturally();
                     }
                 }
             }
@@ -933,7 +897,8 @@ class EnchantMoreListener implements Listener {
             // Shears + Power = hedge trimmer; cut grass
             // see also secondary effect above
             if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
-                breakContiguous(block, item, 50 * item.getEnchantmentLevel(POWER));
+                event.setCancelled(true);
+                hedgeTrimmer(block, item, item.getEnchantmentLevel(POWER));
                 // no extra damage
             }
 
@@ -1194,10 +1159,11 @@ class EnchantMoreListener implements Listener {
                             nativeWorld.addEntity(potion);
                         } else if (itemStack.getType().isBlock()) {
                             // Blocks = build
-                            Block hitBlock = dest.getBlock();
+                            // TODO: better building than straight up vertical columns? build around?
+                            Block build = dest.getBlock().getRelative(0, i, 0);
 
-                            if (hitBlock.getType() != Material.BEDROCK) {
-                                hitBlock.setType(itemStack.getType());
+                            if (build.getType() == Material.AIR) {
+                                build.setType(itemStack.getType());
                             }
                         } else {
                             // Other item, we can't do any better, just teleport it
