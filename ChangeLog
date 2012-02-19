@@ -7,6 +7,7 @@ X X
     * Improve Pickaxe/Shovel/Axe + Flame = auto-smelt, now drops natural item if unsmeltable
     * Improve Axe + Power = fell tree, now breaks more branches depending on enchantment level
     * Improve Boots + Punch = hover jump, now only jumps when press Shift, not release
+    * Improve Boots + Punch = hover jump, now preserves horizontal momentum
     * Fix not ignoring cancelled events (partial fix for ticket 4)
     * Fix new item/enchantments not respecting Unbreaking and not breaking when used up
     * Fix NPE and player disconnect with certain enchantments when using ModLoaderMP (ticket 6)

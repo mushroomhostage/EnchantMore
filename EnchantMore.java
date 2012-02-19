@@ -1792,7 +1792,13 @@ class EnchantMoreListener implements Listener {
         if (boots != null && boots.containsEnchantment(PUNCH)) {
             int n = boots.getEnchantmentLevel(PUNCH);
 
-            player.setVelocity(new Vector(0, n, 0));
+            Vector v = player.getVelocity();
+
+            v.setY(n);
+
+            player.setVelocity(v);
+
+            //player.setVelocity(new Vector(0, n, 0));
         }
     }
 
