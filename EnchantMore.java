@@ -1157,18 +1157,40 @@ class EnchantMoreListener implements Listener {
                     final int SPAWN_EGG_ID = 383; 
 
                     if (itemStack.getTypeId() == SPAWN_EGG_ID) {
+                        // Spawn Egg = creature
                         int entityId = itemStack.getData().getData();
 
                         // WARNING: This even spawns enderdragons! Even if Spawn Dragon eggs are blocked 
                         world.spawnCreature(dest, creatureTypeFromId(entityId));
                     } else if (itemStack.getType() == Material.ARROW) {
-                        float n = 10f;
-                        Vector velocity = new Vector(random.nextFloat() * n, random.nextFloat() * n, random.nextFloat() * n);
+                        // Arrow
+
+                        // TODO: make the spawned arrow have a useful velocity - none of these attempts
+                        // seem to make it do anything but rest and fall to the ground
+                        //float n = 10f;     // TODO: get from enchantment level, but would have to enchant arrow on shoot
+                        //Vector velocity = new Vector(random.nextFloat() * n, random.nextFloat() * n, random.nextFloat(n));
+                        //Vector velocity = arrow.getVelocity().clone();
+                        //velocity.multiply(-1);
+                        //velocity.setY(-velocity.getY());
+                        //velocity.multiply(2);
+
+                        Vector velocity = new Vector(0, 0, 0);
                         float speed = 0.6f;
                         float spread = 12f;
-                        spread = 0;
-                        plugin.log.info("v = "+velocity);
-                        world.spawnArrow(dest.add(0, 1, 0), velocity, speed, spread);
+                        world.spawnArrow(dest, velocity, speed, spread);
+                    } else if (itemStack.getType() == Material.SNOW_BALL) {
+                        world.spawn(dest, Snowball.class);
+                    } else if (isSplashPotion(itemStack)) {
+                        // TODO: replace with potion API in 1.1-R4
+                        net.minecraft.server.World nativeWorld = ((CraftWorld)world).getHandle();
+                        net.minecraft.server.EntityPotion potion = new net.minecraft.server.EntityPotion(nativeWorld, 
+                            dest.getX(), dest.getY(), dest.getZ(), 
+                            itemStack.getDurability());
+                        //potion.a(0, 0.1, 0, 1.375f, 6.0f);
+                        nativeWorld.addEntity(potion);
+                    // TODO: blocks! build
+                    } else {
+                        passenger.teleport(dest);
                     }
                 } else {
                     passenger.teleport(dest);
@@ -1314,6 +1336,21 @@ class EnchantMoreListener implements Listener {
 
             player.teleport(dest);
         }
+    }
+
+    // Return whether item is a splash potion
+    public boolean isSplashPotion(ItemStack item) {
+        if (item.getType() != Material.POTION) {
+            return false;
+        }
+
+        // Get damage value.. NOT getData().getData(), its wrong:
+        // data=37, dura=16421
+        int data = item.getDurability();
+        
+        // TODO: merge into ItemStackX, would be useful to expose. or use potion API?
+        boolean splash = net.minecraft.server.ItemPotion.c(data);
+        return splash;
     }
 
     // Get a CreatureType from entity ID
