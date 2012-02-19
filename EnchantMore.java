@@ -1852,26 +1852,57 @@ class EnchantMoreListener implements Listener {
         }
     }
 
+    private ConcurrentHashMap<Player, Integer> playerSneakCount = null;
+
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-        if (!event.isSneaking()) {
+        if (event.isSneaking()) {
             return;
         }
+        // released
+
 
         Player player = event.getPlayer();
+
         ItemStack boots = player.getInventory().getBoots();
 
-        // Boots + Punch = shift to hover jump
+        // Boots + Punch = hover jump
         if (boots != null && boots.containsEnchantment(PUNCH)) {
-            int n = boots.getEnchantmentLevel(PUNCH);
+            if (playerSneakCount == null) {
+                playerSneakCount = new ConcurrentHashMap<Player, Integer>();
+            }
+           
+            int count = 0;
 
-            Vector v = player.getVelocity();
+            if (playerSneakCount.containsKey(player)) {
+                count = playerSneakCount.get(player);
+            }
+            count += 1;
+            playerSneakCount.put(player, count);
+            plugin.log.info("\t "+count);
 
-            v.setY(n);
+            class EnchantMoreSneakTimeoutTask implements Runnable {
+                EnchantMoreListener listener;
+                Player player;
 
-            player.setVelocity(v);
+                public EnchantMoreSneakTimeoutTask(EnchantMoreListener listener, Player player) {
+                    this.listener = listener;
+                    this.player = player;
+                }
 
-            //player.setVelocity(new Vector(0, n, 0));
+                public void run() {
+                    listener.plugin.log.info("timeout");
+                    listener.playerSneakCount.put(player, 0);
+                }
+            }
+
+
+            if (count >= 2) {
+                int n = boots.getEnchantmentLevel(PUNCH);
+                player.setVelocity(player.getVelocity().setY(n));
+            }
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreSneakTimeoutTask(this, player), 20*2);
         }
     }
 
