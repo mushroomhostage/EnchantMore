@@ -4,17 +4,21 @@ EnchantMore adds dozens of new item enchantment effects,
 on flint & steel, hoes, shears, fishing rods, and other items --
 ranging from entertainingly destructive to legitimately useful.
 
+***New! [Download 0.5.7 here](http://dev.bukkit.org/server-mods/enchantmore/files/6-enchant-more-0-5-7/)*** - released 2012/02/18 (*use this link until sidebar is updated after approval*)
+
 ## Features
 * More than 50 new enchantment/item combinations
 * Items in inventory appear as expected (glowing + descriptive tooltip) 
 * No client mods required
 * Only adds functionality, does not change any -- all your existing enchanted tools work as expected
 
-**Important**: to enchant items, you currently need to use an inventory editor or enchanting plugin,
-such as [Tim The Enchanter](http://dev.bukkit.org/server-mods/enchanter/). New enchantments are *not* yet 
-accessible through enchanting tables. For now, consider this a feature, as it allows access to the special
-items to be tightly controlled.
+**Important**: to enchant items, you currently need to use an enchanting plugin or inventory editor. EnchantMore does not yet enchant items itself or alter enchantment tables. Known plugins compatible with EnchantMore:
 
+* [Tim The Enchanter](http://dev.bukkit.org/server-mods/enchanter/) - /enchant command for ops
+* [AutoEnchanter](http://dev.bukkit.org/server-mods/autoenchanter/) - set "unsafe" to true in config 
+
+If you know of any other compatible plugins, let me know and I'll add them here. (If you're writing an enchanting plugin, use addUnsafeEnchantment() and 
+ignore canEnchantItem(), then it should be compatible with EnchantMore.)
 
 ### Available Effects
 * Axe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))

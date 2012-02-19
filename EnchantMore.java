@@ -1670,7 +1670,7 @@ class EnchantMoreListener implements Listener {
     private void onPlayerDamaged(Player playerDamaged, EntityDamageEvent event) {
         ItemStack chestplate = playerDamaged.getInventory().getChestplate();
 
-        // Chestplate + Infinity = god mode (no damage)
+        // Chestplate + Infinity = god mode (no damage/hunger)
         if (chestplate != null && chestplate.containsEnchantment(INFINITE)) {
             // no damage ever
             // TODO: also need to cancel death? can die elsewhere? (other plugins)
