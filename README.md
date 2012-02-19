@@ -17,58 +17,63 @@ items to be tightly controlled.
 
 
 ### Available Effects
-* Axe + Flame = auto-smelt ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
-* Axe + Power = fell tree ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
+* Axe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
+* Axe + Power = fell tree ([details](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
 * Boots + Flame = firewalker (set ground on fire)
 * Boots + Power = witch's broom (sprint flying)
 * Boots + Punch = shift to hover jump
 * Bow + Aqua Affinity = freeze water, stun players
 * Bow + Bane of Arthropods = poison
 * Bow + Efficiency = instant shoot
-* Bow + Feather Falling = teleport ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/4-bow-feather-falling-teleport/))
-* Bow + Fire Aspect = fiery explosions ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/5-bow-fire-aspect-fiery-explosions/))
+* Bow + Feather Falling = teleport ([details](http://dev.bukkit.org/server-mods/enchantmore/images/4-bow-feather-falling-teleport/))
+* Bow + Fire Aspect = fiery explosions ([details](http://dev.bukkit.org/server-mods/enchantmore/images/5-bow-fire-aspect-fiery-explosions/))
 * Bow + Knockback = pierce blocks
-* Bow + Looting = steal ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/6-bow-looting-steal/))
+* Bow + Looting = steal ([details](http://dev.bukkit.org/server-mods/enchantmore/images/6-bow-looting-steal/))
+* Bow + Respiration = stapled arrows (attach adjacent item in inventory)
 * Bow + Sharpness = increase velocity
+* Bow + Silk Touch = magnetic arrows (transport nearby entity)
 * Bow + Smite = strike lightning
 * Chestplate + Infinity = god mode (no damage)
 * Chestplate + Knockback = reflect arrows
 * Fishing Rod + Efficiency = fish faster
 * Fishing Rod + Fire Aspect = set mobs on fire
 * Fishing Rod + Flame = catch cooked fish
-* Fishing Rod + Fortune = catch junk ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/7-fishing-rod-fortune-catch-sunken-treasure/))
+* Fishing Rod + Fortune = catch junk ([details](http://dev.bukkit.org/server-mods/enchantmore/images/7-fishing-rod-fortune-catch-sunken-treasure/))
 * Fishing Rod + Looting = catch extra fish
 * Fishing Rod + Silk Touch = catch more reliably
 * Fishing Rod + Smite = strike mobs with lightning
-* Flint & Steel + Aqua Affinity = vaporize water ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/9-flint-steel-aqua-affinity-vaporize-water/))
+* Flint & Steel + Aqua Affinity = vaporize water ([details](http://dev.bukkit.org/server-mods/enchantmore/images/9-flint-steel-aqua-affinity-vaporize-water/))
 * Flint & Steel + Efficiency = burn faster (turn wood to grass)
 * Flint & Steel + Fire Aspect = set mobs on fire
-* Flint & Steel + Fire Protection = fire resistance ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/10-flint-steel-fire-protection-fire-resistance/))
+* Flint & Steel + Fire Protection = fire resistance ([details](http://dev.bukkit.org/server-mods/enchantmore/images/10-flint-steel-fire-protection-fire-resistance/))
 * Flint & Steel + Respiration = smoke inhalation (confusion effect on player)
 * Flint & Steel + Sharpness = fiery explosion
-* Flint & Steel + Smite = strike lightning ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/8-fishing-rod-smite-strike-lightning/))
+* Flint & Steel + Smite = strike lightning ([details](http://dev.bukkit.org/server-mods/enchantmore/images/8-fishing-rod-smite-strike-lightning/))
 * Helmet + Fire Aspect = swim in lava
-* Hoe + Aqua Affinity = auto-hydrate ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/11-hoe-aqua-affinity-auto-hydrate/))
+* Hoe + Aqua Affinity = auto-hydrate ([details](http://dev.bukkit.org/server-mods/enchantmore/images/11-hoe-aqua-affinity-auto-hydrate/))
+* Hoe + Bane of Arthropods = toggle downfall
 * Hoe + Efficiency = till larger area
 * Hoe + Fortune = chance to drop seeds
-* Hoe + Respiration = grow ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/12-hoe-respiration-grow/))
+* Hoe + Power = move time
+* Hoe + Respiration = grow ([details](http://dev.bukkit.org/server-mods/enchantmore/images/12-hoe-respiration-grow/))
 * Hoe + Silk Touch = collect farmland, crop block, pumpkin/melon stem, cake block, sugarcane block, netherwart block (preserving data)
-* Pickaxe + Flame = auto-smelt ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
+* Pickaxe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
+* Pickaxe + Looting = deconstruct (reverse crafting)
 * Pickaxe + Power = instantly break anything (including bedrock)
 * Pickaxe + Silk Touch II = harvest ice
 * Shears + Bane of Arthropods = collect spider eyes
 * Shears + Fortune = apples from leaves
-* Shears + Looting = more wool (random colors); feathers from chickens
-* Shears + Power = hedge trimmer; cut grass
+* Shears + Looting = more wool (random colors); feathers from chickens, leather from cows
+* Shears + Power = hedge trimmer/builder; cut grass
 * Shears + Silk Touch = collect cobweb, dead bush
 * Shears + Smite = gouge eyes (blindness effect on player)
-* Shovel + Flame = auto-smelt ([screenshot](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
+* Shovel + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
 * Shovel + Power = excavation (dig large area, no drops)
 * Shovel + Silk Touch II = harvest fallen snow, fire
+* Sword + Fire Protection = return to player when dropped in lava
 * Sword + Flame = create semi-permanent lit path
 * Sword + Power = strike lightning 100+ meters away
 * Sword + Protection = resistance when blocking 
-
 
 ## Limitations
 * Not all enchantments reasonably combine with one another

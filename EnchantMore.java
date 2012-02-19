@@ -662,7 +662,7 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            // Shears + Looting = feathers from chicken (secondary)
+            // Shears + Looting = feathers from chicken, leather from cows (secondary)
             if (item.containsEnchantment(LOOTING)) {
                 if (entity instanceof Chicken) {
                     Creature bird = (Creature)entity;
@@ -671,11 +671,20 @@ class EnchantMoreListener implements Listener {
                     if (bird.getHealth() >= bird.getMaxHealth() / 2) {
                         world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.FEATHER, random.nextInt(5) + 1));
 
+                        // only can drop once (unless healed)
                         bird.setHealth(bird.getMaxHealth() / 2 - 1);
                         // There isn't any "featherless chicken" sprite
                     }
                     
                     damage(item, player);
+                } else if (entity instanceof Cow) {
+                    Creature bovine = (Creature)entity;
+                    if (bovine.getHealth() >= bovine.getMaxHealth() / 2) {
+                        world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEATHER, random.nextInt(5) + 1));
+
+                        // can drop twice since cows are bigger
+                        bovine.setHealth(bovine.getHealth() - bovine.getMaxHealth() / 3);
+                    }
                 }
             }
         }  else if (isSword(item.getType())) {
@@ -1096,7 +1105,7 @@ class EnchantMoreListener implements Listener {
         }
         // TODO: mooshroom?
 
-        // Shears + Looting = more wool (random colors); feathers from chickens
+        // Shears + Looting = more wool (random colors); feathers from chickens, leather from cows
         // see also secondary effect above
         if (tool.getType() == Material.SHEARS && tool.containsEnchantment(LOOTING)) {
             Location loc = entity.getLocation();
