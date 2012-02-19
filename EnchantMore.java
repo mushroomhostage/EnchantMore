@@ -214,6 +214,19 @@ class EnchantMoreListener implements Listener {
             }
         }
 
+        if (player.isSneaking()) {
+            if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+                ItemStack boots = player.getInventory().getBoots();
+                // Boots + Punch = hover jump (shift-right-click)
+                if (boots != null && boots.containsEnchantment(PUNCH)) {
+                    int n = boots.getEnchantmentLevel(PUNCH);
+
+                    player.setVelocity(new Vector(0, n, 0));
+                }
+            }
+        }
+
+
         if (block == null) {
             return;
         }
@@ -1688,13 +1701,19 @@ class EnchantMoreListener implements Listener {
     // Player causing damage, attacking another entity
     private void onPlayerAttack(Player attacker, ItemStack weapon, Entity entity, EntityDamageByEntityEvent event) {
         // TODO: Sword + Infinity = sudden death
+        // disabled for now since doesn't work on enderdragon, where it would be most useful!
+        /*
         if (weapon.containsEnchantment(INFINITE)) {
+            plugin.log.info("infinity sword! on "+entity);
             if (entity instanceof LivingEntity) {
                 plugin.log.info("KILL");
                 ((LivingEntity)entity).setHealth(0);
                 ((LivingEntity)entity).damage(Integer.MAX_VALUE, attacker);
 
 
+                // Not even called when damaging enderdragon? says fixed in 1.1-R4..
+                // https://bukkit.atlassian.net/browse/BUKKIT-129
+                
                 if (entity instanceof ComplexLivingEntity) {
                     // just to be sure..
                     Set<ComplexEntityPart> parts = ((ComplexLivingEntity)entity).getParts();
@@ -1706,6 +1725,7 @@ class EnchantMoreListener implements Listener {
                 entity.remove();
             }
         }
+        */
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
@@ -1772,18 +1792,20 @@ class EnchantMoreListener implements Listener {
         }
     }
 
+    /*
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         ItemStack boots = player.getInventory().getBoots();
 
-        // Boots + Punch = shift to hover jump
+        // old Boots + Punch = shift to hover jump
         if (boots != null && boots.containsEnchantment(PUNCH)) {
             int n = boots.getEnchantmentLevel(PUNCH);
 
             player.setVelocity(new Vector(0, n, 0));
         }
     }
+    */
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onEntityCombust(EntityCombustEvent event) {
