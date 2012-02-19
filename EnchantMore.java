@@ -1149,55 +1149,65 @@ class EnchantMoreListener implements Listener {
                     Item item = (Item)passenger;
                     ItemStack itemStack = item.getItemStack();
 
-                    item.remove();
+                    boolean remove = true;
 
                     // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0 
                     // [ModLoaderMP 1.1 CB1.1R4] Missing Material.MONSTER_EGG, causes NoSuchFieldError
                     // fixed in r2
                     final int SPAWN_EGG_ID = 383; 
 
-                    if (itemStack.getTypeId() == SPAWN_EGG_ID) {
-                        // Spawn Egg = creature
-                        int entityId = itemStack.getData().getData();
+                    for (int i = 0; i < itemStack.getAmount(); i += 1) {
+                        if (itemStack.getTypeId() == SPAWN_EGG_ID) {
+                            // Spawn Egg = creature
+                            int entityId = itemStack.getData().getData();
 
-                        // WARNING: This even spawns enderdragons! Even if Spawn Dragon eggs are blocked 
-                        world.spawnCreature(dest, creatureTypeFromId(entityId));
-                    } else if (itemStack.getType() == Material.ARROW) {
-                        // Arrow
+                            // WARNING: This even spawns enderdragons! Even if Spawn Dragon eggs are blocked 
+                            world.spawnCreature(dest, creatureTypeFromId(entityId));
+                        } else if (itemStack.getType() == Material.ARROW) {
+                            // Arrow
 
-                        // TODO: make the spawned arrow have a useful velocity - none of these attempts
-                        // seem to make it do anything but rest and fall to the ground
-                        //float n = 10f;     // TODO: get from enchantment level, but would have to enchant arrow on shoot
-                        //Vector velocity = new Vector(random.nextFloat() * n, random.nextFloat() * n, random.nextFloat(n));
-                        //Vector velocity = arrow.getVelocity().clone();
-                        //velocity.multiply(-1);
-                        //velocity.setY(-velocity.getY());
-                        //velocity.multiply(2);
+                            // TODO: make the spawned arrow have a useful velocity - none of these attempts
+                            // seem to make it do anything but rest and fall to the ground
+                            //float n = 10f;     // TODO: get from enchantment level, but would have to enchant arrow on shoot
+                            //Vector velocity = new Vector(random.nextFloat() * n, random.nextFloat() * n, random.nextFloat(n));
+                            //Vector velocity = arrow.getVelocity().clone();
+                            //velocity.multiply(-1);
+                            //velocity.setY(-velocity.getY());
+                            //velocity.multiply(2);
 
-                        Vector velocity = new Vector(0, 0, 0);
-                        float speed = 0.6f;
-                        float spread = 12f;
-                        world.spawnArrow(dest, velocity, speed, spread);
-                    } else if (itemStack.getType() == Material.SNOW_BALL) {
-                        world.spawn(dest, Snowball.class);
-                    } else if (isSplashPotion(itemStack)) {
-                        // Splash potion = throw
-                        // TODO: replace with potion API in 1.1-R4
-                        net.minecraft.server.World nativeWorld = ((CraftWorld)world).getHandle();
-                        net.minecraft.server.EntityPotion potion = new net.minecraft.server.EntityPotion(nativeWorld, 
-                            dest.getX(), dest.getY(), dest.getZ(), 
-                            itemStack.getDurability());
-                        //potion.a(0, 0.1, 0, 1.375f, 6.0f);
-                        nativeWorld.addEntity(potion);
-                    } else if (itemStack.getType().isBlock()) {
-                        // Blocks = build
-                        Block hitBlock = dest.getBlock();
+                            Vector velocity = new Vector(0, 0, 0);
+                            float speed = 0.6f;
+                            float spread = 12f;
+                            world.spawnArrow(dest, velocity, speed, spread);
+                        } else if (itemStack.getType() == Material.SNOW_BALL) {
+                            world.spawn(dest, Snowball.class);
+                        } else if (itemStack.getType() == Material.EGG) {
+                            world.spawn(dest, Egg.class);
+                        } else if (isSplashPotion(itemStack)) {
+                            // Splash potion = throw
+                            // TODO: replace with potion API in 1.1-R4
+                            net.minecraft.server.World nativeWorld = ((CraftWorld)world).getHandle();
+                            net.minecraft.server.EntityPotion potion = new net.minecraft.server.EntityPotion(nativeWorld, 
+                                dest.getX(), dest.getY(), dest.getZ(), 
+                                itemStack.getDurability());
+                            //potion.a(0, 0.1, 0, 1.375f, 6.0f);
+                            nativeWorld.addEntity(potion);
+                        } else if (itemStack.getType().isBlock()) {
+                            // Blocks = build
+                            Block hitBlock = dest.getBlock();
 
-                        if (hitBlock.getType() != Material.BEDROCK) {
-                            hitBlock.setType(itemStack.getType());
+                            if (hitBlock.getType() != Material.BEDROCK) {
+                                hitBlock.setType(itemStack.getType());
+                            }
+                        } else {
+                            // Other item, we can't do any better, just teleport it
+                            passenger.teleport(dest);
+                            remove = false; 
                         }
-                    } else {
-                        passenger.teleport(dest);
+                    }
+                    // Remove item stack entity if it was instantiated into something
+                    if (remove) {
+                        item.remove();
                     }
                 } else {
                     passenger.teleport(dest);
@@ -1567,18 +1577,21 @@ class EnchantMoreListener implements Listener {
                 int payloadSlot = arrowSlot + 1;
                 ItemStack payloadStack = inventory.getItem(payloadSlot);
                 if (payloadStack != null && payloadStack.getType() != Material.AIR) {
-                    // Take item(s)
+                    // Take item(s) TODO: use splitStacks method somewhere
+                    int n = bow.getEnchantmentLevel(RESPIRATION);
                     ItemStack part = payloadStack.clone();
-                    if (payloadStack.getAmount() == 1) {
+                    if (payloadStack.getAmount() <= n) {
                         inventory.clear(payloadSlot);
                     } else {
-                        payloadStack.setAmount(payloadStack.getAmount() - 1);
+                        payloadStack.setAmount(payloadStack.getAmount() - n);
                         inventory.setItem(payloadSlot, payloadStack);
+                        part.setAmount(n);
                     }
-                    part.setAmount(bow.getEnchantmentLevel(RESPIRATION));
 
+                    // Attach the payload
                     // We can't make an entity without spawning in the world, so start it over the player's head,
-                    // also has the pro/con they'll get the item back if it doesn't land in time
+                    // also has the pro/con they'll get the item back if it doesn't land in time.. but they may
+                    // notice it if they look up!
                     Location start = arrow.getLocation().add(0,10,0);
 
                     // Starts out life as an item..attached to the arrow! Cool you can do this
