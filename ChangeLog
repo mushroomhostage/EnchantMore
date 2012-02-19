@@ -10,6 +10,7 @@ X X
     * Improve Axe + Power = fell tree, now breaks more branches depending on enchantment level
     * Improve Boots + Punch = hover jump, now only jumps when press Shift, not release
     * Improve Boots + Punch = hover jump, now preserves horizontal momentum
+    * Improve Chestplate + Infinity = god mode, now maxes out food level and health
     * Change Shears + Power = hedge trimmer, now cuts in fixed shape instead of all contiguous
     * Fix not ignoring cancelled events (partial fix for ticket 4)
     * Fix new item/enchantments not respecting Unbreaking and not breaking when used up

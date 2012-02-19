@@ -1666,6 +1666,8 @@ class EnchantMoreListener implements Listener {
             // no damage ever
             // TODO: also need to cancel death? can die elsewhere? (other plugins)
             event.setCancelled(true);
+            // in case damaged by bypassing event
+            playerDamaged.setHealth(playerDamaged.getMaxHealth());
         }
 
         EntityDamageEvent.DamageCause cause = event.getCause();
@@ -1889,7 +1891,24 @@ class EnchantMoreListener implements Listener {
                     entity.teleport(dest.getLocation());
                     break;
                 }
+                // TODO: if no one nearby, teleport randomly? in case dies..
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player)) {
+            return;
+        }
+        Player player = (Player)entity;
+
+        ItemStack chestplate = player.getInventory().getChestplate();
+        // Chestplate + Infinity = no hunger (secondary)
+        if (chestplate != null && chestplate.containsEnchantment(INFINITE)) {
+            event.setFoodLevel(20); // max
+            // not cancelled, so still can eat
         }
     }
 }
