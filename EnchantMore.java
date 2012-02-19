@@ -214,19 +214,6 @@ class EnchantMoreListener implements Listener {
             }
         }
 
-        if (player.isSneaking()) {
-            if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-                ItemStack boots = player.getInventory().getBoots();
-                // Boots + Punch = hover jump (shift-right-click)
-                if (boots != null && boots.containsEnchantment(PUNCH)) {
-                    int n = boots.getEnchantmentLevel(PUNCH);
-
-                    player.setVelocity(new Vector(0, n, 0));
-                }
-            }
-        }
-
-
         if (block == null) {
             return;
         }
@@ -1792,20 +1779,22 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    /*
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+        if (!event.isSneaking()) {
+            return;
+        }
+
         Player player = event.getPlayer();
         ItemStack boots = player.getInventory().getBoots();
 
-        // old Boots + Punch = shift to hover jump
+        // Boots + Punch = shift to hover jump
         if (boots != null && boots.containsEnchantment(PUNCH)) {
             int n = boots.getEnchantmentLevel(PUNCH);
 
             player.setVelocity(new Vector(0, n, 0));
         }
     }
-    */
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onEntityCombust(EntityCombustEvent event) {

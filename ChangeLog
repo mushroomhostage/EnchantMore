@@ -4,8 +4,9 @@ X X
     * Add Hoe + Power = move time
     * Add Hoe + Bane of Arthropods = toggle downfall
     * Add Bow + Silk Touch = magnetic arrows (transport nearby entity)
-    * Improve Pickaxe/Shovel/Axe + Flame = auto-smelt to drop natural item if unsmeltable
+    * Improve Pickaxe/Shovel/Axe + Flame = auto-smelt, now drops natural item if unsmeltable
     * Improve Axe + Power = fell tree, now breaks more branches depending on enchantment level
+    * Improve Boots + Punch = hover jump, now only jumps when press Shift, not release
     * Fix not ignoring cancelled events (partial fix for ticket 4)
     * Fix new item/enchantments not respecting Unbreaking and not breaking when used up
     * Fix NPE and player disconnect with certain enchantments when using ModLoaderMP (ticket 6)
