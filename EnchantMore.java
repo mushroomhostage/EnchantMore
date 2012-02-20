@@ -539,6 +539,7 @@ class EnchantMoreListener implements Listener {
         return m == Material.DIRT.getId() ||
             m == Material.GRASS.getId() ||
             m == Material.GRAVEL.getId() ||
+            m == Material.SAND.getId() ||
             m == Material.SOUL_SAND.getId() ||
             m == Material.NETHERRACK.getId(); // not normally diggable, but why not?
     }

@@ -4,4 +4,4 @@ rm -rf me
 mkdir -p me/exphc/EnchantMore
 mv *.class me/exphc/EnchantMore/
 jar cf EnchantMore.jar me/ *.yml *.java *.dat README.md ChangeLog LICENSE
-cp EnchantMore.jar ../plugins/
+#cp EnchantMore.jar ../plugins/

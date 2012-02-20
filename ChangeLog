@@ -1,5 +1,6 @@
 X   X
-    * Change Boots + Punch = hover jump, now activate by double-tapping shift
+    * Change Boots + Punch = hover jump, now activated by double-tapping shift
+    * Improve Shovel + Power = excavate, now can excavate sand
 
 2012-02-18  0.5.7
     * Add Bow + Respiration = stapled arrows (attach adjacent item in inventory)
