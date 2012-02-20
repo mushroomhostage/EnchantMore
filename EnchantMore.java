@@ -405,8 +405,18 @@ class EnchantMoreListener implements Listener {
         } else if (isPickaxe(item.getType())) {
             // Pickaxe + Power = instantly break anything (including bedrock)
             if (item.containsEnchantment(POWER)) {
-                // Note: this also works for bedrock!
-                block.breakNaturally(item);
+                // level 1 just breaks one block, but,
+                // higher powers cut diagonal strip in direction facing
+                // TODO: cut only in orthogonal directions? or only if in threshold?
+                int level = item.getEnchantmentLevel(POWER);
+                int dx = (int)Math.signum(block.getLocation().getX() - player.getLocation().getX());
+                int dy = (int)Math.signum(block.getLocation().getY() - player.getLocation().getY());
+                int dz = (int)Math.signum(block.getLocation().getZ() - player.getLocation().getZ());
+                for (int i = 0; i < level; i += 1) {
+                    // Note: this also works for bedrock!
+                    plugin.log.info("break "+i);
+                    block.getRelative(dx*i, dy*i, dz*i).breakNaturally(item);
+                }
 
                 damage(item, player);
             }
