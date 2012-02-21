@@ -109,7 +109,7 @@ class EnchantMoreListener implements Listener {
 
     static Random random;
    
-    EnchantMore plugin;
+    static EnchantMore plugin;
 
     public EnchantMoreListener(EnchantMore pl) {
         plugin = pl;
@@ -117,6 +117,18 @@ class EnchantMoreListener implements Listener {
         random = new Random();
 
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    static public boolean hasEnch(ItemStack tool, Enchantment ench, Player player) {
+        // TODO: config enable/disable
+        // TODO: optional player permission support
+        return tool.containsEnchantment(ench);
+    }
+
+    static public int getLevel(ItemStack tool, Enchantment ench, Player player) {
+        // TODO: config max level support
+        // TODO: optional player permission max level support
+        return tool.getEnchantmentLevel(ench);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
@@ -136,13 +148,13 @@ class EnchantMoreListener implements Listener {
 
         if (item.getType() == Material.BOW && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
             // Bow + Efficiency = instant shoot
-            if (item.containsEnchantment(EFFICIENCY)) {
+            if (hasEnch(item, EFFICIENCY, player)) {
                 player.shootArrow();
             }
         } else if (isSword(item.getType())) {
             if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
                 // Sword + Power = strike lightning 100+ meters away
-                if (item.containsEnchantment(POWER)) {
+                if (hasEnch(item, POWER, player)) {
                     int maxDistance = 100;  // TODO: configurable
                     Block target = player.getTargetBlock(null, maxDistance * item.getEnchantmentLevel(FLAME));
 
@@ -152,7 +164,7 @@ class EnchantMoreListener implements Listener {
                 }
             } /*else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
                 // TODO: Sword + Blast Protection = blocking summons summon fireballs
-                if (item.containsEnchantment(BLAST_PROTECTION)) {
+                if (hasEnch(item, BLAST_PROTECTION, player)) {
                     // http://forums.bukkit.org/threads/summoning-a-fireball.40724/#post-738436
                     Location loc = event.getPlayer().getLocation();
                     Block b = event.getPlayer().getTargetBlock(null, 100 * item.getEnchantmentLevel(BLAST_PROTECTION));
@@ -170,7 +182,7 @@ class EnchantMoreListener implements Listener {
             // TODO: Aqua Affinity = slowness
         } else if (isShovel(item.getType())) {
             // Shovel + Silk Touch II = harvest fire (secondary)
-            if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2 &&
+            if (hasEnch(item, SILK_TOUCH, player) && item.getEnchantmentLevel(SILK_TOUCH) >= 2 &&
                 (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
                 Block target = player.getTargetBlock(null, 3 * item.getEnchantmentLevel(SILK_TOUCH));
 
@@ -180,7 +192,7 @@ class EnchantMoreListener implements Listener {
             }
         } else if (isHoe(item.getType())) {
             // Hoe + Power = move time
-            if (item.containsEnchantment(POWER)) {
+            if (hasEnch(item, POWER, player)) {
                 int sign, amount;
                 switch(item.getType()) {
                 case WOOD_HOE: amount = 1; break;
@@ -208,7 +220,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Hoe + Bane of Arthropods = toggle downfall
-            if (item.containsEnchantment(BANE)) {
+            if (hasEnch(item, BANE, player)) {
                 world.setStorm(!world.hasStorm());
                 damage(item, player);
             }
@@ -223,7 +235,7 @@ class EnchantMoreListener implements Listener {
 
         if (item.getType() == Material.SHEARS) {
             // Shears + Power = cut grass, build hedges (secondary effect)
-            if (item.containsEnchantment(POWER)) {
+            if (hasEnch(item, POWER, player)) {
                 int n = item.getEnchantmentLevel(POWER);
                 // on grass: cut into dirt
                 if (block.getType() == Material.GRASS) {
@@ -263,19 +275,19 @@ class EnchantMoreListener implements Listener {
             }
         } else if (item.getType() == Material.FLINT_AND_STEEL && action == Action.RIGHT_CLICK_BLOCK) {
             // Flint & Steel + Smite = strike lightning ([details](http://dev.bukkit.org/server-mods/enchantmore/images/8-fishing-rod-smite-strike-lightning/))
-            if (item.containsEnchantment(SMITE)) {
+            if (hasEnch(item, SMITE, player)) {
                 world.strikeLightning(block.getLocation());
                 damage(item, 9, player);
             }
 
             // Flint & Steel + Fire Protection = fire resistance ([details](http://dev.bukkit.org/server-mods/enchantmore/images/10-flint-steel-fire-protection-fire-resistance/))
-            if (item.containsEnchantment(FIRE_PROTECTION)) {
+            if (hasEnch(item, FIRE_PROTECTION, player)) {
                 applyPlayerEffect(player, EFFECT_FIRE_RESISTANCE, item.getEnchantmentLevel(FIRE_PROTECTION));
                 // no extra damage
             }
 
             // Flint & Steel + Aqua Affinity = vaporize water ([details](http://dev.bukkit.org/server-mods/enchantmore/images/9-flint-steel-aqua-affinity-vaporize-water/))
-            if (item.containsEnchantment(AQUA_AFFINITY)) {
+            if (hasEnch(item, AQUA_AFFINITY, player)) {
                 // Find water within ignited cube area
                 int r = item.getEnchantmentLevel(AQUA_AFFINITY);
 
@@ -300,7 +312,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Flint & Steel + Sharpness = fiery explosion
-            if (item.containsEnchantment(SHARPNESS)) {
+            if (hasEnch(item, SHARPNESS, player)) {
                 float power = (item.getEnchantmentLevel(SHARPNESS) - 1) * 1.0f;
 
                 world.createExplosion(block.getLocation(), power, true);
@@ -309,7 +321,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Flint & Steel + Efficiency = burn faster (turn wood to grass)
-            if (item.containsEnchantment(EFFICIENCY)) {
+            if (hasEnch(item, EFFICIENCY, player)) {
                 if (isWoodenBlock(block.getType(), block.getData())) {
                     block.setType(Material.LEAVES);
                     // TODO: data? just leaving as before, but type may be unexpected
@@ -319,7 +331,7 @@ class EnchantMoreListener implements Listener {
 
         } else if (isHoe(item.getType())) {
             // Hoe + Aqua Affinity = auto-hydrate ([details](http://dev.bukkit.org/server-mods/enchantmore/images/11-hoe-aqua-affinity-auto-hydrate/))
-            if (item.containsEnchantment(AQUA_AFFINITY)) {
+            if (hasEnch(item, AQUA_AFFINITY, player)) {
                 // As long as not in hell, hydrate nearby
                 if (world.getEnvironment() != World.Environment.NETHER) {
                     int n = item.getEnchantmentLevel(AQUA_AFFINITY);
@@ -348,7 +360,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Hoe + Fortune = chance to drop seeds
-            if (item.containsEnchantment(FORTUNE) && action == Action.RIGHT_CLICK_BLOCK) {
+            if (hasEnch(item, FORTUNE, player) && action == Action.RIGHT_CLICK_BLOCK) {
                 if (block.getType() == Material.DIRT || block.getType() == Material.GRASS) {
                     if (random.nextInt(2) != 0) {   // TODO: configurable, and depend on level
                         Material seedType;
@@ -371,7 +383,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Hoe + Efficiency = till larger area
-            if (item.containsEnchantment(EFFICIENCY)) { // also can use left-click, for efficiency!
+            if (hasEnch(item, EFFICIENCY, player)) { // also can use left-click, for efficiency!
                 int r = item.getEnchantmentLevel(EFFICIENCY);
 
                 Location loc = block.getLocation();
@@ -395,7 +407,7 @@ class EnchantMoreListener implements Listener {
             // Note, left-click will also destroy sensitive plants (wheat, saplings, though interestingly not shrooms),
             // so it will only work on blocks like grass (which does not break instantly). For 
             // this reason, also allow right-click for grow, even though it means you cannot till.
-            if (item.containsEnchantment(RESPIRATION)) {
+            if (hasEnch(item, RESPIRATION, player)) {
                 growStructure(block.getLocation(), player);
                 damage(item, player);
 
@@ -404,7 +416,7 @@ class EnchantMoreListener implements Listener {
             }
         } else if (isPickaxe(item.getType())) {
             // Pickaxe + Power = instantly break anything (including bedrock)
-            if (item.containsEnchantment(POWER)) {
+            if (hasEnch(item, POWER, player)) {
                 // level 1 just breaks one block, but,
                 // higher powers cut diagonal strip in direction facing
                 // TODO: cut only in orthogonal directions? or only if in threshold?
@@ -621,14 +633,14 @@ class EnchantMoreListener implements Listener {
             }
 
             // Flint & Steel + Fire Aspect = set mobs on fire
-            if (item.containsEnchantment(FIRE_ASPECT)) {
+            if (hasEnch(item, FIRE_ASPECT, player)) {
                 entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
                 damage(item, player);
 
                 // Flint & Steel + Fire Protection = player fire resistance (secondary)
                 // We apply this for lighting blocks, too; this one is for attacking mobs
-                if (item.containsEnchantment(FIRE_PROTECTION)) {
+                if (hasEnch(item, FIRE_PROTECTION, player)) {
                     applyPlayerEffect(player, EFFECT_FIRE_RESISTANCE, item.getEnchantmentLevel(FIRE_PROTECTION));
                     // no extra damage
                 }
@@ -636,7 +648,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Flint & Steel + Respiration = smoke inhalation (confusion effect on player)
-            if (item.containsEnchantment(RESPIRATION)) {
+            if (hasEnch(item, RESPIRATION, player)) {
                 world.playEffect(entity.getLocation(), Effect.SMOKE, 0);    // TOOD: smoke direction
                 world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);    // TOOD: smoke direction
 
@@ -649,7 +661,7 @@ class EnchantMoreListener implements Listener {
             }
         } else if (item.getType() == Material.SHEARS) {
             // Shears + Smite = gouge eyes (blindness effect on player)
-            if (item.containsEnchantment(SMITE)) {
+            if (hasEnch(item, SMITE, player)) {
                 if (entity instanceof CraftPlayer) {
                     applyPlayerEffect((CraftPlayer)entity, EFFECT_BLINDNESS, item.getEnchantmentLevel(SMITE));
 
@@ -658,7 +670,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Shears + Bane of Arthropods = collect spider eyes
-            if (item.containsEnchantment(BANE)) {
+            if (hasEnch(item, BANE, player)) {
                 if (entity instanceof CaveSpider || entity instanceof Spider) {
                     Creature bug = (Creature)entity;
 
@@ -674,7 +686,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Shears + Looting = feathers from chicken, leather from cows (secondary)
-            if (item.containsEnchantment(LOOTING)) {
+            if (hasEnch(item, LOOTING, player)) {
                 if (entity instanceof Chicken) {
                     Creature bird = (Creature)entity;
 
@@ -702,7 +714,7 @@ class EnchantMoreListener implements Listener {
             /*
             // BLOCKED: Sword + ? = night vision when blocking 
             // The visual effect plays (navy blue swirly particles), but doesn't actually do anything as of Minecraft 1.1
-            if (item.containsEnchantment(FLAME)) {
+            if (hasEnch(item, FLAME, player)) {
                 applyPlayerEffect(player, EFFECT_NIGHT_VISION, item.getEnchantmentLevel(FLAME));
                 damage(item, player);
             }
@@ -710,7 +722,7 @@ class EnchantMoreListener implements Listener {
             // BLOCKED: Sword + ? = invisibility when blocking 
             // Also has no implemented effect in Minecraft 1.1. Maybe a plugin could use?
             // TODO: use Vanish API in dev builts of Bukkit, that VanishNoPacket uses
-            if (item.containsEnchantment(INFINITE)) {
+            if (hasEnch(item, INFINITE, player)) {
                 applyPlayerEffect(player, EFFECT_INVISIBILITY, item.getEnchantmentLevel(INFINITE));
                 damage(item, player);
             }
@@ -718,7 +730,7 @@ class EnchantMoreListener implements Listener {
 
 
             // Sword + Protection = resistance when blocking 
-            if (item.containsEnchantment(PROTECTION)) {
+            if (hasEnch(item, PROTECTION, player)) {
                 applyPlayerEffect(player, EFFECT_RESISTANCE, item.getEnchantmentLevel(PROTECTION));
                 damage(item, player);
             }
@@ -790,7 +802,7 @@ class EnchantMoreListener implements Listener {
             // Pickaxe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
             // Shovel + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
             // Axe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
-            if (item.containsEnchantment(FLAME)) {
+            if (hasEnch(item, FLAME, player)) {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
 
                 boolean naturalDrop = true;
@@ -816,7 +828,7 @@ class EnchantMoreListener implements Listener {
 
             if (isAxe(item.getType())) {
                 // Axe + Power = fell tree ([details](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
-                if (item.containsEnchantment(POWER) && block.getType() == Material.LOG) {
+                if (hasEnch(item, POWER, player) && block.getType() == Material.LOG) {
                     fellTree(block, item, item.getEnchantmentLevel(POWER));
                     event.setCancelled(true);
                     // no extra damage
@@ -825,7 +837,7 @@ class EnchantMoreListener implements Listener {
 
             if (isShovel(item.getType())) {
                 // Shovel + Power = excavation (dig large area, no drops)
-                if (item.containsEnchantment(POWER) && isExcavatable(block.getType())) {
+                if (hasEnch(item, POWER, player) && isExcavatable(block.getType())) {
                     // Clear out those annoying veins of gravel (or dirt)
 
                     // Dig a cube out, but no drops
@@ -855,7 +867,7 @@ class EnchantMoreListener implements Listener {
 
                 // Shovel + Silk Touch II = harvest fallen snow, fire
                 // (fire elsewhere)
-                if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
+                if (hasEnch(item, SILK_TOUCH, player) && item.getEnchantmentLevel(SILK_TOUCH) >= 2) {
                     if (block.getType() == Material.SNOW) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
                         block.setType(Material.AIR);
@@ -866,7 +878,7 @@ class EnchantMoreListener implements Listener {
             }
             if (isPickaxe(item.getType())) {
                 // Pickaxe + Silk Touch II = harvest ice
-                if (item.containsEnchantment(SILK_TOUCH) && item.getEnchantmentLevel(SILK_TOUCH) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", 2)) {
+                if (hasEnch(item, SILK_TOUCH, player) && item.getEnchantmentLevel(SILK_TOUCH) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", 2)) {
                     if (block.getType() == Material.ICE) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
                         block.setType(Material.AIR);
@@ -879,7 +891,7 @@ class EnchantMoreListener implements Listener {
                 }
 
                 // Pickaxe + Looting = deconstruct (reverse crafting)
-                if (item.containsEnchantment(LOOTING)) {
+                if (hasEnch(item, LOOTING, player)) {
                     // partly inspired by Advanced Shears' bookshelves/ladders/jackolatern/stickypiston disassembling
                     // http://forums.bukkit.org/threads/edit-fun-misc-advancedshears-v-1-3-cut-through-more-blocks-and-mobs-953-1060.24746/
                     Collection<ItemStack> finishedDrops = block.getDrops(item);
@@ -913,7 +925,7 @@ class EnchantMoreListener implements Listener {
             }
         } else if (item.getType() == Material.SHEARS) {
             // Shears + Silk Touch = collect cobweb, dead bush
-            if (item.containsEnchantment(SILK_TOUCH)) {
+            if (hasEnch(item, SILK_TOUCH, player)) {
                 // Note: you can collect dead bush with shears on 12w05a!
                 // http://www.reddit.com/r/Minecraft/comments/pc2rs/just_noticed_dead_bush_can_be_collected_with/
                 if (block.getType() == Material.DEAD_BUSH ||
@@ -928,7 +940,7 @@ class EnchantMoreListener implements Listener {
             }
 
             // Shears + Fortune = apples from leaves
-            if (item.containsEnchantment(FORTUNE)) {
+            if (hasEnch(item, FORTUNE, player)) {
                 if (block.getType() == Material.LEAVES) {
                     Material dropType;
 
@@ -948,7 +960,7 @@ class EnchantMoreListener implements Listener {
 
             // Shears + Power = hedge trimmer/builder; cut grass
             // see also secondary effect above
-            if (item.containsEnchantment(POWER) && block.getType() == Material.LEAVES) {
+            if (hasEnch(item, POWER, player) && block.getType() == Material.LEAVES) {
                 event.setCancelled(true);
                 hedgeTrimmer(block, item, item.getEnchantmentLevel(POWER));
                 // no extra damage
@@ -956,7 +968,7 @@ class EnchantMoreListener implements Listener {
 
         } else if (isHoe(item.getType())) {
             // Hoe + Silk Touch = collect farmland, crop block, pumpkin/melon stem, cake block, sugarcane block, netherwart block (preserving data)
-            if (item.containsEnchantment(SILK_TOUCH)) {
+            if (hasEnch(item, SILK_TOUCH, player)) {
                 // Collect farm-related blocks, preserving the growth/wetness/eaten data
                 if (isFarmBlock(block.getType())) {
                     ItemStack drop = new ItemStack(block.getType(), 1);
@@ -987,7 +999,7 @@ class EnchantMoreListener implements Listener {
         ItemStack item = player.getItemInHand();
 
         // Set data of farm-related block
-        if (item != null && item.containsEnchantment(SILK_TOUCH)) {
+        if (item != null && hasEnch(item, SILK_TOUCH, player)) {
             if (isFarmBlock(item.getType())) {
                 plugin.log.info("data"+item.getEnchantmentLevel(SILK_TOUCH));
                 // broken in 1.1-R2??
@@ -1118,7 +1130,7 @@ class EnchantMoreListener implements Listener {
 
         // Shears + Looting = more wool (random colors); feathers from chickens, leather from cows
         // see also secondary effect above
-        if (tool.getType() == Material.SHEARS && tool.containsEnchantment(LOOTING)) {
+        if (tool.getType() == Material.SHEARS && hasEnch(tool, LOOTING, player)) {
             Location loc = entity.getLocation();
 
             int quantity = random.nextInt(tool.getEnchantmentLevel(LOOTING) * 2);
@@ -1161,7 +1173,7 @@ class EnchantMoreListener implements Listener {
         Entity passenger = arrow.getPassenger();
         if (passenger != null) {
             // Bow + Respiration = stapled arrows (attach adjacent item in inventory)
-            if (bow.containsEnchantment(RESPIRATION)) {
+            if (hasEnch(bow, RESPIRATION, player)) {
                 if (passenger instanceof Item) {
                     Item item = (Item)passenger;
                     ItemStack itemStack = item.getItemStack();
@@ -1233,14 +1245,14 @@ class EnchantMoreListener implements Listener {
             } 
 
             // Bow + Silk Touch = magnetic arrows (transport nearby entity) (secondary)
-            if (bow.containsEnchantment(SILK_TOUCH)) {
+            if (hasEnch(bow, SILK_TOUCH, player)) {
                 passenger.teleport(dest);
             }
         }
 
 
         // Bow + Looting = steal ([details](http://dev.bukkit.org/server-mods/enchantmore/images/6-bow-looting-steal/))
-        if (bow.containsEnchantment(LOOTING)) {
+        if (hasEnch(bow, LOOTING, player)) {
             double s = 5.0 * bow.getEnchantmentLevel(LOOTING);
 
             List<Entity> loots = arrow.getNearbyEntities(s, s, s);
@@ -1252,19 +1264,19 @@ class EnchantMoreListener implements Listener {
         }
 
         // Bow + Smite = strike lightning
-        if (bow.containsEnchantment(SMITE)) {
+        if (hasEnch(bow, SMITE, player)) {
             world.strikeLightning(dest);
         }
 
         // Bow + Fire Aspect = fiery explosions ([details](http://dev.bukkit.org/server-mods/enchantmore/images/5-bow-fire-aspect-fiery-explosions/))
-        if (bow.containsEnchantment(FIRE_ASPECT)) {
+        if (hasEnch(bow, FIRE_ASPECT, player)) {
             float power = 1.0f * bow.getEnchantmentLevel(FIRE_ASPECT);
 
             world.createExplosion(dest, power, true);
         }
 
         // Bow + Aqua Affinity = freeze water, stun players
-        if (bow.containsEnchantment(AQUA_AFFINITY)) {
+        if (hasEnch(bow, AQUA_AFFINITY, player)) {
             int r = bow.getEnchantmentLevel(AQUA_AFFINITY);
 
             // freeze water 
@@ -1299,7 +1311,7 @@ class EnchantMoreListener implements Listener {
         }
 
         // Bow + Knockback = pierce blocks
-        if (bow.containsEnchantment(KNOCKBACK)) {
+        if (hasEnch(bow, KNOCKBACK, player)) {
             class ArrowPierceTask implements Runnable {
                 Arrow arrow;
                 int depth;
@@ -1350,7 +1362,7 @@ class EnchantMoreListener implements Listener {
         // TODO: fire protection = remove water (like flint & steel aqua affinity)
 
         // Bow + Bane of Arthropods = poison
-        if (bow.containsEnchantment(BANE)) {
+        if (hasEnch(bow, BANE, player)) {
             // TODO: only poison hit player!
 
             // poison nearby players
@@ -1365,7 +1377,7 @@ class EnchantMoreListener implements Listener {
         }
 
         // Bow + Feather Falling = teleport ([details](http://dev.bukkit.org/server-mods/enchantmore/images/4-bow-feather-falling-teleport/))
-        if (bow.containsEnchantment(FEATHER_FALLING)) {
+        if (hasEnch(bow, FEATHER_FALLING, player)) {
             // use up the arrow (TODO: not at higher levels?) or set no pickup?
             arrow.remove();
 
@@ -1448,21 +1460,21 @@ class EnchantMoreListener implements Listener {
             }
 
             // Fishing Rod + Fire Aspect = set mobs on fire
-            if (item.containsEnchantment(FIRE_ASPECT)) {
+            if (hasEnch(item, FIRE_ASPECT, player)) {
                 entity.setFireTicks(getFireTicks(item.getEnchantmentLevel(FIRE_ASPECT)));
 
                 damage(item, player);
             }
             
             // Fishing Rod + Smite = strike mobs with lightning
-            if (item.containsEnchantment(SMITE)) {
+            if (hasEnch(item, SMITE, player)) {
                 world.strikeLightning(entity.getLocation());
 
                 damage(item, player);
             }
         } else if (state == PlayerFishEvent.State.CAUGHT_FISH) {
             // Fishing Rod + Flame = catch cooked fish
-            if (item.containsEnchantment(FLAME)) {
+            if (hasEnch(item, FLAME, player)) {
                 event.setCancelled(true);
 
                 // replace raw with cooked (TODO: play well with all other enchantments)
@@ -1470,13 +1482,13 @@ class EnchantMoreListener implements Listener {
             }
 
             // Fishing Rod + Looting = catch extra fish
-            if (item.containsEnchantment(LOOTING)) {
+            if (hasEnch(item, LOOTING, player)) {
                 // one extra per level
                 world.dropItemNaturally(player.getLocation(), new ItemStack(Material.RAW_FISH, item.getEnchantmentLevel(FORTUNE)));
             }
 
             // Fishing Rod + Fortune = catch junk ([details](http://dev.bukkit.org/server-mods/enchantmore/images/7-fishing-rod-fortune-catch-sunken-treasure/))
-            if (item.containsEnchantment(FORTUNE)) {
+            if (hasEnch(item, FORTUNE, player)) {
                 int quantity  = item.getEnchantmentLevel(FORTUNE);
 
                 Material m;
@@ -1516,7 +1528,7 @@ class EnchantMoreListener implements Listener {
 
         } else if (state == PlayerFishEvent.State.FAILED_ATTEMPT) {
             // Fishing Rod + Silk Touch = catch more reliably
-            if (item.containsEnchantment(SILK_TOUCH)) {
+            if (hasEnch(item, SILK_TOUCH, player)) {
                 // probability
                 // TODO: configurable levels, maybe to 100?
                 // 4 = always
@@ -1534,7 +1546,7 @@ class EnchantMoreListener implements Listener {
             // no extra damage
         } else if (state == PlayerFishEvent.State.FISHING) {
             // Fishing Rod + Efficiency = fish faster
-            if (item.containsEnchantment(EFFICIENCY)) {
+            if (hasEnch(item, EFFICIENCY, player)) {
                
                 // 13 seconds for level 1, down to 1 for level 7
                 int delayTicks = (15 - item.getEnchantmentLevel(EFFICIENCY) * 2) * 20;
@@ -1575,7 +1587,7 @@ class EnchantMoreListener implements Listener {
         Player player = (Player)shooter;
 
         // Bow + Sharpness = increase velocity
-        if (bow.containsEnchantment(SHARPNESS)) {
+        if (hasEnch(bow, SHARPNESS, player)) {
             double factor = 2.0 * bow.getEnchantmentLevel(SHARPNESS);   // TODO: configurable factor
 
             // TODO: instead of scalar multiplication, therefore also multiplying the 'shooting inaccuracy'
@@ -1586,7 +1598,7 @@ class EnchantMoreListener implements Listener {
         }
 
         // Bow + Respiration = stapled arrows (secondary) (see above)
-        if (bow.containsEnchantment(RESPIRATION)) {
+        if (hasEnch(bow, RESPIRATION, player)) {
             World world = player.getWorld();
             PlayerInventory inventory = player.getInventory();
             int arrowSlot = inventory.first(Material.ARROW);
@@ -1620,7 +1632,7 @@ class EnchantMoreListener implements Listener {
         }
 
         // Bow + Silk Touch = magnetic arrows (transport nearby entity)
-        if (bow.containsEnchantment(SILK_TOUCH)) {
+        if (hasEnch(bow, SILK_TOUCH, player)) {
             double range = 10.0 * bow.getEnchantmentLevel(SILK_TOUCH);
             List<Entity> nearby = player.getNearbyEntities(range, range, range);
 
@@ -1672,7 +1684,7 @@ class EnchantMoreListener implements Listener {
         Player player = (Player)entity;
 
         ItemStack helmet = player.getInventory().getHelmet();
-        if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
+        if (helmet != null && hasEnch(helmet, FIRE_ASPECT, player)) {
             event.setCancelled(true);
         }
     }*/
@@ -1682,7 +1694,7 @@ class EnchantMoreListener implements Listener {
         ItemStack chestplate = playerDamaged.getInventory().getChestplate();
 
         // Chestplate + Infinity = god mode (no damage/hunger)
-        if (chestplate != null && chestplate.containsEnchantment(INFINITE)) {
+        if (chestplate != null && hasEnch(chestplate, INFINITE, playerDamaged)) {
             // no damage ever
             // TODO: also need to cancel death? can die elsewhere? (other plugins)
             event.setCancelled(true);
@@ -1697,7 +1709,7 @@ class EnchantMoreListener implements Listener {
             cause == EntityDamageEvent.DamageCause.FIRE_TICK) {
             ItemStack helmet = playerDamaged.getInventory().getHelmet();
             // Helmet + Fire Aspect = swim in lava
-            if (helmet != null && helmet.containsEnchantment(FIRE_ASPECT)) {
+            if (helmet != null && hasEnch(helmet, FIRE_ASPECT, playerDamaged)) {
                 event.setCancelled(true);   // stop knockback and damage
                 //event.setDamage(0);
                 playerDamaged.setFireTicks(0);     // cool off immediately after exiting lava
@@ -1723,7 +1735,7 @@ class EnchantMoreListener implements Listener {
                 Arrow arrow = (Arrow)damager;
 
                 // Chestplate + Knockback = reflect arrows
-                if (chestplate != null && chestplate.containsEnchantment(KNOCKBACK)) {
+                if (chestplate != null && hasEnch(chestplate, KNOCKBACK, playerDamaged)) {
                     event.setCancelled(true);   // stop arrow damage
                     playerDamaged.shootArrow();        // reflect arrow
 
@@ -1774,7 +1786,7 @@ class EnchantMoreListener implements Listener {
         // TODO: Sword + Infinity = sudden death
         // disabled for now since doesn't work on enderdragon, where it would be most useful!
         /*
-        if (weapon.containsEnchantment(INFINITE)) {
+        if (hasEnch(weapon, INFINITE, player)) {
             plugin.log.info("infinity sword! on "+entity);
             if (entity instanceof LivingEntity) {
                 plugin.log.info("KILL");
@@ -1806,7 +1818,7 @@ class EnchantMoreListener implements Listener {
 
         if (item != null && isSword(item.getType())) {
             // Sword + Flame = create semi-permanent lit path
-            if (item.containsEnchantment(FLAME)) {
+            if (hasEnch(item, FLAME, player)) {
                 // Task to light up player, as long as its holding the right tool
                 class EnchantMoreFlameLightTask implements Runnable {
                     Player player;
@@ -1821,7 +1833,7 @@ class EnchantMoreListener implements Listener {
                         ItemStack item = player.getItemInHand();
 
                         if (item != null && EnchantMoreListener.isSword(item.getType())) {
-                            if (item.containsEnchantment(EnchantMoreListener.FLAME)) {
+                            if (hasEnch(item, EnchantMoreListener.FLAME, player)) {
                                 Location to = player.getLocation();
                                 World world = to.getWorld();
 
@@ -1878,7 +1890,7 @@ class EnchantMoreListener implements Listener {
         ItemStack boots = player.getInventory().getBoots();
 
         // Boots + Punch = hover jump (double-tap shift)
-        if (boots != null && boots.containsEnchantment(PUNCH)) {
+        if (boots != null && hasEnch(boots, PUNCH, player)) {
             EnchantMoreHoverJumpTask.bumpSneakCount(player);
 
             if (EnchantMoreHoverJumpTask.shouldHoverJump(player)) {
@@ -1902,7 +1914,7 @@ class EnchantMoreListener implements Listener {
 
         if (itemStack != null && isSword(itemStack.getType())) {
             // Sword + Fire Protection = return to player when dropped in lava
-            if (itemStack.containsEnchantment(FIRE_PROTECTION)) {
+            if (hasEnch(itemStack, FIRE_PROTECTION, null)) {    // no player.. TODO: find nearest player, check if has permission
                 event.setCancelled(true);
 
                 double range = 10.0 * itemStack.getEnchantmentLevel(FIRE_PROTECTION);
@@ -1930,7 +1942,7 @@ class EnchantMoreListener implements Listener {
 
         ItemStack chestplate = player.getInventory().getChestplate();
         // Chestplate + Infinity = no hunger (secondary)
-        if (chestplate != null && chestplate.containsEnchantment(INFINITE)) {
+        if (chestplate != null && hasEnch(chestplate, INFINITE, player)) {
             event.setFoodLevel(20); // max
             // not cancelled, so still can eat
         }
@@ -2070,7 +2082,7 @@ class EnchantMorePlayerMoveListener implements Listener {
 
         if (boots != null) {
             // Boots + Power = witch's broom (sprint flying)
-            if (boots.containsEnchantment(EnchantMoreListener.POWER)) {
+            if (EnchantMoreListener.hasEnch(boots, EnchantMoreListener.POWER, player)) {
                 if (player.isSprinting()) {
                     Vector velocity = event.getTo().getDirection().normalize().multiply(boots.getEnchantmentLevel(EnchantMoreListener.POWER));
 
@@ -2086,7 +2098,7 @@ class EnchantMorePlayerMoveListener implements Listener {
             }
 
             // Boots + Flame = firewalker (set ground on fire)
-            if (boots.containsEnchantment(EnchantMoreListener.FLAME)) {
+            if (EnchantMoreListener.hasEnch(boots, EnchantMoreListener.FLAME, player)) {
                 Location to = event.getTo();
                 Location from = event.getFrom();
                 World world = from.getWorld();
@@ -2111,7 +2123,7 @@ class EnchantMorePlayerMoveListener implements Listener {
 
             // TODO: Boots + Aqua Affinity = walk on water
             /*
-            if (boots.containsEnchantment(EnchantMoreListener.AQUA_AFFINITY)) {
+            if (EnchantMoreListener.hasEnch(boots, EnchantMoreListener.AQUA_AFFINITY, player)) {
                 World world = event.getTo().getWorld();
                 Block block = event.getTo().getBlock();
 
@@ -2130,7 +2142,7 @@ class EnchantMorePlayerMoveListener implements Listener {
 
             // TODO: Boots + Knockback = bounce on fall
             /*
-            if (boots.containsEnchantment(EnchantMoreListener.KNOCKBACK)) {
+            if (EnchantMoreListener.hasEnch(boots, EnchantMoreListener.KNOCKBACK, player)) {
                 if (event.getTo().getY() < event.getFrom().getY()) {
                     Block block = event.getTo().getBlock();
                     Block land = block.getRelative(BlockFace.DOWN);
