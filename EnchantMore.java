@@ -224,6 +224,25 @@ class EnchantMoreListener implements Listener {
                 world.setStorm(!world.hasStorm());
                 damage(item, player);
             }
+
+            // Hoe + Fire Protection = sensor
+            if (hasEnch(item, FIRE_PROTECTION, player)) {
+                Block target = player.getTargetBlock(null, 100);
+
+                boolean showSeed = getLevel(item, FIRE_PROTECTION, player) >= 2;
+
+                int x = target.getLocation().getBlockX();
+                int z = target.getLocation().getBlockZ();
+                // TODO: nice colors
+                player.sendMessage(
+                    //"Humidity "+world.getHumidity(x, z)+", "+ // not compatible with 1.8
+                    //"Temperature "+world.getTemperature(x, z)+", "+
+                    "Biome "+world.getBiome(x, z)+", "+
+                    "Time "+world.getFullTime()+", "+
+                    "Sea Level "+world.getSeaLevel()+", "+
+                    "Weather "+world.getWeatherDuration()+     // TODO: only if rain/storm?
+                    (showSeed ? (", Seed "+world.getSeed()) : ""));
+            }
         }
 
         if (block == null) {
