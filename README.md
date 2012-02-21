@@ -14,6 +14,7 @@ ranging from entertainingly destructive to legitimately useful.
 
 **Important**: to enchant items, you currently need to use an enchanting plugin or inventory editor. EnchantMore does not yet enchant items itself or alter enchantment tables. Known plugins compatible with EnchantMore:
 
+* [EasyEnchant](http://dev.bukkit.org/server-mods/easyenchant/) - Exception section in the config to enable/disable item enchantments
 * [Tim The Enchanter](http://dev.bukkit.org/server-mods/enchanter/) - /enchant command for ops
 * [AutoEnchanter](http://dev.bukkit.org/server-mods/autoenchanter/) - set "unsafe" to true in config 
 
