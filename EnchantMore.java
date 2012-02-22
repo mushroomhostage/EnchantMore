@@ -1977,6 +1977,20 @@ class EnchantMoreListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
+    public void onEntityExplode(EntityExplodeEvent event) {
+        Entity entity = event.getEntity();
+
+        World world = entity.getWorld();
+
+        double range = 10.0;
+        List<Entity> nearbyEntities = entity.getNearbyEntities(range, range, range);
+
+        // TODO: Pickaxe + Blast Protection = 
+
+        plugin.log.info("exp "+nearbyEntities);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onEntityCombust(EntityCombustEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Item)) {
