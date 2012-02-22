@@ -1980,14 +1980,47 @@ class EnchantMoreListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         Entity entity = event.getEntity();
 
+        if (!(entity instanceof Creeper)) {
+            return;
+        }
+
+        Location blastLocation = entity.getLocation();
+
         World world = entity.getWorld();
+        List<Player> players = world.getPlayers();
 
-        double range = 10.0;
-        List<Entity> nearbyEntities = entity.getNearbyEntities(range, range, range);
+        // Check nearby player inventories
+        for (Player player: players) {
+            if (!player.getWorld().equals(world)) {
+                continue;
+            }
 
-        // TODO: Pickaxe + Blast Protection = 
+            PlayerInventory inventory = player.getInventory();
+            ItemStack[] contents = inventory.getContents();
+            for (int i = 0; i < contents.length; i += 1) {
+                ItemStack item = contents[i];
+                if (item != null && isPickaxe(item.getType())) {
+                    if (hasEnch(item, BLAST_PROTECTION, player)) {
+                        double range = getLevel(item, BLAST_PROTECTION, player) * 10.0;
 
-        plugin.log.info("exp "+nearbyEntities);
+                        // Pickaxe + Blast Protection = anti-creeper (cancel nearby explosion)
+                        Location loc = player.getLocation();
+
+                        double d2 = loc.distanceSquared(blastLocation);
+                        //plugin.log.info("d2="+d2);
+                        if (d2 < range) {
+                            //plugin.log.info("cancel "+range);
+                            event.setCancelled(true);
+
+                            //world.playEffect(blastLocation, Effect.SMOKE, 0); // TODO
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        // TODO: also cancel blast if nearby chests/dispensers/furnaces have this item!!
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)

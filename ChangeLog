@@ -1,8 +1,11 @@
 X   X
+    
     * Add Axe + Respiration = generate tree
     * Add Hoe + Fire Protection = sensor
     * Add Leggings + Punch = rocket launch pants (double-tap shift)
+    * Add Pickaxe + Blast Protection = anti-creeper (cancel nearby explosion)
     * Change Boots + Punch = hover jump, now activated by double-tapping shift
+      Fixes conflict with Shift for sneaking
     * Improve Shovel + Power = excavate, now can excavate sand
 
 2012-02-18  0.5.7
