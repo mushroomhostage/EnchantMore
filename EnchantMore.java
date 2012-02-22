@@ -1940,9 +1940,30 @@ class EnchantMoreListener implements Listener {
         Player player = event.getPlayer();
 
         ItemStack boots = player.getInventory().getBoots();
+        ItemStack leggings = player.getInventory().getLeggings();
 
+        // Leggings + Punch = rocket launch pants (double-tap shift)
+        if (leggings != null && hasEnch(leggings, PUNCH, player)) {
+            EnchantMoreTapShiftTask.bumpSneakCount(player);
+
+            if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
+                int n = leggings.getEnchantmentLevel(PUNCH);
+
+                Location loc = player.getLocation();
+
+                Block blockOn = loc.getBlock().getRelative(BlockFace.DOWN);
+                
+                // Only launch if on solid block
+                if (blockOn.getType() != Material.AIR && !blockOn.isLiquid()) {
+                    player.setVelocity(loc.getDirection().normalize().multiply(n * 2.5f));   // TODO: configurable factor
+                }
+            }
+
+            EnchantMoreTapShiftTask.scheduleTimeout(player, this);
+        
         // Boots + Punch = hover jump (double-tap shift)
-        if (boots != null && hasEnch(boots, PUNCH, player)) {
+        // (one or the other)
+        } else if (boots != null && hasEnch(boots, PUNCH, player)) {
             EnchantMoreTapShiftTask.bumpSneakCount(player);
 
             if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
@@ -1953,21 +1974,6 @@ class EnchantMoreListener implements Listener {
             EnchantMoreTapShiftTask.scheduleTimeout(player, this);
         }
 
-        ItemStack leggings = player.getInventory().getLeggings();
-
-        // Leggings + Punch = rocket pants (double-tap shift)
-        if (leggings != null && hasEnch(leggings, PUNCH, player)) {
-            EnchantMoreTapShiftTask.bumpSneakCount(player);
-
-            if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
-                int n = leggings.getEnchantmentLevel(PUNCH);
-
-                // TODO: only launch if standing on solid block?
-                player.setVelocity(player.getLocation().getDirection().multiply(n));
-            }
-
-            EnchantMoreTapShiftTask.scheduleTimeout(player, this);
-        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
