@@ -1983,11 +1983,11 @@ class EnchantMoreListener implements Listener {
             ItemStack[] contents = inventory.getContents();
             for (int i = 0; i < contents.length; i += 1) {
                 ItemStack item = contents[i];
-                if (item != null && isPickaxe(item.getType())) {
+                if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
                     if (hasEnch(item, BLAST_PROTECTION, player)) {
                         double range = getLevel(item, BLAST_PROTECTION, player) * 10.0;
 
-                        // Pickaxe + Blast Protection = anti-creeper (cancel nearby explosion)
+                        // Flint & Steel + Blast Protection = anti-creeper (cancel nearby explosion)
                         Location loc = player.getLocation();
 
                         double d2 = loc.distanceSquared(blastLocation);
