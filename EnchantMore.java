@@ -478,7 +478,6 @@ class EnchantMoreListener implements Listener {
                 case 8: type = TreeType.BROWN_MUSHROOM; break;
                 }
 
-                plugin.log.info("gen tree "+type);
                 world.generateTree(block.getRelative(BlockFace.UP).getLocation(), type);
 
                 damage(item, player);
@@ -1949,6 +1948,22 @@ class EnchantMoreListener implements Listener {
             if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = boots.getEnchantmentLevel(PUNCH);
                 player.setVelocity(player.getVelocity().setY(n));
+            }
+
+            EnchantMoreTapShiftTask.scheduleTimeout(player, this);
+        }
+
+        ItemStack leggings = player.getInventory().getLeggings();
+
+        // Leggings + Punch = rocket pants (double-tap shift)
+        if (leggings != null && hasEnch(leggings, PUNCH, player)) {
+            EnchantMoreTapShiftTask.bumpSneakCount(player);
+
+            if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
+                int n = leggings.getEnchantmentLevel(PUNCH);
+
+                // TODO: only launch if standing on solid block?
+                player.setVelocity(player.getLocation().getDirection().multiply(n));
             }
 
             EnchantMoreTapShiftTask.scheduleTimeout(player, this);
