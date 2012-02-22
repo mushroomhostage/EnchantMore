@@ -233,6 +233,7 @@ class EnchantMoreListener implements Listener {
 
                 int x = target.getLocation().getBlockX();
                 int z = target.getLocation().getBlockZ();
+
                 // TODO: nice colors
                 player.sendMessage(
                     //"Humidity "+world.getHumidity(x, z)+", "+ // not compatible with 1.8
@@ -240,7 +241,14 @@ class EnchantMoreListener implements Listener {
                     "Biome "+world.getBiome(x, z)+", "+
                     "Time "+world.getFullTime()+", "+
                     "Sea Level "+world.getSeaLevel()+", "+
-                    "Weather "+world.getWeatherDuration()+     // TODO: only if rain/storm?
+                    "Weather "+world.getWeatherDuration());     // TODO: only if rain/storm?
+
+                player.sendMessage(
+                    "Block "+target.getTypeId() + ";" + target.getData()+" "+
+                    "Light "+target.getLightLevel() + " ("+target.getLightFromSky()+"/"+target.getLightFromBlocks()+") "+
+                    (target.isBlockPowered() ? "Powered " : (target.isBlockIndirectlyPowered() ? " Powered (Indirect) " : "")) +
+                    (target.isLiquid() ? "Liquid " : "")+
+                    (target.isEmpty() ? "Empty " : "")+
                     (showSeed ? (", Seed "+world.getSeed()) : ""));
             }
         }
