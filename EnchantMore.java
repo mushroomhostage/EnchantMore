@@ -458,6 +458,17 @@ class EnchantMoreListener implements Listener {
 
                 damage(item, player);
             }
+
+            // TODO: Pickaxe + Respiration = regenerate chunk
+            // causes NPE, maybe have to unload, regen, reload, send?
+            /*
+            if (hasEnch(item, RESPIRATION, player)) {
+                int x = block.getLocation().getBlockX();
+                int z = block.getLocation().getBlockZ();
+
+                world.regenerateChunk(x, z);
+            }
+            */
         } else if (isAxe(item.getType())) {
             // Axe + Respiration = generate tree
             if (hasEnch(item, RESPIRATION, player)) {
