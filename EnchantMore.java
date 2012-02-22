@@ -251,8 +251,7 @@ class EnchantMoreListener implements Listener {
                     (target.isEmpty() ? "Empty " : "")+
                     (showSeed ? (", Seed "+world.getSeed()) : ""));
             }
-        }
-
+        } 
         if (block == null) {
             return;
         }
@@ -453,13 +452,40 @@ class EnchantMoreListener implements Listener {
                 int dz = (int)Math.signum(block.getLocation().getZ() - player.getLocation().getZ());
                 for (int i = 0; i < level; i += 1) {
                     // Note: this also works for bedrock!
-                    plugin.log.info("break "+i);
+                    //plugin.log.info("break "+i);
                     block.getRelative(dx*i, dy*i, dz*i).breakNaturally(item);
                 }
 
                 damage(item, player);
             }
-        } 
+        } else if (isAxe(item.getType())) {
+            // Axe + Respiration = generate tree
+            if (hasEnch(item, RESPIRATION, player)) {
+                int n = getLevel(item, RESPIRATION, player);
+                if (n < 2 || n > 8) {
+                    n = random.nextInt(7) + 2;
+                }
+
+                TreeType type = TreeType.TREE;
+                switch(n) {
+                case 2: type = TreeType.TREE; break;
+                case 3: type = TreeType.BIG_TREE; break;
+                case 4: type = TreeType.REDWOOD; break;
+                case 5: type = TreeType.TALL_REDWOOD; break;
+                case 6: type = TreeType.BIRCH; break;
+                // doesn't seem to work in 1.1-R4 TODO: bug?
+                case 7: type = TreeType.RED_MUSHROOM; break;
+                case 8: type = TreeType.BROWN_MUSHROOM; break;
+                }
+
+                plugin.log.info("gen tree "+type);
+                world.generateTree(block.getRelative(BlockFace.UP).getLocation(), type);
+
+                damage(item, player);
+            }
+        }
+
+
     }
 
    
@@ -1813,7 +1839,7 @@ class EnchantMoreListener implements Listener {
         // TODO: Sword + Infinity = sudden death
         // disabled for now since doesn't work on enderdragon, where it would be most useful!
         /*
-        if (hasEnch(weapon, INFINITE, player)) {
+        if (hasEnch(weapon, INFINITE, attacker)) {
             plugin.log.info("infinity sword! on "+entity);
             if (entity instanceof LivingEntity) {
                 plugin.log.info("KILL");
@@ -1918,14 +1944,14 @@ class EnchantMoreListener implements Listener {
 
         // Boots + Punch = hover jump (double-tap shift)
         if (boots != null && hasEnch(boots, PUNCH, player)) {
-            EnchantMoreHoverJumpTask.bumpSneakCount(player);
+            EnchantMoreTapShiftTask.bumpSneakCount(player);
 
-            if (EnchantMoreHoverJumpTask.shouldHoverJump(player)) {
+            if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = boots.getEnchantmentLevel(PUNCH);
                 player.setVelocity(player.getVelocity().setY(n));
             }
 
-            EnchantMoreHoverJumpTask.scheduleTimeout(player, this);
+            EnchantMoreTapShiftTask.scheduleTimeout(player, this);
         }
     }
 
@@ -1977,14 +2003,14 @@ class EnchantMoreListener implements Listener {
 }
 
 // Task to detect double-shift-taps for hover jumping
-class EnchantMoreHoverJumpTask implements Runnable {
+class EnchantMoreTapShiftTask implements Runnable {
     static ConcurrentHashMap<Player, Integer> playerSneakCount = null;
     static ConcurrentHashMap<Player, Integer> playerTimeoutTasks = null;
 
     EnchantMoreListener listener;
     Player player;
 
-    public EnchantMoreHoverJumpTask(EnchantMoreListener listener, Player player) {
+    public EnchantMoreTapShiftTask(EnchantMoreListener listener, Player player) {
         this.listener = listener;
         this.player = player;
     }
@@ -2004,7 +2030,7 @@ class EnchantMoreHoverJumpTask implements Runnable {
         // Window of time must hit shift twice for hover jump to be activated
         int timeoutTicks = 20/2;  // 1/2 second = 500 ms
 
-        int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(listener.plugin, new EnchantMoreHoverJumpTask(listener, player), timeoutTicks);
+        int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(listener.plugin, new EnchantMoreTapShiftTask(listener, player), timeoutTicks);
 
         playerTimeoutTasks.put(player, taskId);
     }
@@ -2037,7 +2063,7 @@ class EnchantMoreHoverJumpTask implements Runnable {
     }
 
     // Whether should hover jump = double-tapped Shift
-    public static boolean shouldHoverJump(Player player) {
+    public static boolean isDoubleTapShift(Player player) {
         return getSneakCount(player) >= 2;
     }
 
