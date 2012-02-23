@@ -298,10 +298,14 @@ class EnchantMoreListener implements Listener {
     }
 
     private static void putEffectEnabled(int itemId, Enchantment ench, boolean enable) {
-        int packed = itemId + ench.getId() << 10;
+        int packed = itemId + (ench.getId() << 20);
 
         if (plugin.getConfig().getBoolean("verboseConfig", false)) {
             plugin.log.info("Effect "+Material.getMaterial(itemId)+" ("+itemId+") + "+ench+" = "+packed+" = "+enable);
+        }
+
+        if (enabledEffectMap.get(packed) != null) {
+            plugin.log.severe("Overlapping effect! "+Material.getMaterial(itemId)+" ("+itemId+") + "+ench+" = "+packed+" = "+enable);
         }
 
 
@@ -309,7 +313,7 @@ class EnchantMoreListener implements Listener {
     }
 
     static public boolean getEffectEnabled(int itemId, Enchantment ench) {
-        int packed = itemId + ench.getId() << 10;
+        int packed = itemId + (ench.getId() << 20);
 
         Object obj = enabledEffectMap.get(packed);
         if (obj == null) {
