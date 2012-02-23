@@ -111,13 +111,13 @@ class EnchantMoreListener implements Listener {
    
     static EnchantMore plugin;
 
+    static ConcurrentHashMap<String, Enchantment> enchByName;
     static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;
 
     public EnchantMoreListener(EnchantMore pl) {
         plugin = pl;
 
         random = new Random();
-        enabledEffectMap = new ConcurrentHashMap<Integer, Boolean>();
 
         loadConfig();
 
@@ -139,12 +139,48 @@ class EnchantMoreListener implements Listener {
     }
 
     private void loadConfig() {
+        // Because internally the enchantment names are not really what you might expect,
+        // we maintain a list of easily-recognizable names, to map to the Enchantment
+        enchByName = new ConcurrentHashMap<String, Enchantment>();
+
+        MemorySection enchIDSection = (MemorySection)plugin.getConfig().get("enchantmentIDs");
+
+        for (String enchName: enchIDSection.getKeys(false)) {
+            int id = plugin.getConfig().getInt("enchantmentIDs." + enchName);
+
+            Enchantment ench = Enchantment.getById(id);
+
+            enchByName.put(enchName.toLowerCase(), ench);
+            enchByName.put(ench.getName().toLowerCase(), ench); 
+            enchByName.put(String.valueOf(id), ench);
+
+            plugin.log.info("Name '"+enchName+"' = "+id);
+        }
+
+        // Map of item ids + effects to whether they are enabled
+        enabledEffectMap = new ConcurrentHashMap<Integer, Boolean>();
         MemorySection effectsSection = (MemorySection)plugin.getConfig().get("effects");
 
         for (String effectName: effectsSection.getKeys(false)) {
             boolean enable = plugin.getConfig().getBoolean("effects." + effectName + ".enable");
 
-            plugin.log.info("effect "+effectName+" = "+enable);
+            String[] parts = effectName.split(" \\+ ", 2);
+            if (parts.length != 2) {
+                plugin.log.info("Invalid effect name '"+effectName+"', ignored");
+                continue;
+            }
+
+            String itemName = parts[0];
+            String enchName = parts[1];
+            
+            Enchantment ench = enchByName.get(enchName.toLowerCase());
+
+            if (ench == null) {
+                plugin.log.info("Invalid enchantment name '"+enchName+"', ignored");
+                continue;
+            }
+
+            plugin.log.info("effect "+ench+" + "+itemName+" = "+enable);
         }
     }
 

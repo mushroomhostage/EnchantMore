@@ -1,7 +1,29 @@
+enchantmentIDs:
+    Protection: 0
+    Fire Protection: 1
+    Feather Falling: 2
+    Blast Protection: 3
+    Projectile Protection: 4
+    Respiration: 5
+    Aqua Affinity: 6
+    Sharpness: 16
+    Smite: 17
+    Bane of Arthropods: 18
+    Knockback: 19
+    Fire Aspect: 20
+    Looting: 21
+    Efficiency: 32
+    Silk Touch: 33
+    Unbreaking: 34
+    Fortune: 35
+    Power: 48
+    Punch: 49
+    Flame: 50
+    Infinity: 51
 effects:
-    foo: 
+    Bow + Feather Falling:
         enable: true
-    bar:
+    Bow + Respiration:
         enable: false
 
 moveListener: true
