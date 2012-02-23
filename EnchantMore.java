@@ -1918,18 +1918,18 @@ class EnchantMoreListener implements Listener {
         if (!event.isSneaking()) {
             return;
         }
-        // pressed shift
-
 
         Player player = event.getPlayer();
+
+        // Pressed shift, count number of times pressed
+        EnchantMoreTapShiftTask.bumpSneakCount(player);
+
 
         ItemStack boots = player.getInventory().getBoots();
         ItemStack leggings = player.getInventory().getLeggings();
 
         // Leggings + Punch = rocket launch pants (double-tap shift)
         if (leggings != null && hasEnch(leggings, PUNCH, player)) {
-            EnchantMoreTapShiftTask.bumpSneakCount(player);
-
             if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = getLevel(leggings, PUNCH, player);
 
@@ -1943,21 +1943,19 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            EnchantMoreTapShiftTask.scheduleTimeout(player, this);
         
         // Boots + Punch = hover jump (double-tap shift)
         // (one or the other)
         } else if (boots != null && hasEnch(boots, PUNCH, player)) {
-            EnchantMoreTapShiftTask.bumpSneakCount(player);
-
             if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = getLevel(boots, PUNCH, player);
                 player.setVelocity(player.getVelocity().setY(n));
             }
-
-            EnchantMoreTapShiftTask.scheduleTimeout(player, this);
         }
 
+        // Reset count so can sneak and sneak again later - must double-tap rapidly to activate
+        // TODO: only bump/schedule this if above enchantments are enabled
+        EnchantMoreTapShiftTask.scheduleTimeout(player, this);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
