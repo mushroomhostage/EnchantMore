@@ -127,6 +127,7 @@ class EnchantMoreListener implements Listener {
     static ConcurrentHashMap<String, Enchantment> enchByName;
     static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;
     static ConcurrentHashMap<Integer, EnchantMoreItemCategory> itemToCategory;
+    static ConcurrentHashMap<EnchantMoreItemCategory, Object> categoryToItems;
 
     public EnchantMoreListener(EnchantMore pl) {
         plugin = pl;
@@ -168,21 +169,15 @@ class EnchantMoreListener implements Listener {
             enchByName.put(enchName.toLowerCase(), ench);
             enchByName.put(ench.getName().toLowerCase(), ench); 
             enchByName.put(String.valueOf(id), ench);
-
-            plugin.log.info("Name '"+enchName+"' = "+id);
         }
 
         // Items and categories
         itemToCategory = new ConcurrentHashMap<Integer, EnchantMoreItemCategory>();
+        categoryToItems = new ConcurrentHashMap<EnchantMoreItemCategory, Object>();
         MemorySection itemSection = (MemorySection)plugin.getConfig().get("items");
         for (String categoryName: itemSection.getKeys(false)) {
             // Category name
-            EnchantMoreItemCategory category = null;
-            try {
-                category = EnchantMoreItemCategory.valueOf("IS_" + categoryName.toUpperCase());
-            } catch (Exception e) {
-                category = null;
-            }
+            EnchantMoreItemCategory category = getCategoryByName(categoryName);
             if (category == null) {
                 plugin.log.warning("Item category '"+categoryName+"' invalid, ignored");
                 continue;
@@ -191,22 +186,12 @@ class EnchantMoreListener implements Listener {
             // Items in this category
             List<String> itemNames = plugin.getConfig().getStringList("items."+categoryName);
             for (String itemName: itemNames) {
-                plugin.log.info("item "+itemName);
-
                 String[] parts = itemName.split(";", 2);
 
-                // Get type ID, either from name or integer string
-                int id = -1;
-                Material material = Material.matchMaterial(parts[0]);
-                if (material != null) {
-                    id = material.getId();
-                } else {
-                    try {
-                        id = Integer.parseInt(parts[0], 10);
-                    } catch (Exception e) {
-                        plugin.log.warning("Invalid item '"+itemName+"', ignored");
-                        continue;
-                    }
+                int id = getTypeIdByName(parts[0]);
+                if (id == -1) {
+                    plugin.log.warning("Invalid item '"+itemName+"', ignored");
+                    continue;
                 }
 
                 // Optional data field, packed into higher bits for ease of lookup
@@ -228,10 +213,24 @@ class EnchantMoreListener implements Listener {
                     continue;
                 }
 
+                // Item to category, for is*() lookups
                 itemToCategory.put(packedId, category);
 
-                plugin.log.info("Cat "+packedId+" = "+category);
+                // Category to item, for config shortcuts
+                Object obj = categoryToItems.get(category);
+                if (obj == null) {
+                    obj = new ArrayList<Integer>();
+                }
+                if (!(obj instanceof ArrayList)) {
+                    plugin.log.info("internal error adding items to category: " + categoryToItems);
+                    continue;
+                }
+                List list = (List)obj;
+                // TODO: fix type warning
+                list.add(id);    // only item type id, no data
+                categoryToItems.put(category, list);
             }
+
         }
 
         // Map of item ids + effects to whether they are enabled
@@ -258,6 +257,46 @@ class EnchantMoreListener implements Listener {
             }
 
             plugin.log.info("effect "+ench+" + "+itemName+" = "+enable);
+
+            // Item can either be a category (for all items) or an item name
+            EnchantMoreItemCategory category = getCategoryByName(itemName);
+            if (category != null) {
+                // its a category!
+                Object obj = categoryToItems.get(category);
+                if (obj == null || !(obj instanceof List)) {
+                    plugin.log.info("Invalid category "+itemName+", ignored");
+                    continue;
+                }
+
+                List list = (List)obj;
+                plugin.log.info("\t cat="+list);
+            } else {
+                int id = getTypeIdByName(itemName);
+                plugin.log.info("\t id="+id);
+            }
+        }
+    }
+
+    public static EnchantMoreItemCategory getCategoryByName(String name) {
+        try {
+            return EnchantMoreItemCategory.valueOf("IS_" + name.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    // Get material type ID, either from name or integer string
+    // @returns -1 if error
+    public static int getTypeIdByName(String name) {
+        Material material = Material.matchMaterial(name);
+        if (material != null) {
+            return material.getId();
+        } else {
+            try {
+                return Integer.parseInt(name, 10);
+            } catch (Exception e) {
+                return -1;
+            }
         }
     }
 
