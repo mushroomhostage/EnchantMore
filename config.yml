@@ -20,6 +20,56 @@ enchantmentIDs:
     Punch: 49
     Flame: 50
     Infinity: 51
+items:
+    Pickaxe:
+    - diamond_pickaxe
+    - gold_pickaxe
+    - iron_pickaxe
+    - stone_pickaxe
+    - wood_pickaxe
+    # Add your RP2 Ruby, Sapphire, Emerald tools here (item IDs)..
+    Hoe:
+    - diamond_hoe
+    - gold_hoe 
+    - iron_hoe
+    - stone_hoe
+    - wood_hoe
+    Sword:
+    - diamond_sword   
+    - gold_sword
+    - iron_sword
+    - stone_sword
+    - wood_sword
+    Shovel:
+    - diamond_spade
+    - gold_spade
+    - iron_spade
+    - stone_spade
+    - wood_spade
+    Axe:
+    - diamond_axe
+    - gold_axe
+    - iron_axe
+    - stone_axe
+    - wood_axe
+    Farmblock:
+    - soil
+    - crops
+    - sugar_cane_block
+    - cake_block
+    - pumpkin_stem
+    - melon_stem
+    - nether_warts # Not the item, that is nether_stalk (confusingly)
+    # Able to be excavated by shovel
+    Excavatable:
+    - dirt
+    - grass
+    - gravel
+    - sand
+    - soul_sand
+    - netherrack  # Not normally diggable, but why not?
+
+
 effects:
     Bow + Feather Falling:
         enable: true

@@ -81,6 +81,18 @@ import net.minecraft.server.ItemDye;
 import net.minecraft.server.EntityArrow;
 import net.minecraft.server.EnumSkyBlock;
 
+enum EnchantMoreItemCategory 
+{
+    IS_HOE,
+    IS_SWORD,
+    IS_PICKAXE,
+    IS_SHOVEL,
+    IS_AXE,
+    IS_FARMBLOCK,
+    IS_EXCAVATABLE,
+    IS_WOODENBLOCK,
+};
+
 class EnchantMoreListener implements Listener {
 
     // Better enchantment names more closely matching in-game display
@@ -113,6 +125,7 @@ class EnchantMoreListener implements Listener {
 
     static ConcurrentHashMap<String, Enchantment> enchByName;
     static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;
+    static ConcurrentHashMap<Integer, EnchantMoreItemCategory> itemToCategory;
 
     public EnchantMoreListener(EnchantMore pl) {
         plugin = pl;
@@ -141,6 +154,7 @@ class EnchantMoreListener implements Listener {
     private void loadConfig() {
         // Because internally the enchantment names are not really what you might expect,
         // we maintain a list of easily-recognizable names, to map to the Enchantment
+        // TODO: FT
         enchByName = new ConcurrentHashMap<String, Enchantment>();
 
         MemorySection enchIDSection = (MemorySection)plugin.getConfig().get("enchantmentIDs");
@@ -157,6 +171,52 @@ class EnchantMoreListener implements Listener {
             plugin.log.info("Name '"+enchName+"' = "+id);
         }
 
+        // Items and categories
+        itemToCategory = new ConcurrentHashMap<Integer, EnchantMoreItemCategory>();
+        MemorySection itemSection = (MemorySection)plugin.getConfig().get("items");
+        for (String categoryName: itemSection.getKeys(false)) {
+            // Category name
+            EnchantMoreItemCategory category = null;
+            try {
+                category = EnchantMoreItemCategory.valueOf("IS_" + categoryName.toUpperCase());
+            } catch (Exception e) {
+                category = null;
+            }
+            if (category == null) {
+                plugin.log.warning("Item category '"+categoryName+"' invalid, ignored");
+                continue;
+            }
+            
+            // Items in this category
+            List<String> itemNames = plugin.getConfig().getStringList("items."+categoryName);
+            for (String itemName: itemNames) {
+                plugin.log.info("item "+itemName);
+
+                // Get type ID, either from name or integer string
+                int id = -1;
+                Material material = Material.matchMaterial(itemName);
+                if (material != null) {
+                    id = material.getId();
+                } else {
+                    try {
+                        id = Integer.parseInt(itemName, 10);
+                    } catch (Exception e) {
+                        plugin.log.warning("Invalid item '"+itemName+"', ignored");
+                        continue;
+                    }
+                }
+
+                if (itemToCategory.contains(id)) {
+                    plugin.log.info("Overlapping item '"+itemName+"' ("+id+"), category "+itemToCategory.get(id)+" != "+category+", ignored");
+                    continue;
+                }
+
+                itemToCategory.put(id, category);
+
+                plugin.log.info("Cat "+id+" = "+category);
+            }
+        }
+
         // Map of item ids + effects to whether they are enabled
         enabledEffectMap = new ConcurrentHashMap<Integer, Boolean>();
         MemorySection effectsSection = (MemorySection)plugin.getConfig().get("effects");
@@ -166,7 +226,7 @@ class EnchantMoreListener implements Listener {
 
             String[] parts = effectName.split(" \\+ ", 2);
             if (parts.length != 2) {
-                plugin.log.info("Invalid effect name '"+effectName+"', ignored");
+                plugin.log.warning("Invalid effect name '"+effectName+"', ignored");
                 continue;
             }
 
@@ -176,7 +236,7 @@ class EnchantMoreListener implements Listener {
             Enchantment ench = enchByName.get(enchName.toLowerCase());
 
             if (ench == null) {
-                plugin.log.info("Invalid enchantment name '"+enchName+"', ignored");
+                plugin.log.warning("Invalid enchantment name '"+enchName+"', ignored");
                 continue;
             }
 
