@@ -1,12 +1,13 @@
-X   X
-    * Add configurable item categories, so you can use the enchantments on RP2/IC2 items    
-    * Add Axe + Respiration = generate tree
-    * Add Axe + Aqua Affinity = slowness effect (like Bow, but melee attack) (ticket 1)
-    * Add Chestplate + Silk Touch = cactus protection (no contact damage)
-    * Add Hoe + Fire Protection = sensor
+2012-02-22  0.6.4
+    * Add support for enabling/disabling effects in config.yml
     * Add Leggings + Punch = rocket launch pants (double-tap shift)
     * Add Flint & Steel + Blast Protection = anti-creeper (cancel nearby explosion)
     * Add Flint & Steel + Punch = cannon
+    * Add Chestplate + Silk Touch = cactus protection (no contact damage)
+    * Add Axe + Aqua Affinity = slowness effect (like Bow, but melee attack) (ticket 1)
+    * Add Axe + Respiration = generate tree
+    * Add Hoe + Fire Protection = sensor
+    * Add support for enchantments on RP2/IC2/other items (see config.yml)
     * Change Boots + Punch = hover jump, now activated by double-tapping shift
       Fixes conflict with Shift for sneaking
     * Improve Shovel + Power = excavate, now can excavate sand by default
