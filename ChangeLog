@@ -7,6 +7,7 @@ X   X
     * Change Boots + Punch = hover jump, now activated by double-tapping shift
       Fixes conflict with Shift for sneaking
     * Improve Shovel + Power = excavate, now can excavate sand
+    * Fix Pickaxe + Power, now only breaks blocks when left-clicking
 
 2012-02-18  0.5.7
     * Add Bow + Respiration = stapled arrows (attach adjacent item in inventory)
