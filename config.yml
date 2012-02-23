@@ -87,7 +87,7 @@ items:
     - dirt
     - grass
     - gravel
-    #- sand
+    - sand
     - soul_sand
     - netherrack  # Not normally diggable, but why not?
     # TODO: more blocks?
