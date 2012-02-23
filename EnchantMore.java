@@ -1806,6 +1806,11 @@ class EnchantMoreListener implements Listener {
                 // "golden helmet = breath underwater" [seems to overlap with Respiration, meh]
                 // "golden shoes = no fall damage" [ditto for Feather Falling]
             }
+        } else if (cause == EntityDamageEvent.DamageCause.CONTACT) {
+            // Chestplate + Silk Touch = cactus protection (no contact damage)
+            if (chestplate != null && hasEnch(chestplate, SILK_TOUCH, playerDamaged)) {
+                event.setCancelled(true);
+            }
         }
 
         if (event instanceof EntityDamageByEntityEvent) {    // note: do not register directly
