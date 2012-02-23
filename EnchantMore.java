@@ -2441,15 +2441,63 @@ public class EnchantMore extends JavaPlugin {
     Logger log = Logger.getLogger("Minecraft");
 
     public void onEnable() {
-        getConfig().options().copyDefaults(true);   // TODO: preserve comments :(
-        saveConfig();
+        // Load config
+
+        String filename = getDataFolder() + System.getProperty("file.separator") + "config.yml";
+        File file = new File(filename);
+        if (!file.exists()) {
+            if (!newConfig(file)) {
+                Bukkit.getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
+        }
+
         reloadConfig();
+
 
         new EnchantMoreListener(this);
 
         if (getConfig().getBoolean("moveListener", true)) {
             new EnchantMorePlayerMoveListener(this);
         }
+    }
+
+    // Copy default configuration
+    // Needed because getConfig().options().copyDefaults(true); doesn't preserve comments!
+    public boolean newConfig(File file) {
+        FileWriter fileWriter;
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdir();
+        }
+
+        try {
+            fileWriter = new FileWriter(file);
+        } catch (IOException e) {
+            log.severe("Couldn't write config file: " + e.getMessage());
+            return false;
+        }
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(getResource("config.yml"))));
+        BufferedWriter writer = new BufferedWriter(fileWriter);
+        try {
+            String line = reader.readLine();
+            while (line != null) {
+                writer.write(line + System.getProperty("line.separator"));
+                line = reader.readLine();
+            }
+            log.info("Wrote default config");
+        } catch (IOException e) {
+            log.severe("Error writing config: " + e.getMessage());
+        } finally {
+            try {
+                writer.close();
+                reader.close();
+            } catch (IOException e) {
+                log.severe("Error saving config: " + e.getMessage());
+                return false;
+            }
+        }
+        return true;
     }
     
     public void onDisable() {

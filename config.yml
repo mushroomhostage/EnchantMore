@@ -1,142 +1,18 @@
-enchantmentIDs:
-    Protection: 0
-    Fire Protection: 1
-    Feather Falling: 2
-    Blast Protection: 3
-    Projectile Protection: 4
-    Respiration: 5
-    Aqua Affinity: 6
-    Sharpness: 16
-    Smite: 17
-    Bane of Arthropods: 18
-    Knockback: 19
-    Fire Aspect: 20
-    Looting: 21
-    Efficiency: 32
-    Silk Touch: 33
-    Unbreaking: 34
-    Fortune: 35
-    Power: 48
-    Punch: 49
-    Flame: 50
-    Infinity: 51
-items:
-    Pickaxe:
-    - diamond_pickaxe
-    - gold_pickaxe
-    - iron_pickaxe
-    - stone_pickaxe
-    - wood_pickaxe
-    # Add your RP2 Ruby, Sapphire, Emerald or IC2 bronze tools here (item IDs)..
-    - '1281'    # RP2 RubyPickaxe
-    - '1282'    # RP2 EmeraldPickaxe
-    - '1283'    # RP2 SapphirePickaxe
-    - '30200'   # IC2 ToolBronzePickaxe
-    Hoe:
-    - diamond_hoe
-    - gold_hoe 
-    - iron_hoe
-    - stone_hoe
-    - wood_hoe
-    - '1287'    # RP2 RubyHoe
-    - '1288'    # RP2 EmeraldHoe
-    - '1289'    # RP2 SapphireHoe
-    - '30119'   # IC2 ToolHoe (electric)
-    - '30196'   # IC2 ToolBronzeHoe
-    Sword:
-    - diamond_sword   
-    - gold_sword
-    - iron_sword
-    - stone_sword
-    - wood_sword
-    - '1275'    # RP2 RubySword
-    - '1276'    # RP2 EmeraldSword
-    - '1277'    # RP2 SapphireSword
-    - '30198'   # IC2 ToolBronzeSword
-    Shovel:
-    - diamond_spade
-    - gold_spade
-    - iron_spade
-    - stone_spade
-    - wood_spade
-    - '1279'    # RP2 EmeraldShovel
-    - '1280'    # RP2 SapphireShovel
-    - '1278'    # RP2 RubyShovel
-    Axe:
-    - diamond_axe
-    - gold_axe
-    - iron_axe
-    - stone_axe
-    - wood_axe
-    - '1284'    # RP2 RubyAxe
-    - '1285'    # RP2 EmeraldAxe
-    - '1286'    # RP2 SapphireAxe
-    - '30199'   # IC2 ToolBronzeAxe
-    # Farm-related block, either land or growing crops 
-    Farmblock:
-    - soil      # Farmland
-    - crops     # Wheat TODO: update wiki, calls 'Wheat Seeds' though in-game 'Crops'
-    - sugar_cane_block
-    - cake_block
-    - pumpkin_stem
-    - melon_stem
-    - nether_warts # Not the item, that is nether_stalk (confusingly)
-    # TODO: flaxseed from RP2?
-    # Able to be excavated by shovel
-    Excavatable:
-    - dirt
-    - grass
-    - gravel
-    - sand
-    - soul_sand
-    - netherrack  # Not normally diggable, but why not?
-    # TODO: more blocks?
-    WoodenBlock:
-    - wood
-    - wood_plate
-    - wood_stairs
-    - wooden_door
-    - log
-    - step;2            # wooden slab
-    - double_step;2     # wooden double slab
+# EnchantMore configuration
 
-    # Categories below only used for effects shortcuts
-    # Normally, armor effect determined by slot - if other item is in
-    # slot, then it will trigger the default enable state
-    Helmet:
-    - chainmail_helmet
-    - diamond_helmet
-    - gold_helmet
-    - iron_helmet
-    - leather_helmet
-    Chestplate:
-    - chainmail_chestplate
-    - diamond_chestplate
-    - gold_chestplate
-    - iron_chestplate
-    - leather_chestplate
-    Leggings:
-    - chainmail_leggings
-    - diamond_leggings
-    - gold_leggings
-    - iron_leggings
-    - leather_leggings
-    Boots:
-    - chainmail_boots
-    - diamond_boots
-    - gold_boots
-    - iron_boots
-    - leather_boots
-
-moveListener: true
-
-
-# If combination is not listed, default to on/off
+# If item/enchantment effect combination is not listed, default to on (true) or off (false)
 defaultEffectEnabled: true
 
-# For diagnosis purposes, if true, list expanded item id + enchantment id and states
+# For diagnosis purposes, if true, prints expanded item id + enchantment id and states 
 verboseConfig: false
 
+# Listen for player movement - required for Boots + Power, Boots + Flame, but can be
+# disabled if desired for performance reasons
+moveListener: true
+
+# Individual item + enchantment combinations
+# 'item' can either be an item category (Pickaxe), or specific item name (Diamond_Pickaxe)
+# 'enchantment' names and category names are defined below
 effects:
     Axe + Aqua Affinity:
         enable: true
@@ -266,3 +142,141 @@ effects:
         enable: true
     Sword + Protection:
         enable: true
+
+
+# Canonical names of enchantments and their respective IDs
+# See http://www.minecraftwiki.net/wiki/Enchanting#Enchantments
+enchantmentIDs:
+    Protection: 0
+    Fire Protection: 1
+    Feather Falling: 2
+    Blast Protection: 3
+    Projectile Protection: 4
+    Respiration: 5
+    Aqua Affinity: 6
+    Sharpness: 16
+    Smite: 17
+    Bane of Arthropods: 18
+    Knockback: 19
+    Fire Aspect: 20
+    Looting: 21
+    Efficiency: 32
+    Silk Touch: 33
+    Unbreaking: 34
+    Fortune: 35
+    Power: 48
+    Punch: 49
+    Flame: 50
+    Infinity: 51
+
+# Categories of items - used in 'effects' section above to expand the given items,
+# and also internally for category-specific item enchantments
+items:
+    Pickaxe:
+    - diamond_pickaxe
+    - gold_pickaxe
+    - iron_pickaxe
+    - stone_pickaxe
+    - wood_pickaxe
+    # Add your RP2 Ruby, Sapphire, Emerald or IC2 bronze tools here (item IDs)..
+    - '1281'    # RP2 RubyPickaxe
+    - '1282'    # RP2 EmeraldPickaxe
+    - '1283'    # RP2 SapphirePickaxe
+    - '30200'   # IC2 ToolBronzePickaxe
+    Hoe:
+    - diamond_hoe
+    - gold_hoe 
+    - iron_hoe
+    - stone_hoe
+    - wood_hoe
+    - '1287'    # RP2 RubyHoe
+    - '1288'    # RP2 EmeraldHoe
+    - '1289'    # RP2 SapphireHoe
+    - '30119'   # IC2 ToolHoe (electric)
+    - '30196'   # IC2 ToolBronzeHoe
+    Sword:
+    - diamond_sword   
+    - gold_sword
+    - iron_sword
+    - stone_sword
+    - wood_sword
+    - '1275'    # RP2 RubySword
+    - '1276'    # RP2 EmeraldSword
+    - '1277'    # RP2 SapphireSword
+    - '30198'   # IC2 ToolBronzeSword
+    Shovel:
+    - diamond_spade
+    - gold_spade
+    - iron_spade
+    - stone_spade
+    - wood_spade
+    - '1279'    # RP2 EmeraldShovel
+    - '1280'    # RP2 SapphireShovel
+    - '1278'    # RP2 RubyShovel
+    Axe:
+    - diamond_axe
+    - gold_axe
+    - iron_axe
+    - stone_axe
+    - wood_axe
+    - '1284'    # RP2 RubyAxe
+    - '1285'    # RP2 EmeraldAxe
+    - '1286'    # RP2 SapphireAxe
+    - '30199'   # IC2 ToolBronzeAxe
+    # Farm-related block, either land or growing crops 
+    Farmblock:
+    - soil      # Farmland
+    - crops     # Wheat TODO: update wiki, calls 'Wheat Seeds' though in-game 'Crops'
+    - sugar_cane_block
+    - cake_block
+    - pumpkin_stem
+    - melon_stem
+    - nether_warts # Not the item, that is nether_stalk (confusingly)
+    # TODO: flaxseed from RP2?
+    # Able to be excavated by shovel
+    Excavatable:
+    - dirt
+    - grass
+    - gravel
+    - sand
+    - soul_sand
+    - netherrack  # Not normally diggable, but why not?
+    # TODO: more blocks?
+    WoodenBlock:
+    - wood
+    - wood_plate
+    - wood_stairs
+    - wooden_door
+    - log
+    - step;2            # wooden slab
+    - double_step;2     # wooden double slab
+
+    # Categories below only used for effects shortcuts
+    # Normally, armor effect determined by slot - if other item is in
+    # slot, then it will trigger the default enable state
+    Helmet:
+    - chainmail_helmet
+    - diamond_helmet
+    - gold_helmet
+    - iron_helmet
+    - leather_helmet
+    Chestplate:
+    - chainmail_chestplate
+    - diamond_chestplate
+    - gold_chestplate
+    - iron_chestplate
+    - leather_chestplate
+    Leggings:
+    - chainmail_leggings
+    - diamond_leggings
+    - gold_leggings
+    - iron_leggings
+    - leather_leggings
+    Boots:
+    - chainmail_boots
+    - diamond_boots
+    - gold_boots
+    - iron_boots
+    - leather_boots
+
+
