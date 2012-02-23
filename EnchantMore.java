@@ -2356,7 +2356,7 @@ public class EnchantMore extends JavaPlugin {
     Logger log = Logger.getLogger("Minecraft");
 
     public void onEnable() {
-        getConfig().options().copyDefaults(true);
+        getConfig().options().copyDefaults(true);   // TODO: preserve comments :(
         saveConfig();
         reloadConfig();
 

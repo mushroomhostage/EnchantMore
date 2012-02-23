@@ -28,30 +28,50 @@ items:
     - stone_pickaxe
     - wood_pickaxe
     # Add your RP2 Ruby, Sapphire, Emerald or IC2 bronze tools here (item IDs)..
+    - '1281'    # RP2 RubyPickaxe
+    - '1282'    # RP2 EmeraldPickaxe
+    - '1283'    # RP2 SapphirePickaxe
+    - '30200'   # IC2 ToolBronzePickaxe
     Hoe:
     - diamond_hoe
     - gold_hoe 
     - iron_hoe
     - stone_hoe
     - wood_hoe
+    - '1287'    # RP2 RubyHoe
+    - '1288'    # RP2 EmeraldHoe
+    - '1289'    # RP2 SapphireHoe
+    - '30119'   # IC2 ToolHoe (electric)
+    - '30196'   # IC2 ToolBronzeHoe
     Sword:
     - diamond_sword   
     - gold_sword
     - iron_sword
     - stone_sword
     - wood_sword
+    - '1275'    # RP2 RubySword
+    - '1276'    # RP2 EmeraldSword
+    - '1277'    # RP2 SapphireSword
+    - '30198'   # IC2 ToolBronzeSword
     Shovel:
     - diamond_spade
     - gold_spade
     - iron_spade
     - stone_spade
     - wood_spade
+    - '1279'    # RP2 EmeraldShovel
+    - '1280'    # RP2 SapphireShovel
+    - '1278'    # RP2 RubyShovel
     Axe:
     - diamond_axe
     - gold_axe
     - iron_axe
     - stone_axe
     - wood_axe
+    - '1284'    # RP2 RubyAxe
+    - '1285'    # RP2 EmeraldAxe
+    - '1286'    # RP2 SapphireAxe
+    - '30199'   # IC2 ToolBronzeAxe
     # Farm-related block, either land or growing crops 
     Farmblock:
     - soil      # Farmland
@@ -61,6 +81,7 @@ items:
     - pumpkin_stem
     - melon_stem
     - nether_warts # Not the item, that is nether_stalk (confusingly)
+    # TODO: flaxseed from RP2?
     # Able to be excavated by shovel
     Excavatable:
     - dirt
@@ -69,6 +90,7 @@ items:
     #- sand
     - soul_sand
     - netherrack  # Not normally diggable, but why not?
+    # TODO: more blocks?
     WoodenBlock:
     - wood
     - wood_plate
