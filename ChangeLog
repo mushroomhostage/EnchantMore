@@ -1,6 +1,7 @@
 X   X
     * Add configurable item categories, so you can use the enchantments on RP2/IC2 items    
     * Add Axe + Respiration = generate tree
+    * Add Axe + Aqua Affinity = slowness effect (like Bow, but melee attack) (ticket 1)
     * Add Hoe + Fire Protection = sensor
     * Add Leggings + Punch = rocket launch pants (double-tap shift)
     * Add Flint & Steel + Blast Protection = anti-creeper (cancel nearby explosion)

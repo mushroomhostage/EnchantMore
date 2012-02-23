@@ -624,8 +624,6 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
         }
-
-
     }
 
    
@@ -1892,6 +1890,14 @@ class EnchantMoreListener implements Listener {
             }
         }
         */
+
+        // Axe + Aqua Affinity = slowness effect
+        if (hasEnch(weapon, AQUA_AFFINITY, attacker)) {
+            if (entity instanceof LivingEntity) {
+                ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, getLevel(weapon, AQUA_AFFINITY, attacker)*20*5, 1));
+                // see also: SLOW_DIGGING, WEAKNESS - TODO: can we apply all three?
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
