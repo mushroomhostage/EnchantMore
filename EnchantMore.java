@@ -62,6 +62,7 @@ import org.bukkit.configuration.*;
 import org.bukkit.configuration.file.*;
 import org.bukkit.scheduler.*;
 import org.bukkit.enchantments.*;
+import org.bukkit.potion.*;
 import org.bukkit.util.*;
 import org.bukkit.*;
 
@@ -141,7 +142,7 @@ class EnchantMoreListener implements Listener {
         // TODO: config enable/disable
         // TODO: optional player permission support
 
-        plugin.log.info("hasEnch "+tool.getTypeId()+" "+ench.getId());
+        //plugin.log.info("hasEnch "+tool.getTypeId()+" "+ench.getId());
         return tool.containsEnchantment(ench);
     }
 
@@ -437,7 +438,7 @@ class EnchantMoreListener implements Listener {
 
             // Flint & Steel + Fire Protection = fire resistance ([details](http://dev.bukkit.org/server-mods/enchantmore/images/10-flint-steel-fire-protection-fire-resistance/))
             if (hasEnch(item, FIRE_PROTECTION, player)) {
-                applyPlayerEffect(player, EFFECT_FIRE_RESISTANCE, getLevel(item, FIRE_PROTECTION, player));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, getLevel(item, FIRE_PROTECTION, player)*20*5, 1));
                 // no extra damage
             }
 
@@ -706,41 +707,6 @@ class EnchantMoreListener implements Listener {
         return itemToCategory.get(m.getId() + (data << 10)) == EnchantMoreItemCategory.IS_WOODENBLOCK;
     }
 
-    // http://wiki.vg/Protocol#Effects
-    // TODO: replace with new potions API in 1.1-R4! or so
-    private static final int EFFECT_MOVE_SPEED = 1;
-    private static final int EFFECT_MOVE_SLOW_DOWN = 2;
-    private static final int EFFECT_DIG_SPEED = 3;
-    private static final int EFFECT_DIG_SLOW_DOWN = 4;
-    private static final int EFFECT_DAMAGE_BOOST = 5;
-    private static final int EFFECT_HEAL = 6;
-    private static final int EFFECT_HARM = 7;
-    private static final int EFFECT_JUMP = 8;
-    private static final int EFFECT_CONFUSION = 9;
-    private static final int EFFECT_REGENERATION = 10;
-    private static final int EFFECT_RESISTANCE = 11;
-    private static final int EFFECT_FIRE_RESISTANCE = 12;
-    private static final int EFFECT_WATER_BREATHING = 13;
-    private static final int EFFECT_INVISIBILITY = 14;  // sadly, no effect in 1.1
-    private static final int EFFECT_BLINDNESS = 15;
-    private static final int EFFECT_NIGHTVISION = 16;   // sadly, no effect in 1.1
-    private static final int EFFECT_HUNGER = 17;
-    private static final int EFFECT_WEAKNESS = 18;
-    private static final int EFFECT_POISON = 19;
-
-
-    private void applyPlayerEffect(Player player, int effect, int level) {
-        ((CraftPlayer)player).getHandle().addEffect(new net.minecraft.server.MobEffect(
-            effect,             // http://wiki.vg/Protocol#Effects
-            20 * 10 * level,    // duration in ticks
-            1));                // amplifier
-
-        // TODO: can we used the predefined effects (w/ duration, amplifier) in MobEffectList?
-        // as suggested here: http://forums.bukkit.org/threads/potion-events.57086/#post-936679
-        // however, b() takes a MobEffect, but MobEffectList.CONFUSIOn is a MobEffectList
-        //(((CraftPlayer)entity).getHandle()).b(MobEffectList.CONFUSION);
-    }
-
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity entity = event.getRightClicked();
@@ -767,29 +733,29 @@ class EnchantMoreListener implements Listener {
                 // Flint & Steel + Fire Protection = player fire resistance (secondary)
                 // We apply this for lighting blocks, too; this one is for attacking mobs
                 if (hasEnch(item, FIRE_PROTECTION, player)) {
-                    applyPlayerEffect(player, EFFECT_FIRE_RESISTANCE, getLevel(item, FIRE_PROTECTION, player));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, getLevel(item, FIRE_PROTECTION, player)*20*5, 1));
                     // no extra damage
                 }
 
             }
 
-            // Flint & Steel + Respiration = smoke inhalation (confusion effect on player)
+            // Flint & Steel + Respiration = smoke inhalation (confusion effect)
             if (hasEnch(item, RESPIRATION, player)) {
                 world.playEffect(entity.getLocation(), Effect.SMOKE, 0);    // TOOD: smoke direction
                 world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);    // TOOD: smoke direction
 
-                // Confusion effect on players
-                if (entity instanceof CraftPlayer) {
-                    applyPlayerEffect((CraftPlayer)entity, EFFECT_CONFUSION, getLevel(item, RESPIRATION, player));
+                // Confusion effect 
+                if (entity instanceof LivingEntity) {
+                    ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, getLevel(item, RESPIRATION, player)*20*5, 1));
 
                     damage(item, player);
                 }
             }
         } else if (item.getType() == Material.SHEARS) {
-            // Shears + Smite = gouge eyes (blindness effect on player)
+            // Shears + Smite = gouge eyes (blindness effect)
             if (hasEnch(item, SMITE, player)) {
-                if (entity instanceof CraftPlayer) {
-                    applyPlayerEffect((CraftPlayer)entity, EFFECT_BLINDNESS, getLevel(item, SMITE, player));
+                if (entity instanceof LivingEntity) {
+                    ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, getLevel(item, SMITE, player)*20*5, 1));
 
                     damage(item, player);
                 }
@@ -840,24 +806,15 @@ class EnchantMoreListener implements Listener {
             /*
             // BLOCKED: Sword + ? = night vision when blocking 
             // The visual effect plays (navy blue swirly particles), but doesn't actually do anything as of Minecraft 1.1
-            if (hasEnch(item, FLAME, player)) {
-                applyPlayerEffect(player, EFFECT_NIGHT_VISION, getLevel(item, FLAME, player));
-                damage(item, player);
-            }
-
             // BLOCKED: Sword + ? = invisibility when blocking 
             // Also has no implemented effect in Minecraft 1.1. Maybe a plugin could use?
             // TODO: use Vanish API in dev builts of Bukkit, that VanishNoPacket uses
-            if (hasEnch(item, INFINITE, player)) {
-                applyPlayerEffect(player, EFFECT_INVISIBILITY, getLevel(item, INFINITE, player));
-                damage(item, player);
-            }
             */
 
 
             // Sword + Protection = resistance when blocking 
             if (hasEnch(item, PROTECTION, player)) {
-                applyPlayerEffect(player, EFFECT_RESISTANCE, getLevel(item, PROTECTION, player));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, getLevel(item, PROTECTION, player)*20*5, 1));
                 damage(item, player);
             }
 
@@ -1423,13 +1380,13 @@ class EnchantMoreListener implements Listener {
                 }
             }
             
-            // TODO: only poison hit player!
+            // TODO: only poison hit entity!
 
-            // stun nearby players
+            // stun nearby living things
             List<Entity> victims = arrow.getNearbyEntities(r, r, r);
             for (Entity victim: victims) {
-                if (victim instanceof CraftPlayer) {
-                    applyPlayerEffect((CraftPlayer)victim, EFFECT_MOVE_SLOW_DOWN, r);
+                if (victim instanceof LivingEntity) {
+                    ((LivingEntity)victim).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, r * 20*5, 1));
                 }
             }
 
@@ -1489,14 +1446,14 @@ class EnchantMoreListener implements Listener {
 
         // Bow + Bane of Arthropods = poison
         if (hasEnch(bow, BANE, player)) {
-            // TODO: only poison hit player!
+            // TODO: only poison hit entity!
 
-            // poison nearby players
+            // poison nearby living things
             int r = getLevel(bow, BANE, player);
             List<Entity> victims = arrow.getNearbyEntities(r, r, r);
             for (Entity victim: victims) {
-                if (victim instanceof CraftPlayer) {
-                    applyPlayerEffect((CraftPlayer)victim, EFFECT_POISON, r);
+                if (victim instanceof LivingEntity) {
+                    ((LivingEntity)victim).addPotionEffect(new PotionEffect(PotionEffectType.POISON, r*20*5, 1));
                 }
             }
 

@@ -1,12 +1,13 @@
 X   X
-    
+    * Add configurable item categories, so you can use the enchantments on RP2/IC2 items    
     * Add Axe + Respiration = generate tree
     * Add Hoe + Fire Protection = sensor
     * Add Leggings + Punch = rocket launch pants (double-tap shift)
     * Add Flint & Steel + Blast Protection = anti-creeper (cancel nearby explosion)
     * Change Boots + Punch = hover jump, now activated by double-tapping shift
       Fixes conflict with Shift for sneaking
-    * Improve Shovel + Power = excavate, now can excavate sand
+    * Improve Shovel + Power = excavate, now can excavate sand by default
+    * Improve potion effects, now applies to all living entities and uses new API
     * Fix Pickaxe + Power, now only breaks blocks when left-clicking
 
 2012-02-18  0.5.7
