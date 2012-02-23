@@ -92,6 +92,11 @@ enum EnchantMoreItemCategory
     IS_FARMBLOCK,
     IS_EXCAVATABLE,
     IS_WOODENBLOCK,
+
+    IS_HELMET,
+    IS_CHESTPLATE,
+    IS_LEGGINGS,
+    IS_BOOTS
 };
 
 class EnchantMoreListener implements Listener {
@@ -264,8 +269,6 @@ class EnchantMoreListener implements Listener {
                 continue;
             }
 
-            plugin.log.info("effect "+ench+" + "+itemName+" = "+enable);
-
             // Item can either be a category (for all items) or an item name
             EnchantMoreItemCategory category = getCategoryByName(itemName);
             if (category != null) {
@@ -295,9 +298,12 @@ class EnchantMoreListener implements Listener {
     }
 
     private static void putEffectEnabled(int itemId, Enchantment ench, boolean enable) {
-        plugin.log.info("enable "+itemId+" + "+ench+" = "+enable);
-
         int packed = itemId + ench.getId() << 10;
+
+        if (plugin.getConfig().getBoolean("verboseConfig", false)) {
+            plugin.log.info("Effect "+Material.getMaterial(itemId)+" ("+itemId+") + "+ench+" = "+packed+" = "+enable);
+        }
+
 
         enabledEffectMap.put(packed, enable);
     }
@@ -307,7 +313,9 @@ class EnchantMoreListener implements Listener {
 
         Object obj = enabledEffectMap.get(packed);
         if (obj == null) {
-            plugin.log.info("default for "+ench);
+            if (plugin.getConfig().getBoolean("verboseConfig", false)) {
+                plugin.log.info("default for "+Material.getMaterial(itemId)+" ("+itemId+") +" + ench);
+            }
             return defaultEnabledEffectState;
         }
         return ((Boolean)obj).booleanValue();
@@ -328,6 +336,11 @@ class EnchantMoreListener implements Listener {
         if (material != null) {
             return material.getId();
         } else {
+            if (name.equalsIgnoreCase("flint & steel")) {
+                // no & in enum, so..
+                return Material.FLINT_AND_STEEL.getId();
+            } 
+
             try {
                 return Integer.parseInt(name, 10);
             } catch (Exception e) {
@@ -1875,7 +1888,7 @@ class EnchantMoreListener implements Listener {
         ItemStack chestplate = playerDamaged.getInventory().getChestplate();
 
         // Chestplate + Infinity = god mode (no damage/hunger)
-        if (chestplate != null && hasEnch(chestplate, INFINITE, playerDamaged)) {
+        if (chestplate != null && chestplate.getType() != Material.AIR && hasEnch(chestplate, INFINITE, playerDamaged)) {
             // no damage ever
             // TODO: also need to cancel death? can die elsewhere? (other plugins)
             event.setCancelled(true);
@@ -1890,7 +1903,7 @@ class EnchantMoreListener implements Listener {
             cause == EntityDamageEvent.DamageCause.FIRE_TICK) {
             ItemStack helmet = playerDamaged.getInventory().getHelmet();
             // Helmet + Fire Aspect = swim in lava
-            if (helmet != null && hasEnch(helmet, FIRE_ASPECT, playerDamaged)) {
+            if (helmet != null && helmet.getType() != Material.AIR && hasEnch(helmet, FIRE_ASPECT, playerDamaged)) {
                 event.setCancelled(true);   // stop knockback and damage
                 //event.setDamage(0);
                 playerDamaged.setFireTicks(0);     // cool off immediately after exiting lava
@@ -1908,7 +1921,7 @@ class EnchantMoreListener implements Listener {
             }
         } else if (cause == EntityDamageEvent.DamageCause.CONTACT) {
             // Chestplate + Silk Touch = cactus protection (no contact damage)
-            if (chestplate != null && hasEnch(chestplate, SILK_TOUCH, playerDamaged)) {
+            if (chestplate != null && chestplate.getType() != Material.AIR && hasEnch(chestplate, SILK_TOUCH, playerDamaged)) {
                 event.setCancelled(true);
             }
         }
@@ -1921,7 +1934,7 @@ class EnchantMoreListener implements Listener {
                 Arrow arrow = (Arrow)damager;
 
                 // Chestplate + Knockback = reflect arrows
-                if (chestplate != null && hasEnch(chestplate, KNOCKBACK, playerDamaged)) {
+                if (chestplate != null && chestplate.getType() != Material.AIR && hasEnch(chestplate, KNOCKBACK, playerDamaged)) {
                     event.setCancelled(true);   // stop arrow damage
                     playerDamaged.shootArrow();        // reflect arrow
 
@@ -2087,7 +2100,7 @@ class EnchantMoreListener implements Listener {
         ItemStack leggings = player.getInventory().getLeggings();
 
         // Leggings + Punch = rocket launch pants (double-tap shift)
-        if (leggings != null && hasEnch(leggings, PUNCH, player)) {
+        if (leggings != null && leggings.getType() != Material.AIR && hasEnch(leggings, PUNCH, player)) {
             if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = getLevel(leggings, PUNCH, player);
 
@@ -2104,7 +2117,7 @@ class EnchantMoreListener implements Listener {
         
         // Boots + Punch = hover jump (double-tap shift)
         // (one or the other)
-        } else if (boots != null && hasEnch(boots, PUNCH, player)) {
+        } else if (boots != null && boots.getType() != Material.AIR && hasEnch(boots, PUNCH, player)) {
             if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = getLevel(boots, PUNCH, player);
                 player.setVelocity(player.getVelocity().setY(n));
@@ -2203,7 +2216,7 @@ class EnchantMoreListener implements Listener {
 
         ItemStack chestplate = player.getInventory().getChestplate();
         // Chestplate + Infinity = no hunger (secondary)
-        if (chestplate != null && hasEnch(chestplate, INFINITE, player)) {
+        if (chestplate != null && chestplate.getType() != Material.AIR && hasEnch(chestplate, INFINITE, player)) {
             event.setFoodLevel(20); // max
             // not cancelled, so still can eat
         }
@@ -2341,7 +2354,7 @@ class EnchantMorePlayerMoveListener implements Listener {
         //  odd diamond block enchant deal
         ItemStack boots = player.getInventory().getBoots();
 
-        if (boots != null) {
+        if (boots != null && boots.getType() != Material.AIR) {
             // Boots + Power = witch's broom (sprint flying)
             if (EnchantMoreListener.hasEnch(boots, EnchantMoreListener.POWER, player)) {
                 if (player.isSprinting()) {

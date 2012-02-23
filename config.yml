@@ -100,7 +100,43 @@ items:
     - step;2            # wooden slab
     - double_step;2     # wooden double slab
 
+    # Categories below only used for effects shortcuts
+    # Normally, armor effect determined by slot - if other item is in
+    # slot, then it will trigger the default enable state
+    Helmet:
+    - chainmail_helmet
+    - diamond_helmet
+    - gold_helmet
+    - iron_helmet
+    - leather_helmet
+    Chestplate:
+    - chainmail_chestplate
+    - diamond_chestplate
+    - gold_chestplate
+    - iron_chestplate
+    - leather_chestplate
+    Leggings:
+    - chainmail_leggings
+    - diamond_leggings
+    - gold_leggings
+    - iron_leggings
+    - leather_leggings
+    Boots:
+    - chainmail_boots
+    - diamond_boots
+    - gold_boots
+    - iron_boots
+    - leather_boots
+
+moveListener: true
+
+
+# If combination is not listed, default to on/off
 defaultEffectEnabled: true
+
+# For diagnosis purposes, if true, list expanded item id + enchantment id and states
+verboseConfig: false
+
 effects:
     Axe + Aqua Affinity:
         enable: true
@@ -230,6 +266,3 @@ effects:
         enable: true
     Sword + Protection:
         enable: true
-    Sword + Power:
-        enable: false
-moveListener: true
