@@ -139,12 +139,12 @@ class EnchantMoreListener implements Listener {
     }
 
     private void loadConfig() {
-        List<Map<String,Object>> mapList = plugin.getConfig().getMapList("effects");
+        MemorySection effectsSection = (MemorySection)plugin.getConfig().get("effects");
 
-        plugin.log.info("mapList = "+mapList);
+        for (String effectName: effectsSection.getKeys(false)) {
+            boolean enable = plugin.getConfig().getBoolean("effects." + effectName + ".enable");
 
-        for (Map<String,Object> map: mapList) { 
-            plugin.log.info("map = "+map);
+            plugin.log.info("effect "+effectName+" = "+enable);
         }
     }
 

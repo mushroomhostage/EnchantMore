@@ -1,5 +1,7 @@
 effects:
-    - foo: 1
-    - bar: 2
+    foo: 
+        enable: true
+    bar:
+        enable: false
 
 moveListener: true
