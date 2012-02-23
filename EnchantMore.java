@@ -111,10 +111,15 @@ class EnchantMoreListener implements Listener {
    
     static EnchantMore plugin;
 
+    static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;
+
     public EnchantMoreListener(EnchantMore pl) {
         plugin = pl;
 
         random = new Random();
+        enabledEffectMap = new ConcurrentHashMap<Integer, Boolean>();
+
+        loadConfig();
 
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -122,6 +127,8 @@ class EnchantMoreListener implements Listener {
     static public boolean hasEnch(ItemStack tool, Enchantment ench, Player player) {
         // TODO: config enable/disable
         // TODO: optional player permission support
+
+        plugin.log.info("hasEnch "+tool.getTypeId()+" "+ench.getId());
         return tool.containsEnchantment(ench);
     }
 
@@ -129,6 +136,16 @@ class EnchantMoreListener implements Listener {
         // TODO: config max level support
         // TODO: optional player permission max level support
         return tool.getEnchantmentLevel(ench);
+    }
+
+    private void loadConfig() {
+        List<Map<String,Object>> mapList = plugin.getConfig().getMapList("effects");
+
+        plugin.log.info("mapList = "+mapList);
+
+        for (Map<String,Object> map: mapList) { 
+            plugin.log.info("map = "+map);
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
@@ -2266,6 +2283,10 @@ public class EnchantMore extends JavaPlugin {
     Logger log = Logger.getLogger("Minecraft");
 
     public void onEnable() {
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        reloadConfig();
+
         new EnchantMoreListener(this);
 
         if (getConfig().getBoolean("moveListener", true)) {
