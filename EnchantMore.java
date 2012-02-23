@@ -129,6 +129,8 @@ class EnchantMoreListener implements Listener {
     static ConcurrentHashMap<Integer, EnchantMoreItemCategory> itemToCategory;
     static ConcurrentHashMap<EnchantMoreItemCategory, Object> categoryToItems;
 
+    static boolean defaultEnabledEffectState = true;
+
     public EnchantMoreListener(EnchantMore pl) {
         plugin = pl;
 
@@ -140,7 +142,10 @@ class EnchantMoreListener implements Listener {
     }
 
     static public boolean hasEnch(ItemStack tool, Enchantment ench, Player player) {
-        // TODO: config enable/disable
+        if (!getEffectEnabled(tool.getTypeId(), ench)) {
+            // globally disabled in configuration
+            return false;
+        }
         // TODO: optional player permission support
 
         //plugin.log.info("hasEnch "+tool.getTypeId()+" "+ench.getId());
@@ -154,6 +159,9 @@ class EnchantMoreListener implements Listener {
     }
 
     private void loadConfig() {
+        // If isn't overridden in config, should default to on (true) or off (false)?
+        defaultEnabledEffectState = plugin.getConfig().getBoolean("defaultEffectEnabled", true);
+
         // Because internally the enchantment names are not really what you might expect,
         // we maintain a list of easily-recognizable names, to map to the Enchantment
         // TODO: FT
@@ -233,7 +241,7 @@ class EnchantMoreListener implements Listener {
 
         }
 
-        // Map of item ids + effects to whether they are enabled
+        // Map of item ids and effects to whether they are enabled
         enabledEffectMap = new ConcurrentHashMap<Integer, Boolean>();
         MemorySection effectsSection = (MemorySection)plugin.getConfig().get("effects");
 
@@ -264,20 +272,48 @@ class EnchantMoreListener implements Listener {
                 // its a category!
                 Object obj = categoryToItems.get(category);
                 if (obj == null || !(obj instanceof List)) {
-                    plugin.log.info("Invalid category "+itemName+", ignored");
+                    plugin.log.warning("Invalid item category '"+itemName+"', ignored");
                     continue;
                 }
 
                 List list = (List)obj;
-                plugin.log.info("\t cat="+list);
+                for (Object item: list) {
+                    if (item instanceof Integer) {
+                        putEffectEnabled(((Integer)item).intValue(), ench, enable);
+                    }
+                }
             } else {
                 int id = getTypeIdByName(itemName);
-                plugin.log.info("\t id="+id);
+                if (id == -1) {
+                    plugin.log.warning("Invalid item name '"+itemName+"', ignored");
+                    continue;
+                }
+                putEffectEnabled(id, ench, enable);
             }
+
         }
     }
 
-    public static EnchantMoreItemCategory getCategoryByName(String name) {
+    private static void putEffectEnabled(int itemId, Enchantment ench, boolean enable) {
+        plugin.log.info("enable "+itemId+" + "+ench+" = "+enable);
+
+        int packed = itemId + ench.getId() << 10;
+
+        enabledEffectMap.put(packed, enable);
+    }
+
+    static public boolean getEffectEnabled(int itemId, Enchantment ench) {
+        int packed = itemId + ench.getId() << 10;
+
+        Object obj = enabledEffectMap.get(packed);
+        if (obj == null) {
+            plugin.log.info("default for "+ench);
+            return defaultEnabledEffectState;
+        }
+        return ((Boolean)obj).booleanValue();
+    }
+
+    static public EnchantMoreItemCategory getCategoryByName(String name) {
         try {
             return EnchantMoreItemCategory.valueOf("IS_" + name.toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -299,6 +335,7 @@ class EnchantMoreListener implements Listener {
             }
         }
     }
+
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -420,8 +457,10 @@ class EnchantMoreListener implements Listener {
 
                 // TODO: nice colors
                 player.sendMessage(
-                    //"Humidity "+world.getHumidity(x, z)+", "+ // not compatible with 1.8
-                    //"Temperature "+world.getTemperature(x, z)+", "+
+                /* not compatible with 1.8 TODO: why is it still here?
+                    "Humidity "+world.getHumidity(x, z)+", "+ 
+                    "Temperature "+world.getTemperature(x, z)+", "+
+                    */
                     "Biome "+world.getBiome(x, z)+", "+
                     "Time "+world.getFullTime()+", "+
                     "Sea Level "+world.getSeaLevel()+", "+

@@ -100,10 +100,136 @@ items:
     - step;2            # wooden slab
     - double_step;2     # wooden double slab
 
+defaultEffectEnabled: true
 effects:
+    Axe + Aqua Affinity:
+        enable: true
+    Axe + Flame:
+        enable: true
+    Axe + Power:
+        enable: true
+    Axe + Respiration:
+        enable: true
+    Boots + Flame:
+        enable: true
+    Boots + Power:
+        enable: true
+    Boots + Punch:
+        enable: true
+    Bow + Aqua Affinity:
+        enable: true
+    Bow + Bane of Arthropods:
+        enable: true
+    Bow + Efficiency:
+        enable: true
     Bow + Feather Falling:
         enable: true
+    Bow + Fire Aspect:
+        enable: true
+    Bow + Knockback:
+        enable: true
+    Bow + Looting:
+        enable: true
     Bow + Respiration:
+        enable: true
+    Bow + Sharpness:
+        enable: true
+    Bow + Silk Touch:
+        enable: true
+    Bow + Smite:
+        enable: true
+    Chestplate + Infinity:
+        enable: true
+    Chestplate + Knockback:
+        enable: true
+    Chestplate + Silk Touch:
+        enable: true
+    Fishing Rod + Efficiency:
+        enable: true
+    Fishing Rod + Fire Aspect:
+        enable: true
+    Fishing Rod + Flame:
+        enable: true
+    Fishing Rod + Fortune:
+        enable: true
+    Fishing Rod + Looting:
+        enable: true
+    Fishing Rod + Silk Touch:
+        enable: true
+    Fishing Rod + Smite:
+        enable: true
+    Flint & Steel + Aqua Affinity:
+        enable: true
+    Flint & Steel + Blast Protection:
+        enable: true
+    Flint & Steel + Efficiency:
+        enable: true
+    Flint & Steel + Fire Aspect:
+        enable: true
+    Flint & Steel + Fire Protection:
+        enable: true
+    Flint & Steel + Punch:
+        enable: true
+    Flint & Steel + Respiration:
+        enable: true
+    Flint & Steel + Sharpness:
+        enable: true
+    Flint & Steel + Smite:
+        enable: true
+    Helmet + Fire Aspect:
+        enable: true
+    Hoe + Aqua Affinity:
+        enable: true
+    Hoe + Bane of Arthropods:
+        enable: true
+    Hoe + Efficiency:
+        enable: true
+    Hoe + Fire Protection:
+        enable: true
+    Hoe + Fortune:
+        enable: true
+    Hoe + Power:
+        enable: true
+    Hoe + Respiration:
+        enable: true
+    Hoe + Silk Touch:
+        enable: true
+    Leggings + Punch:
+        enable: true
+    Pickaxe + Flame:
+        enable: true
+    Pickaxe + Looting:
+        enable: true
+    Pickaxe + Power:
+        enable: true
+    Pickaxe + Silk Touch:   # only level II
+        enable: true
+    Shears + Bane of Arthropods:
+        enable: true
+    Shears + Fortune:
+        enable: true
+    Shears + Looting:
+        enable: true
+    Shears + Power:
+        enable: true
+    Shears + Silk Touch:
+        enable: true
+    Shears + Smite:
+        enable: true
+    Shovel + Flame:
+        enable: true
+    Shovel + Power:
+        enable: true
+    Shovel + Silk Touch:    # only level II
+        enable: true
+    Sword + Fire Protection:
+        enable: true
+    Sword + Flame:
+        enable: true
+    Sword + Power:
+        enable: true
+    Sword + Protection:
+        enable: true
+    Sword + Power:
         enable: false
-
 moveListener: true
