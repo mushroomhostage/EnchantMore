@@ -192,28 +192,44 @@ class EnchantMoreListener implements Listener {
             for (String itemName: itemNames) {
                 plugin.log.info("item "+itemName);
 
+                String[] parts = itemName.split(";", 2);
+
                 // Get type ID, either from name or integer string
                 int id = -1;
-                Material material = Material.matchMaterial(itemName);
+                Material material = Material.matchMaterial(parts[0]);
                 if (material != null) {
                     id = material.getId();
                 } else {
                     try {
-                        id = Integer.parseInt(itemName, 10);
+                        id = Integer.parseInt(parts[0], 10);
                     } catch (Exception e) {
                         plugin.log.warning("Invalid item '"+itemName+"', ignored");
                         continue;
                     }
                 }
 
-                if (itemToCategory.contains(id)) {
+                // Optional data field, packed into higher bits for ease of lookup
+                int packedId = id;
+                if (parts.length > 1) {
+                    int data = 0;
+                    try {
+                        data = Integer.parseInt(parts[1], 10);
+                    } catch (Exception e) {
+                        plugin.log.warning("Invalid item data '"+parts[0]+"', ignored");
+                        continue;
+                    }
+                    packedId += data << 10;
+                }
+                    
+
+                if (itemToCategory.contains(packedId)) {
                     plugin.log.info("Overlapping item '"+itemName+"' ("+id+"), category "+itemToCategory.get(id)+" != "+category+", ignored");
                     continue;
                 }
 
-                itemToCategory.put(id, category);
+                itemToCategory.put(packedId, category);
 
-                plugin.log.info("Cat "+id+" = "+category);
+                plugin.log.info("Cat "+packedId+" = "+category);
             }
         }
 
@@ -655,82 +671,43 @@ class EnchantMoreListener implements Listener {
     // TODO: would really like to support IC2/RP2 extra items
     // sapphire, bronze, emerald, ruby tools..
     public static boolean isHoe(Material m) {
-        return m == Material.DIAMOND_HOE ||
-            m == Material.GOLD_HOE || 
-            m == Material.IRON_HOE ||
-            m == Material.STONE_HOE ||
-            m == Material.WOOD_HOE;
+        return itemToCategory.get(m.getId()) == EnchantMoreItemCategory.IS_HOE;
     }
 
     public static boolean isSword(Material m) {
-        return m == Material.DIAMOND_SWORD ||   
-            m == Material.GOLD_SWORD ||
-            m == Material.IRON_SWORD ||
-            m == Material.STONE_SWORD ||
-            m == Material.WOOD_SWORD;
+        return itemToCategory.get(m.getId()) == EnchantMoreItemCategory.IS_SWORD;
     }
 
     public static boolean isPickaxe(Material m) {
-        return m == Material.DIAMOND_PICKAXE ||
-            m == Material.GOLD_PICKAXE ||
-            m == Material.IRON_PICKAXE ||
-            m == Material.STONE_PICKAXE ||
-            m == Material.WOOD_PICKAXE;
+        return itemToCategory.get(m.getId()) == EnchantMoreItemCategory.IS_PICKAXE;
     }
 
     public static boolean isShovel(Material m) {
-        return m == Material.DIAMOND_SPADE ||
-            m == Material.GOLD_SPADE ||
-            m == Material.IRON_SPADE ||
-            m == Material.STONE_SPADE ||
-            m == Material.WOOD_SPADE;
+        return itemToCategory.get(m.getId()) == EnchantMoreItemCategory.IS_SHOVEL;
     }
 
     public static boolean isAxe(Material m) {
-        return m == Material.DIAMOND_AXE ||
-            m == Material.GOLD_AXE ||
-            m == Material.IRON_AXE ||
-            m == Material.STONE_AXE ||
-            m == Material.WOOD_AXE;
+        return itemToCategory.get(m.getId()) == EnchantMoreItemCategory.IS_AXE;
     }
 
-    // Get whether material is a farm-related block, either land or growing crops
     public static boolean isFarmBlock(Material m) {
-        return m == Material.SOIL ||     // Farmland
-            m == Material.CROPS ||    // wheat TODO: update wiki, calls 'Wheat Seeds' though in-game 'Crops'
-            m == Material.SUGAR_CANE_BLOCK ||
-            m == Material.CAKE_BLOCK ||
-            m == Material.PUMPKIN_STEM ||
-            m == Material.MELON_STEM ||
-            m == Material.NETHER_WARTS; // not the item, that is NETHER_STALK (confusingly)
+        return itemToCategory.get(m.getId()) == EnchantMoreItemCategory.IS_FARMBLOCK;
     }
 
-    // Get whether able to be excavated by shovel
-    public static boolean isExcavatable(int m) {
-        return m == Material.DIRT.getId() ||
-            m == Material.GRASS.getId() ||
-            m == Material.GRAVEL.getId() ||
-            m == Material.SAND.getId() ||
-            m == Material.SOUL_SAND.getId() ||
-            m == Material.NETHERRACK.getId(); // not normally diggable, but why not?
+    public static boolean isExcavatable(int id) {
+        return itemToCategory.get(id) == EnchantMoreItemCategory.IS_EXCAVATABLE;
     }
 
     public static boolean isExcavatable(Material m) {
-        return isExcavatable(m.getId());
+        return itemToCategory.get(m.getId()) == EnchantMoreItemCategory.IS_EXCAVATABLE;
     }
 
-    // Return whether is a wooden block
     public static boolean isWoodenBlock(Material m, byte data) {
-        return m == Material.WOOD || 
-            m == Material.WOOD_PLATE || 
-            m == Material.WOOD_STAIRS ||
-            m == Material.WOODEN_DOOR || 
-            m == Material.LOG ||
-            (m == Material.STEP && data == 2) ||      // wooden slab
-            (m == Material.DOUBLE_STEP && data == 2);// wooden double slab
+        return itemToCategory.get(m.getId() + (data << 10)) == EnchantMoreItemCategory.IS_WOODENBLOCK;
     }
 
     // http://wiki.vg/Protocol#Effects
+    // TODO: replace with new potions API in 1.1-R4! or so
     private static final int EFFECT_MOVE_SPEED = 1;
     private static final int EFFECT_MOVE_SLOW_DOWN = 2;
     private static final int EFFECT_DIG_SPEED = 3;

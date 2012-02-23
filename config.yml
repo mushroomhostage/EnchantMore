@@ -27,7 +27,7 @@ items:
     - iron_pickaxe
     - stone_pickaxe
     - wood_pickaxe
-    # Add your RP2 Ruby, Sapphire, Emerald tools here (item IDs)..
+    # Add your RP2 Ruby, Sapphire, Emerald or IC2 bronze tools here (item IDs)..
     Hoe:
     - diamond_hoe
     - gold_hoe 
@@ -52,9 +52,10 @@ items:
     - iron_axe
     - stone_axe
     - wood_axe
+    # Farm-related block, either land or growing crops 
     Farmblock:
-    - soil
-    - crops
+    - soil      # Farmland
+    - crops     # Wheat TODO: update wiki, calls 'Wheat Seeds' though in-game 'Crops'
     - sugar_cane_block
     - cake_block
     - pumpkin_stem
@@ -65,10 +66,17 @@ items:
     - dirt
     - grass
     - gravel
-    - sand
+    #- sand
     - soul_sand
     - netherrack  # Not normally diggable, but why not?
-
+    WoodenBlock:
+    - wood
+    - wood_plate
+    - wood_stairs
+    - wooden_door
+    - log
+    - step;2            # wooden slab
+    - double_step;2     # wooden double slab
 
 effects:
     Bow + Feather Falling:
