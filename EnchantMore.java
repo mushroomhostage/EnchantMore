@@ -281,6 +281,21 @@ class EnchantMoreListener implements Listener {
             if (hasEnch(item, EFFICIENCY, player)) {
                 player.shootArrow();
             }
+        } else if (item.getType() == Material.FLINT_AND_STEEL && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
+            // Flint & Steel + Punch = cannon
+            if (hasEnch(item, PUNCH, player)) {
+                Location loc = player.getLocation().add(0, 2, 0);
+
+                TNTPrimed tnt = (TNTPrimed)world.spawn(loc, TNTPrimed.class);
+
+                int n = getLevel(item, PUNCH, player);
+                tnt.setVelocity(player.getLocation().getDirection().normalize().multiply(n));
+
+                //tnt.setFuseTicks(n * 20*2); // TODO: should we change?
+
+                damage(item, player);
+            }
+
         } else if (isSword(item.getType())) {
             if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
                 // Sword + Power = strike lightning 100+ meters away
@@ -424,7 +439,7 @@ class EnchantMoreListener implements Listener {
                         } else {
                             player.getInventory().setItem(leavesSlot, leavesStack);
                         }
-                        player.updateInventory();
+                        updateInventory(player);
                     }
                 }
                 damage(item, player);
@@ -641,6 +656,8 @@ class EnchantMoreListener implements Listener {
 
         tool.setDurability((short)nativeTool.getData());
 
+        updateInventory(player);
+
         /* Lame manual way to do it not supporting Unbreaking
         tool.setDurability((short)(tool.getDurability() + amount));
 
@@ -653,6 +670,11 @@ class EnchantMoreListener implements Listener {
             // if they managed to use a tool not in their hand...well, they get a break
             // (but should really set stack size to zero)
         } */
+    }
+
+    public static void updateInventory(Player player) {
+        // TODO: replace with non-deprecated. This is just a wrapper so I only get one warning.
+        player.updateInventory();
     }
 
     // Attempt to grow organic structure
