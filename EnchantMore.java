@@ -163,6 +163,7 @@ class EnchantMoreListener implements Listener {
         return tool.getEnchantmentLevel(ench);
     }
 
+    @SuppressWarnings("unchecked")   // not helpful: list.add(id); warning: [unchecked] unchecked call to add(E) as a member of the raw type java.util.List
     private void loadConfig() {
         // If isn't overridden in config, should default to on (true) or off (false)?
         defaultEnabledEffectState = plugin.getConfig().getBoolean("defaultEffectEnabled", true);
@@ -773,6 +774,7 @@ class EnchantMoreListener implements Listener {
         } */
     }
 
+    @SuppressWarnings("deprecation") // yeah its deprecated, but, there is no replacement! and it won't be removed in 1.1-R4
     public static void updateInventory(Player player) {
         // TODO: replace with non-deprecated. This is just a wrapper so I only get one warning.
         player.updateInventory();
