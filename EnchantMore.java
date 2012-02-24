@@ -1936,6 +1936,19 @@ class EnchantMoreListener implements Listener {
             if (chestplate != null && chestplate.getType() != Material.AIR && hasEnch(chestplate, SILK_TOUCH, playerDamaged)) {
                 event.setCancelled(true);
             }
+        } else if (cause == EntityDamageEvent.DamageCause.FALL) {
+            ItemStack boots = playerDamaged.getInventory().getBoots();
+            // TODO: Boots + Knockback = bounce
+            if (boots != null && boots.getType() != Material.AIR && hasEnch(boots, KNOCKBACK, playerDamaged)) {
+                event.setCancelled(true);
+                if (!playerDamaged.isSneaking()) {  // interferes with always-sneak
+                    double amount = event.getDamage();   // proportional to height
+                    // This needs to be a damped oscillation
+                    double n = getLevel(boots, KNOCKBACK, playerDamaged) * 2.5f; 
+                    playerDamaged.setVelocity(playerDamaged.getVelocity().setY(n));
+                    // see also MorePhysics bouncing blocks
+                }
+            }
         }
 
         if (event instanceof EntityDamageByEntityEvent) {    // note: do not register directly
