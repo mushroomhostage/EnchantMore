@@ -951,9 +951,40 @@ class EnchantMoreListener implements Listener {
 
 
             // Sword + Protection = resistance when blocking 
+            // TODO: kind of a lame enchantment, one of the first.. need an entity to block on, maybe change to temporary wall?
             if (hasEnch(item, PROTECTION, player)) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, getLevel(item, PROTECTION, player)*20*5, 1));
                 damage(item, player);
+            }
+
+            // Sword + Silk Touch = itemize (acquire creature, boat, minecart, TNT as item)
+            if (hasEnch(item, SILK_TOUCH, player)) {
+                // TODO: can we use built-in item -> entity placement, and reverse it?
+                // mainly, I want to use this with Flan's Plane mod, so I can re-acquire planes that
+                // glitched falling into blocks, as items so I can replace them..
+                if (entity instanceof Creature) {
+                    // creature -> spawn egg
+                    // TODO: what is MobCatcher?
+                    Creature creature = (Creature)entity;
+                    short eid = getEntityTypeId(creature);
+
+                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MONSTER_EGG, 1, eid));
+                    entity.remove();
+                } else if (entity instanceof Boat) {
+                    // boat item.. very useful (some plugins make boats drop items when broken)
+                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.BOAT, 1));
+                    entity.remove();
+                } else if (entity instanceof Minecart) {
+                    // minecart, not that useful, but quicker than breaking
+                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MINECART, 1));
+                    entity.remove();
+                } else if (entity instanceof TNTPrimed) {
+                    // primed TNT..cancel it! very useful in emergency situations
+                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.TNT, 1));
+                    entity.remove();
+                } else {
+                    world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);
+                }
             }
 
         } else if (isHoe(item.getType())) {
@@ -985,6 +1016,23 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
         }
+    }
+
+    // Get entity type ID for a creature, for spawn eggs
+    private short getEntityTypeId(Creature creature) {
+        // TODO: in 1.1-R4, replace with getType() -> EntityType -> getTypeId()
+        // see http://forums.bukkit.org/threads/help-how-to-get-an-animals-type-id.60156/#post-967034
+        Class<?>[] clazzes = creature.getClass().getInterfaces();
+        if (clazzes.length != 1) {
+            return -1;
+        }
+        Class<?> clazz = clazzes[0];
+        CreatureType creatureType = CreatureType.fromName(clazz.getSimpleName());
+        if (creatureType == null) {
+            return -1;
+        }
+
+        return creatureType.getTypeId();
     }
 
 

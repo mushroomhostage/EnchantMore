@@ -1,5 +1,6 @@
 X X
     * Add Chestplate + Sharpness = reflect damage
+    * Add Sword + Silk Touch = itemize (acquire creature, boat, minecart, TNT as item)
     * Add Hoe + Punch = grow animal
     * Add Pickaxe/Shovel/Axe + Flame II = auto-smelt and light path
     * Change Hoe + Bane of Arthropods, now left-click starts storm, right-click stops
