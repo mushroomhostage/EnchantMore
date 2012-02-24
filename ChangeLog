@@ -1,3 +1,6 @@
+X X
+    * Change Hoe + Bane of Arthropods, now left-click starts storm, right-click stops
+
 2012-02-22  0.6.4
     * Add support for enabling/disabling effects in config.yml
     * Add Leggings + Punch = rocket launch pants (double-tap shift)

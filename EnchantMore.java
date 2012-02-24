@@ -457,9 +457,15 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
 
-            // Hoe + Bane of Arthropods = toggle downfall
+            // Hoe + Bane of Arthropods = downpour
             if (hasEnch(item, BANE, player)) {
-                world.setStorm(!world.hasStorm());
+                if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+                    world.setStorm(true);
+                } else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+                    world.setStorm(false);
+                } else {
+                    world.setStorm(!world.hasStorm());
+                }
                 damage(item, player);
             }
 
