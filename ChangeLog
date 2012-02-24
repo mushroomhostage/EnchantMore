@@ -1,8 +1,9 @@
 X X
     * Add Chestplate + Sharpness = reflect damage
-    * Add Sword + Silk Touch = itemize (acquire creature, boat, minecart, TNT as item)
+    * Add Sword + Silk Touch = itemize (right-click creature/boat/minecart/primedTNT to drop item)
     * Add Hoe + Punch = grow animal
     * Add Pickaxe/Shovel/Axe + Flame II = auto-smelt and light path
+    * Add Leggings + Feather Falling = surface (double-tap shift)
     * Change Hoe + Bane of Arthropods, now left-click starts storm, right-click stops
     * Enhance Bow + Respiration = stapled arrows: try TNT, water, lava (spawn egg, potions...)
     * Enhance Shears + Looting, now can be used to acquire saddle from saddled pigs

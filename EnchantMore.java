@@ -2328,9 +2328,9 @@ class EnchantMoreListener implements Listener {
         ItemStack boots = player.getInventory().getBoots();
         ItemStack leggings = player.getInventory().getLeggings();
 
-        // Leggings + Punch = rocket launch pants (double-tap shift)
-        if (leggings != null && leggings.getType() != Material.AIR && hasEnch(leggings, PUNCH, player)) {
-            if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
+        if (leggings != null && leggings.getType() != Material.AIR) {
+            // Leggings + Punch = rocket launch pants (double-tap shift)
+            if (hasEnch(leggings, PUNCH, player) && EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = getLevel(leggings, PUNCH, player);
 
                 Location loc = player.getLocation();
@@ -2343,11 +2343,22 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-        
-        // Boots + Punch = hover jump (double-tap shift)
+            // Leggings + Feather Falling = surface (double-tap shift)
+            // TODO: change invoke command to something more obscure. shift-right-click? 
+            if (hasEnch(leggings, FEATHER_FALLING, player) && EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
+                // TODO: this only gets highest non-transparent :( - can get stuck in glass 
+                Block top = player.getWorld().getHighestBlockAt(player.getLocation());
+
+                //player.getLocation().setY(top.getY());
+                player.teleport(top.getLocation()); // resets direction facing, which I don't like
+
+                // TODO: nether.. gets stuck on top :(
+                // TODO: if already on top, go down! and travel through levels.
+            }
         // (one or the other)
-        } else if (boots != null && boots.getType() != Material.AIR && hasEnch(boots, PUNCH, player)) {
-            if (EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
+        } else if (boots != null && boots.getType() != Material.AIR) {
+            // Boots + Punch = hover jump (double-tap shift)
+            if (hasEnch(boots, PUNCH, player) && EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = getLevel(boots, PUNCH, player);
                 player.setVelocity(player.getVelocity().setY(n));
             }
@@ -2533,6 +2544,10 @@ class EnchantMoreTapShiftTask implements Runnable {
     // Whether should hover jump = double-tapped Shift
     public static boolean isDoubleTapShift(Player player) {
         return getSneakCount(player) >= 2;
+    }
+
+    public static boolean isTripleTapShift(Player player) {
+        return getSneakCount(player) >= 3;
     }
 
 }
