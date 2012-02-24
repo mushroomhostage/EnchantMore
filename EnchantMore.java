@@ -931,6 +931,13 @@ class EnchantMoreListener implements Listener {
                         // can drop twice since cows are bigger
                         bovine.setHealth(bovine.getHealth() - bovine.getMaxHealth() / 3);
                     }
+                } else if (entity instanceof Pig) {
+                    Pig piggy = (Pig)entity;
+
+                    if (piggy.hasSaddle()) {
+                        world.dropItemNaturally(piggy.getLocation(), new ItemStack(Material.SADDLE, 1));
+                        piggy.setSaddle(false);
+                    }
                 }
             }
         }  else if (isSword(item.getType())) {

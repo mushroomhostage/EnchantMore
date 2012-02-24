@@ -3,6 +3,7 @@ X X
     * Add Chestplate + Sharpness = reflect damage
     * Change Hoe + Bane of Arthropods, now left-click starts storm, right-click stops
     * Enhance Bow + Respiration = stapled arrows: try TNT, water, lava (spawn egg, potions...)
+    * Enhance Shears + Looting, now can be used to acquire saddle from saddled pigs
     * Partial (warning: incomplete!) WorldGuard support
 
 2012-02-22  0.6.4
