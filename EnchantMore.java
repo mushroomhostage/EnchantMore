@@ -2343,10 +2343,10 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            // Leggings + Feather Falling = surface (double-tap shift)
-            // TODO: change invoke command to something more obscure. shift-right-click? 
-            if (hasEnch(leggings, FEATHER_FALLING, player) && EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
+            // Leggings + Feather Falling = surface (triple-tap shift)
+            if (hasEnch(leggings, FEATHER_FALLING, player) && EnchantMoreTapShiftTask.isTripleTapShift(player)) {
                 // TODO: this only gets highest non-transparent :( - can get stuck in glass 
+                // but, it does work in water! useful in caves or when swimming
                 Block top = player.getWorld().getHighestBlockAt(player.getLocation());
 
                 //player.getLocation().setY(top.getY());
@@ -2355,8 +2355,9 @@ class EnchantMoreListener implements Listener {
                 // TODO: nether.. gets stuck on top :(
                 // TODO: if already on top, go down! and travel through levels.
             }
-        // (one or the other)
-        } else if (boots != null && boots.getType() != Material.AIR) {
+        } 
+
+        if (boots != null && boots.getType() != Material.AIR) {
             // Boots + Punch = hover jump (double-tap shift)
             if (hasEnch(boots, PUNCH, player) && EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
                 int n = getLevel(boots, PUNCH, player);
