@@ -1,5 +1,6 @@
 X X
     * Change Hoe + Bane of Arthropods, now left-click starts storm, right-click stops
+    * Add Pickaxe/Shovel/Axe + Flame II = auto-smelt and light path
 
 2012-02-22  0.6.4
     * Add support for enabling/disabling effects in config.yml
