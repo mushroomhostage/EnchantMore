@@ -9,6 +9,7 @@ X X
     * Enhance Shears + Looting, now can be used to acquire saddle from saddled pigs
     * Enhance Hoe + Fire Protection = sensor, now can show information on entities
     * Partial (warning: incomplete!) WorldGuard support
+      Not all protections are respected! (see ticket 4)
 
 2012-02-22  0.6.4
     * Add support for enabling/disabling effects in config.yml

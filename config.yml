@@ -56,6 +56,8 @@ effects:
         enable: true
     Chestplate + Silk Touch:
         enable: true
+    Chestplate + Sharpness:
+        enable: true
     Fishing Rod + Efficiency:
         enable: true
     Fishing Rod + Fire Aspect:
@@ -102,11 +104,15 @@ effects:
         enable: true
     Hoe + Power:
         enable: true
+    Hoe + Punch:
+        enable: true
     Hoe + Respiration:
         enable: true
     Hoe + Silk Touch:
         enable: true
     Leggings + Punch:
+        enable: true
+    Leggings + Feather Falling:
         enable: true
     Pickaxe + Flame:
         enable: true
@@ -141,6 +147,8 @@ effects:
     Sword + Power:
         enable: true
     Sword + Protection:
+        enable: true
+    Sword + Silk Touch:
         enable: true
 
 
