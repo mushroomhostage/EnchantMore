@@ -1897,13 +1897,15 @@ class EnchantMoreListener implements Listener {
     private void onPlayerDamaged(Player playerDamaged, EntityDamageEvent event) {
         ItemStack chestplate = playerDamaged.getInventory().getChestplate();
 
-        // Chestplate + Infinity = god mode (no damage/hunger)
-        if (chestplate != null && chestplate.getType() != Material.AIR && hasEnch(chestplate, INFINITE, playerDamaged)) {
-            // no damage ever
-            // TODO: also need to cancel death? can die elsewhere? (other plugins)
-            event.setCancelled(true);
-            // in case damaged by bypassing event
-            playerDamaged.setHealth(playerDamaged.getMaxHealth());
+        if (chestplate != null && chestplate.getType() != Material.AIR) {
+            // Chestplate + Infinity = god mode (no damage/hunger)
+            if (hasEnch(chestplate, INFINITE, playerDamaged)) {
+                // no damage ever
+                // TODO: also need to cancel death? can die elsewhere? (other plugins)
+                event.setCancelled(true);
+                // in case damaged by bypassing event
+                playerDamaged.setHealth(playerDamaged.getMaxHealth());
+            }
         }
 
         EntityDamageEvent.DamageCause cause = event.getCause();
@@ -1940,29 +1942,42 @@ class EnchantMoreListener implements Listener {
             EntityDamageByEntityEvent e2 = (EntityDamageByEntityEvent)event;
             Entity damager = e2.getDamager();
 
-            if (damager instanceof Arrow) { // TODO: all projectiles?
-                Arrow arrow = (Arrow)damager;
+            if (chestplate != null && chestplate.getType() != Material.AIR) {
+                // Chestplate + Sharpness = reflect damage 
+                if (hasEnch(chestplate, SHARPNESS, playerDamaged)) {
+                    if (damager instanceof LivingEntity) {
+                        int amount = getLevel(chestplate, SHARPNESS, playerDamaged) * event.getDamage();
+                        ((LivingEntity)damager).damage(amount, playerDamaged);
+
+                        // TODO: damage chestplate still?
+                    }
+                }
 
                 // Chestplate + Knockback = reflect arrows
-                if (chestplate != null && chestplate.getType() != Material.AIR && hasEnch(chestplate, KNOCKBACK, playerDamaged)) {
-                    event.setCancelled(true);   // stop arrow damage
-                    playerDamaged.shootArrow();        // reflect arrow
-
-                    // TODO: should we actually create a new arrow with the opposite velocity vector?
-                    // I think so.. bounce, not reshoot
-                    // not right
-                    /*
-                    Location location = playerDamaged.getLocation();
-                    World world = location.getWorld();
-                    Vector velocity = arrow.getVelocity().multiply(-1);
-                    float speed = 0.6f;  // "A recommend speed is 0.6"
-                    float spread = 12f;  // "A recommend spread is 12"
+                if (hasEnch(chestplate, KNOCKBACK, playerDamaged)) {
+                    if (damager instanceof Arrow) { // TODO: all projectiles?
+                        Arrow arrow = (Arrow)damager;
 
 
-                    world.spawnArrow(location, velocity, speed, spread);
-                    */
+                        event.setCancelled(true);   // stop arrow damage
+                        playerDamaged.shootArrow();        // reflect arrow
 
-                    damage(chestplate, playerDamaged);
+                        // TODO: should we actually create a new arrow with the opposite velocity vector? TODO: yes! allows duping :(
+                        // I think so.. bounce, not reshoot
+                        // not right
+                        /*
+                        Location location = playerDamaged.getLocation();
+                        World world = location.getWorld();
+                        Vector velocity = arrow.getVelocity().multiply(-1);
+                        float speed = 0.6f;  // "A recommend speed is 0.6"
+                        float spread = 12f;  // "A recommend spread is 12"
+
+
+                        world.spawnArrow(location, velocity, speed, spread);
+                        */
+
+                        damage(chestplate, playerDamaged);
+                    }
                 }
                 // TODO: Sword + Projectile Protection = reflect arrows while blocking
                 // make it as ^^ is, nerf above (sword direction control, chestplate not)
