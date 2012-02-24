@@ -956,6 +956,16 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
 
+        } else if (isHoe(item.getType())) {
+            // Hoe + Punch = grow animal
+            if (hasEnch(item, PUNCH, player)) {
+                if (entity instanceof Animals) {
+                    Animals animal = (Animals)entity;
+                    if (!animal.isAdult()) {
+                        animal.setAdult();
+                    }
+                }
+            }
         }
     }
 
