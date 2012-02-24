@@ -82,6 +82,8 @@ import net.minecraft.server.ItemDye;
 import net.minecraft.server.EntityArrow;
 import net.minecraft.server.EnumSkyBlock;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
 enum EnchantMoreItemCategory 
 {
     IS_HOE,
@@ -361,6 +363,10 @@ class EnchantMoreListener implements Listener {
         ItemStack item = event.getItem();
         Action action = event.getAction();
         Player player = event.getPlayer();
+
+        if (!canBuildHere(player, block)) {
+            return;
+        }
 
         if (item == null) {
             return;
@@ -840,6 +846,8 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
+        // TODO: WorldGuard
+
         final World world = player.getWorld();
         
         if (item.getType() == Material.FLINT_AND_STEEL) {
@@ -990,6 +998,47 @@ class EnchantMoreListener implements Listener {
         }
     }
 
+    // http://wiki.sk89q.com/wiki/WorldGuard/Regions/API
+    private WorldGuardPlugin getWorldGuard() {
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+        if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+            return null;
+        }
+
+        return (WorldGuardPlugin)plugin;
+    }
+
+    /* We ignore cancelled events, but that isn't good enough for WorldGuard
+    #worldguard @ irc.esper.net 2012/02/23 
+> when blocks are broken in protected regions, why doesn't WorldGuard cancel the event so other plugins could just use ignoreCancelled=true to respect regions, instead of hooking into WorldGuard's API?
+<zml2008> It does do that, just at a priority that is too high
+> hmm, interesting. if I register my handler as priority MONITOR, I do see the event is cancelled, as expected. but what's the best practice? should I be registering all my listeners as MONITOR?
+<zml2008> That's generally a terrible idea. The event priorities need to be corrected in WG
+> is that something I can change in the config? or is it a bug in WorldGuard that needs to be fixed?
+<zml2008> It's a WG bug
+> so all plugins have to workaround it?
+<zml2008> Until I have time, yes.
+> what would you recommend in the meantime?
+<zml2008>  Using WG's API
+*/
+    private boolean canBuildHere(Player player, Location location) {
+        WorldGuardPlugin wg = getWorldGuard();
+        if (wg == null) {
+            return true;
+        }
+
+        return wg.canBuild(player, location);
+    }
+
+    private boolean canBuildHere(Player player, Block block) {
+        WorldGuardPlugin wg = getWorldGuard();
+        if (wg == null) {
+            return true;
+        }
+
+        return wg.canBuild(player, block);
+    }
+
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
@@ -997,9 +1046,16 @@ class EnchantMoreListener implements Listener {
         ItemStack item = player.getItemInHand();
         final World world = player.getWorld();
 
+        if (!canBuildHere(player, block)) {
+            return;
+        }
+
+
         if (item == null) {
             return;
         }
+
+        plugin.log.info("break "+event+" c="+event.isCancelled());
 
         if (isPickaxe(item.getType()) ||
             isShovel(item.getType()) ||
@@ -1007,7 +1063,7 @@ class EnchantMoreListener implements Listener {
 
             // Pickaxe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
             // Shovel + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
-            // Axe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
+            // exe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
             if (hasEnch(item, FLAME, player)) {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
 
@@ -1200,6 +1256,11 @@ class EnchantMoreListener implements Listener {
         World world = block.getWorld();
         Player player = event.getPlayer();
 
+        if (!canBuildHere(player, block)) {
+            return;
+        }
+
+
         // Item to place as a block
         // NOT event.getItemInHand(), see https://bukkit.atlassian.net/browse/BUKKIT-596 BlockPlaceEvent getItemInHand() loses enchantments
         ItemStack item = player.getItemInHand();
@@ -1325,6 +1386,8 @@ class EnchantMoreListener implements Listener {
         ItemStack tool = player.getItemInHand();
         final World world = player.getWorld();
 
+        // TODO: WorldGuard
+
         if (tool == null) {
             return;
         }
@@ -1352,6 +1415,8 @@ class EnchantMoreListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onProjectileHit(ProjectileHitEvent event) {
         Entity entity = event.getEntity();
+
+        // TODO: WorldGuard
 
         if (!(entity instanceof Arrow)) {
             return;
@@ -1651,6 +1716,8 @@ class EnchantMoreListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = player.getItemInHand();
 
+        // TODO: WorldGuard
+
         if (item == null) {
             return;
         }
@@ -1772,6 +1839,8 @@ class EnchantMoreListener implements Listener {
     public void onEntityShootBow(EntityShootBowEvent event) {
         ItemStack bow = event.getBow();
 
+        // TODO: WorldGuard
+
         if (bow == null) {
             // shot by skeleton, they can't have enchanted bows 
             return;
@@ -1878,23 +1947,6 @@ class EnchantMoreListener implements Listener {
         }
     }
     
-    /*
-    // TODO: attempt to cancel burning when swimming in lava - no effect
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
-    public void onEntityCombust(EntityCombustEvent event) {
-        Entity entity = event.getEntity();
-        if (!(entity instanceof Player)) {
-            return;
-        }
-
-        Player player = (Player)entity;
-
-        ItemStack helmet = player.getInventory().getHelmet();
-        if (helmet != null && hasEnch(helmet, FIRE_ASPECT, player)) {
-            event.setCancelled(true);
-        }
-    }*/
-
     // Player taking damage
     private void onPlayerDamaged(Player playerDamaged, EntityDamageEvent event) {
         ItemStack chestplate = playerDamaged.getInventory().getChestplate();
@@ -2003,6 +2055,8 @@ class EnchantMoreListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
     public void onEntityDamage(EntityDamageEvent event) {
+        // TODO: WorldGuard?
+
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
             onPlayerDamaged((Player)entity, event);
@@ -2079,6 +2133,8 @@ class EnchantMoreListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        // TODO: WorldGuard
+
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItem(event.getNewSlot());
 
@@ -2137,6 +2193,8 @@ class EnchantMoreListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+        // TODO: WorldGuard
+
         if (!event.isSneaking()) {
             return;
         }
@@ -2182,6 +2240,8 @@ class EnchantMoreListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onEntityExplode(EntityExplodeEvent event) {
+        // TODO: WorldGuard
+
         Entity entity = event.getEntity();
 
         if (!(entity instanceof Creeper)) {
@@ -2230,6 +2290,20 @@ class EnchantMoreListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onEntityCombust(EntityCombustEvent event) {
         Entity entity = event.getEntity();
+        // TODO: WorldGuard
+
+        // TODO: attempt to cancel burning when swimming in lava - no effect
+        /*
+            if (entity instanceof Player) {
+                Player player = (Player)entity;
+
+                ItemStack helmet = player.getInventory().getHelmet();
+                if (helmet != null && hasEnch(helmet, FIRE_ASPECT, player)) {
+                    event.setCancelled(true);
+                }
+            }
+        }*/
+
         if (!(entity instanceof Item)) {
             return;
         }
@@ -2259,6 +2333,8 @@ class EnchantMoreListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        // TODO: WorldGuard?
+
         Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
             return;
@@ -2388,6 +2464,8 @@ class EnchantMorePlayerMoveListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerMove(PlayerMoveEvent event) {
+        // TODO: WorldGuard
+
         Player player = event.getPlayer();
         ItemStack item = player.getItemInHand();
 
