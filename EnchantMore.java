@@ -1055,8 +1055,6 @@ class EnchantMoreListener implements Listener {
             return;
         }
 
-        plugin.log.info("break "+event+" c="+event.isCancelled());
-
         if (isPickaxe(item.getType()) ||
             isShovel(item.getType()) ||
             isAxe(item.getType())) {
@@ -1483,6 +1481,29 @@ class EnchantMoreListener implements Listener {
                             world.spawn(dest, Snowball.class);
                         } else if (itemStack.getType() == Material.EGG) {
                             world.spawn(dest, Egg.class);
+                        } else if (itemStack.getType() == Material.TNT) {
+                            // TNT, instant ignite from impact
+                            TNTPrimed tnt = world.spawn(dest, TNTPrimed.class);
+                            tnt.setFuseTicks(0);
+                        } else if (itemStack.getType() == Material.WATER_BUCKET) {
+                            // water bucket, spill and leave empty bucket
+                            if (dest.getBlock() == null || dest.getBlock().getType() == Material.AIR) {
+                                dest.getBlock().setType(Material.WATER); // TODO: WorldGuard
+                                world.dropItem(dest, new ItemStack(Material.BUCKET, 1));
+                            }
+                        } else if (itemStack.getType() == Material.LAVA_BUCKET) {
+                            // lava bucket, same
+                            if (dest.getBlock() == null || dest.getBlock().getType() == Material.AIR) {
+                                dest.getBlock().setType(Material.LAVA);
+                                world.dropItem(dest, new ItemStack(Material.BUCKET, 1));    // probably will be destroyed, but whatever
+                            }
+                        // hacked in water/lava/fire blocks - no drop
+                        } else if (itemStack.getType() == Material.WATER) {
+                            dest.getBlock().setType(Material.WATER);
+                        } else if (itemStack.getType() == Material.LAVA) {
+                            dest.getBlock().setType(Material.LAVA);
+                        } else if (itemStack.getType() == Material.FIRE) {
+                            dest.getBlock().setType(Material.FIRE);
                         } else if (isSplashPotion(itemStack)) {
                             // Splash potion = throw
                             // TODO: replace with potion API in 1.1-R4
