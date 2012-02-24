@@ -518,7 +518,7 @@ class EnchantMoreListener implements Listener {
                 int n = getLevel(item, POWER, player);
                 // on grass: cut into dirt
                 if (block.getType() == Material.GRASS) {
-                    block.setType(Material.DIRT);
+                    safeSetBlock(player, block, Material.DIRT);
                 // on leaves: build hedges
                 } else if (block.getType() == Material.LEAVES) {
                     int leavesSlot = player.getInventory().first(Material.LEAVES);
@@ -530,7 +530,7 @@ class EnchantMoreListener implements Listener {
                                 for (int dz = -n; dz <= n; dz += 1) {
                                     Block b = block.getRelative(dx, dy, dz);
                                     if (b.getType() == Material.AIR && leavesStack.getAmount() > 0) {
-                                        b.setType(leavesStack.getType());
+                                        safeSetBlock(player, b, leavesStack.getType());
 
                                         byte data = leavesStack.getData().getData();
                                         data |= 4;  // permanent, player-placed leaves, never decay
@@ -581,7 +581,7 @@ class EnchantMoreListener implements Listener {
                             Block b = world.getBlockAt(dx+x0, dy+y0, dz+z0);
                            
                             if (b.getType() == Material.STATIONARY_WATER || b.getType() == Material.WATER) {
-                                b.setType(Material.AIR);
+                                safeSetBlock(player, b, Material.AIR);
                                 world.playEffect(b.getLocation(), Effect.SMOKE, 0); // TODO: direction
                             }
                         }
@@ -602,7 +602,7 @@ class EnchantMoreListener implements Listener {
             // Flint & Steel + Efficiency = burn faster (turn wood to grass)
             if (hasEnch(item, EFFICIENCY, player)) {
                 if (isWoodenBlock(block.getType(), block.getData())) {
-                    block.setType(Material.LEAVES);
+                    safeSetBlock(player, block, Material.LEAVES);
                     // TODO: data? just leaving as before, but type may be unexpected
                 }
                 // no extra damage
@@ -621,7 +621,7 @@ class EnchantMoreListener implements Listener {
                             Block near = block.getRelative(dx * n, 0, dz * n);
                             // if either air or flowing water, make stationary water
                             if (near.getType() == Material.AIR || near.getType() == Material.WATER) {
-                                near.setType(Material.STATIONARY_WATER);
+                                safeSetBlock(player, near, Material.STATIONARY_WATER);
                             }
                         }
                     }
@@ -675,7 +675,7 @@ class EnchantMoreListener implements Listener {
                         Block b = world.getBlockAt(dx+x0, y0, dz+z0);
                        
                         if (b.getType() == Material.DIRT || b.getType() == Material.GRASS) {
-                            b.setType(Material.SOIL);
+                            safeSetBlock(player, b, Material.SOIL);
                         }
                     }
                 }
@@ -999,7 +999,7 @@ class EnchantMoreListener implements Listener {
     }
 
     // http://wiki.sk89q.com/wiki/WorldGuard/Regions/API
-    private WorldGuardPlugin getWorldGuard() {
+    public WorldGuardPlugin getWorldGuard() {
         Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
         if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
             return null;
@@ -1021,7 +1021,7 @@ class EnchantMoreListener implements Listener {
 > what would you recommend in the meantime?
 <zml2008>  Using WG's API
 */
-    private boolean canBuildHere(Player player, Location location) {
+    public boolean canBuildHere(Player player, Location location) {
         WorldGuardPlugin wg = getWorldGuard();
         if (wg == null) {
             return true;
@@ -1030,13 +1030,23 @@ class EnchantMoreListener implements Listener {
         return wg.canBuild(player, location);
     }
 
-    private boolean canBuildHere(Player player, Block block) {
+    public boolean canBuildHere(Player player, Block block) {
         WorldGuardPlugin wg = getWorldGuard();
         if (wg == null) {
             return true;
         }
 
         return wg.canBuild(player, block);
+    }
+
+    public boolean safeSetBlock(Player player, Block block, Material type) {
+        if (!canBuildHere(player, block)) {
+            return false;
+        }
+
+        block.setType(type);
+
+        return true;
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
@@ -1079,7 +1089,7 @@ class EnchantMoreListener implements Listener {
 
                 naturalDrop = false;
                 if (!naturalDrop) {
-                    block.setType(Material.AIR);
+                    safeSetBlock(player, block, Material.AIR);
                     event.setCancelled(true);
                 }
 
@@ -1116,7 +1126,7 @@ class EnchantMoreListener implements Listener {
                                 int type = world.getBlockTypeIdAt(x, y, z);
                                 if (isExcavatable(type)) {
                                     Block b = world.getBlockAt(x, y, z);
-                                    b.setType(Material.AIR);
+                                    safeSetBlock(player, b, Material.AIR);
                                 }
                             }
                         }
@@ -1130,7 +1140,7 @@ class EnchantMoreListener implements Listener {
                 if (hasEnch(item, SILK_TOUCH, player) && getLevel(item, SILK_TOUCH, player) >= 2) {
                     if (block.getType() == Material.SNOW) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
-                        block.setType(Material.AIR);
+                        safeSetBlock(player, block, Material.AIR);
                         event.setCancelled(true);   // do not drop snowballs
                     }
                 }
@@ -1141,7 +1151,7 @@ class EnchantMoreListener implements Listener {
                 if (hasEnch(item, SILK_TOUCH, player) && getLevel(item, SILK_TOUCH, player) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", 2)) {
                     if (block.getType() == Material.ICE) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
-                        block.setType(Material.AIR);
+                        safeSetBlock(player, block, Material.AIR);
                         // ModLoader NPE net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
                         // if we don't do this, so do it
                         // see http://dev.bukkit.org/server-mods/enchantmore/tickets/6-on-modded-craft-bukkit-with-mod-loader-mp-forge-hoe/
@@ -1178,7 +1188,7 @@ class EnchantMoreListener implements Listener {
                     }
 
                     if (!naturalDrop) {
-                        block.setType(Material.AIR);
+                        safeSetBlock(player, block, Material.AIR);
                         event.setCancelled(true);
                     }
                 }
@@ -1193,7 +1203,7 @@ class EnchantMoreListener implements Listener {
 
                     world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
 
-                    block.setType(Material.AIR);
+                    safeSetBlock(player, block, Material.AIR);
                     event.setCancelled(true);
                 } 
                 // no extra damage
@@ -1212,7 +1222,7 @@ class EnchantMoreListener implements Listener {
 
                     world.dropItemNaturally(block.getLocation(), new ItemStack(dropType, 1));
                     
-                    block.setType(Material.AIR);
+                    safeSetBlock(player, block, Material.AIR);
                     event.setCancelled(true);
                 }
                 // no extra damage
@@ -1240,7 +1250,7 @@ class EnchantMoreListener implements Listener {
 
                     world.dropItemNaturally(block.getLocation(), drop);
                     
-                    block.setType(Material.AIR);
+                    safeSetBlock(player, block, Material.AIR);
                     event.setCancelled(true);
                 }
                 // no extra damage
@@ -1276,7 +1286,7 @@ class EnchantMoreListener implements Listener {
         if (block != null && block.getType() == Material.ICE) {
             if (world.getEnvironment() == World.Environment.NETHER && plugin.getConfig().getBoolean("sublimateIce", false)) {
                 // sublimate ice to vapor
-                block.setType(Material.AIR);
+                safeSetBlock(player, block, Material.AIR);
 
                 // turn into smoke
                 world.playEffect(block.getLocation(), Effect.SMOKE, 0);
@@ -1488,22 +1498,26 @@ class EnchantMoreListener implements Listener {
                         } else if (itemStack.getType() == Material.WATER_BUCKET) {
                             // water bucket, spill and leave empty bucket
                             if (dest.getBlock() == null || dest.getBlock().getType() == Material.AIR) {
-                                dest.getBlock().setType(Material.WATER); // TODO: WorldGuard
-                                world.dropItem(dest, new ItemStack(Material.BUCKET, 1));
+                                if (safeSetBlock(player, dest.getBlock(), Material.WATER)) {
+                                    world.dropItem(dest, new ItemStack(Material.BUCKET, 1));
+                                }
                             }
                         } else if (itemStack.getType() == Material.LAVA_BUCKET) {
                             // lava bucket, same
                             if (dest.getBlock() == null || dest.getBlock().getType() == Material.AIR) {
-                                dest.getBlock().setType(Material.LAVA);
-                                world.dropItem(dest, new ItemStack(Material.BUCKET, 1));    // probably will be destroyed, but whatever
+                                if (safeSetBlock(player, dest.getBlock(), Material.LAVA)) {
+                                    world.dropItem(dest, new ItemStack(Material.BUCKET, 1));    // probably will be destroyed, but whatever
+                                }
                             }
+                        /* this already works - they're blocks!
                         // hacked in water/lava/fire blocks - no drop
                         } else if (itemStack.getType() == Material.WATER) {
-                            dest.getBlock().setType(Material.WATER);
+                            safeSetBlock(player, dest.getBlock(), Material.WATER);
                         } else if (itemStack.getType() == Material.LAVA) {
-                            dest.getBlock().setType(Material.LAVA);
+                            safeSetBlock(player, dest.getBlock(), Material.LAVA);
                         } else if (itemStack.getType() == Material.FIRE) {
-                            dest.getBlock().setType(Material.FIRE);
+                            safeSetBlock(player, dest.getBlock(), Material.FIRE);
+                            */
                         } else if (isSplashPotion(itemStack)) {
                             // Splash potion = throw
                             // TODO: replace with potion API in 1.1-R4
@@ -1523,6 +1537,8 @@ class EnchantMoreListener implements Listener {
                             }
                         } else {
                             // Other item, we can't do any better, just teleport it
+                            // TODO: can (and should) we place/use _all_ placeable items? using native methods?? (right-click)
+                            // so could automatically place custom items like BuildCraft oil buckets??
                             passenger.teleport(dest);
                             remove = false; 
                         }
