@@ -965,6 +965,24 @@ class EnchantMoreListener implements Listener {
                         animal.setAdult();
                     }
                 }
+
+                damage(item, player);
+            }
+
+            // Hoe + Fire Protection = entity sensor (secondary)
+            if (hasEnch(item, FIRE_PROTECTION, player)) {
+                player.sendMessage("Entity "+entity.getEntityId()+", type "+entity/*.getType()*/+", lived "+entity.getTicksLived() +
+                    (entity.getPassenger() != null ? ", passenger "+entity.getPassenger() : ""));
+
+                if (entity instanceof Animals) {
+                    Animals animal = (Animals)entity;
+                    player.sendMessage("Animal age "+animal.getAge()+ (animal.getAgeLock() ? " (locked) " : "") + ", "+
+                        (animal.canBreed() ? "fertile" : "infertile") + ", " +
+                        (animal.isAdult() ? "adult" : "baby"));
+                }
+                // TODO: more entities
+
+                damage(item, player);
             }
         }
     }
