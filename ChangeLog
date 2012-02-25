@@ -1,7 +1,8 @@
 X X
-    * Add Chestplate + Sharpness = reflect damage
-    * Add Sword + Silk Touch = itemize (right-click creature/boat/minecart/primedTNT to drop item)
+    * Add Bow + Feather Falling II = grapple hook (hold Shift to hang on)
     * Add Flint & Steel + Silk Touch = remote detonate (ignite TNT)
+    * Add Sword + Silk Touch = itemize (right-click creature/boat/minecart/primed TNT to drop item)
+    * Add Chestplate + Sharpness = reflect damage
     * Add Hoe + Punch = grow animal
     * Add Pickaxe/Shovel/Axe + Flame II = auto-smelt and light path
     * Add Leggings + Feather Falling = surface (triple-tap shift)
@@ -10,7 +11,7 @@ X X
     * Enhance Shears + Looting, now can be used to acquire saddle from saddled pigs
     * Enhance Hoe + Fire Protection = sensor, now can show information on entities
     * Partial (warning: incomplete!) WorldGuard support
-      Not all protections are respected! (see ticket 4)
+      Caution: some effects (particularly explosions) still bypass protections (ticket 4)
 
 2012-02-22  0.6.4
     * Add support for enabling/disabling effects in config.yml

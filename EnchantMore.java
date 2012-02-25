@@ -1805,6 +1805,39 @@ class EnchantMoreListener implements Listener {
             arrow.remove();
 
             player.teleport(dest);
+
+            // Bow + Feather Falling II = grapple hook (hold Shift to hang on)
+            int n = getLevel(bow, FEATHER_FALLING, player);
+            if (n >= 2) {
+                Block below = dest.add(0, -1, 0).getBlock();
+                if (below != null && below.getType() == Material.AIR) {
+                    // a ladder to hang on to
+                    if (safeSetBlock(player, below, Material.LADDER)) {
+                        //player.setSneaking(true); // only sets appearance, not really if is sneaking - do need to hold shift
+
+                        // Expire the platform after a while, can't hang on forever 
+                        class EnchantMoreGrappleHookRemoveTask implements Runnable {
+                            Block block;
+                            Player player;
+                            EnchantMoreListener listener;
+
+                            public EnchantMoreGrappleHookRemoveTask(Block block, Player player, EnchantMoreListener listener) {
+                                this.block = block;
+                                this.player = player;
+                                this.listener = listener;
+                            }
+
+                            public void run() {
+                                listener.safeSetBlock(player, block, Material.AIR);
+                            }
+                        }
+
+                        long delayTicks = 20 * 10;
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreGrappleHookRemoveTask(below, player, this), delayTicks);
+                    }
+                }
+            }
         }
     }
 
@@ -2332,8 +2365,6 @@ class EnchantMoreListener implements Listener {
                     }
                 }
             }
-
-            EnchantMoreFlameLightTask task = new EnchantMoreFlameLightTask(plugin, player);
 
             // run once to kick off, it will re-schedule itself if appropriate
             // (note need to schedule to run, so will run after item actually changes in hand)
