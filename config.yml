@@ -135,10 +135,12 @@ effects:
     Pickaxe + Silk Touch:
         enable: true 
         minLevel: 2         # since Silk Touch I already exists in vanilla, we require higher levels by default
-        sublimateIce: false # vaporize ice placed in The Nether (note: must be configured in diamond pickaxe section)
         harvestIce: true
-        harvestDoubleSlabs: true
-        placeDoubleSlabs: true
+        sublimateIce: false             # vaporize ice placed in The Nether (note: must be configured in diamond pickaxe section)
+        harvestDoubleSlabs: true        # instead of breaking into two slabs
+        placeDoubleSlabs: true          # preserve subtype on placement (wooden, stone, etc.)
+        harvestSilverfishBlocks: true   # instead of releasing the silverfish!
+        placeSilverfishBlocks: true     # preserve subtype on placement (stone, cobblestone, stone brick)
     Shears + Bane of Arthropods:
         enable: true
     Shears + Fortune:

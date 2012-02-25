@@ -1040,7 +1040,7 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
 
-            // Sword + Silk Touch = itemize (acquire creature, boat, minecart, TNT as item)
+            // Sword + Silk Touch = capture (right-click to drop creature/boat/minecart/primedTNT as item)
             if (hasEnch(item, SILK_TOUCH, player)) {
                 // TODO: can we use built-in item -> entity placement, and reverse it?
                 // mainly, I want to use this with Flan's Plane mod, so I can re-acquire planes that
@@ -1288,6 +1288,16 @@ class EnchantMoreListener implements Listener {
                                 plugin.safeSetBlock(player, block, Material.AIR);
                                 event.setCancelled(true);
                             }
+                        } else if (block.getTypeId() == 97) {   // Bukkit Material calls this MONSTER_EGGS, but I'm not going to call it that!
+                            if (getConfigBoolean("harvestSilverfishBlocks", true, item, SILK_TOUCH, player)) {
+                                ItemStack drop = new ItemStack(block.getType(), 1, (short)block.getData());
+
+                                drop.addUnsafeEnchantment(SILK_TOUCH, block.getData());
+
+                                world.dropItemNaturally(block.getLocation(), drop);
+                                plugin.safeSetBlock(player, block, Material.AIR);
+                                event.setCancelled(true);
+                            }
                         }
                     }
                     // TODO: how about Silk Touch III = harvest mob spawners? integrate SilkSpawners!
@@ -1436,7 +1446,6 @@ class EnchantMoreListener implements Listener {
                 }
             } else if (block.getType() == Material.DOUBLE_STEP) {
                 ItemStack fakeItem = new ItemStack(Material.DIAMOND_PICKAXE, 1); 
-
                 boolean shouldSetData = getConfigBoolean("placeDoubleSlabs", true, fakeItem, SILK_TOUCH, player);
                 if (shouldSetData) {
                     int data = (int)item.getData().getData();
@@ -1450,6 +1459,19 @@ class EnchantMoreListener implements Listener {
                     // Oddly, if delay and change, then it will take effect but texture won't be updated. Have to set now ^
                     //Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreChangeMaterialTask(block, player, Material.DOUBLE_STEP, data, this));
                 }
+            } else if (block.getTypeId() == 97) {
+                // Silverfish blocks, restore data, same as double slabs
+                ItemStack fakeItem = new ItemStack(Material.DIAMOND_PICKAXE, 1); 
+                boolean shouldSetData = getConfigBoolean("placeSilverfishBlocks", true, fakeItem, SILK_TOUCH, player);
+                if (shouldSetData) {
+                    int data = (int)item.getData().getData();
+                    if (item.containsEnchantment(SILK_TOUCH)) {
+                        data = item.getEnchantmentLevel(SILK_TOUCH);
+                    }
+
+                    block.setData((byte)data);
+                }
+
             }
         }
     }

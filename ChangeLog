@@ -1,7 +1,8 @@
 X X
+    * Add per-effect configuration options
     * Add Bow + Feather Falling II = grapple hook (hold Shift to hang on)
     * Add Flint & Steel + Silk Touch = remote detonate (ignite TNT)
-    * Add Sword + Silk Touch = itemize (right-click creature/boat/minecart/primed TNT to drop item)
+    * Add Sword + Silk Touch = capture (right-click to drop creature/boat/minecart/primedTNT as item)
     * Add Chestplate + Sharpness = reflect damage
     * Add Leggings + Feather Falling = surface (triple-tap shift)
     * Add Hoe + Punch = grow animal
@@ -11,7 +12,8 @@ X X
     * Enhance Bow + Respiration = stapled arrows: try TNT, water, lava (spawn egg, potions...)
     * Enhance Shears + Looting, now can be used to acquire saddle from saddled pigs
     * Enhance Hoe + Fire Protection = sensor, now can show information on entities
-    * Enhance Pickaxe + Silk Touch II, now can harvest/place double slabs
+    * Enhance Pickaxe + Silk Touch II, now can harvest and place double slabs
+    * Enhance Pickaxe + Silk Touch II, now can harvest and place hidden silverfish blocks
     * Partial (warning: incomplete!) WorldGuard support
       Caution: some effects (particularly explosions) still bypass protections (ticket 4)
 
