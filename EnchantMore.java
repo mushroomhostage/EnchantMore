@@ -1807,12 +1807,19 @@ class EnchantMoreListener implements Listener {
             player.teleport(dest);
 
             // Bow + Feather Falling II = grapple hook (hold Shift to hang on)
+            // TODO: should we move the player there slowly, like in in HookShot? (reel in)
+            // Grappling hook mod? http://forums.bukkit.org/threads/grappling-hook-mod.8177/
+            // [FUN] HookShot v1.3.3 - Scale mountains with a Hookshot [1060] http://forums.bukkit.org/threads/fun-hookshot-v1-3-3-scale-mountains-with-a-hookshot-1060.16494/
+            // more complex: "Right-Click arrows to fire a "hook", then right-click whilst holding string to "pull""
             int n = getLevel(bow, FEATHER_FALLING, player);
             if (n >= 2) {
                 Block below = dest.add(0, -1, 0).getBlock();
                 if (below != null && below.getType() == Material.AIR) {
                     // a ladder to hang on to
                     if (safeSetBlock(player, below, Material.LADDER)) {
+                        // The data isn't set, so the ladder appears invisible - I kinda like that
+                        // Player can break it to get a free ladder, but its not a big deal (free sticks, wood, renewable..)
+
                         //player.setSneaking(true); // only sets appearance, not really if is sneaking - do need to hold shift
 
                         // Expire the platform after a while, can't hang on forever 
@@ -2412,8 +2419,11 @@ class EnchantMoreListener implements Listener {
                 // but, it does work in water! useful in caves or when swimming
                 Block top = player.getWorld().getHighestBlockAt(player.getLocation());
 
-                //player.getLocation().setY(top.getY());
-                player.teleport(top.getLocation()); // resets direction facing, which I don't like
+                //player.getLocation().setY(top.getY()); // no change
+                // Only go up, not down (may be flying from other enchantment, or above transparent blocks)
+                if (top.getLocation().getY() > player.getLocation().getY()) {
+                    player.teleport(top.getLocation()); // resets direction facing, which I don't like
+                }
 
                 // TODO: nether.. gets stuck on top :(
                 // TODO: if already on top, go down! and travel through levels.
