@@ -512,12 +512,16 @@ class EnchantMoreListener implements Listener {
             // TODO: Aqua Affinity = slowness
         } else if (isShovel(item.getType())) {
             // Shovel + Silk Touch II = harvest fire (secondary)
-            if (hasEnch(item, SILK_TOUCH, player) && getLevel(item, SILK_TOUCH, player) >= 2 &&
-                (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
-                Block target = player.getTargetBlock(null, 3 * getLevel(item, SILK_TOUCH, player));
+            if (hasEnch(item, SILK_TOUCH, player)) {
+                int minLevel = getConfigInt("minLevel", 2, item, SILK_TOUCH, player); 
 
-                if (target.getType() == Material.FIRE) {
-                    world.dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1));
+                if (getLevel(item, SILK_TOUCH, player) >= minLevel &&
+                    (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
+                    Block target = player.getTargetBlock(null, 3 * getLevel(item, SILK_TOUCH, player));
+
+                    if (target.getType() == Material.FIRE) {
+                        world.dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1));
+                    }
                 }
             }
         } else if (isHoe(item.getType())) {
@@ -1252,11 +1256,14 @@ class EnchantMoreListener implements Listener {
 
                 // Shovel + Silk Touch II = harvest fallen snow, fire
                 // (fire elsewhere)
-                if (hasEnch(item, SILK_TOUCH, player) && getLevel(item, SILK_TOUCH, player) >= 2) {
-                    if (block.getType() == Material.SNOW) {
-                        world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
-                        plugin.safeSetBlock(player, block, Material.AIR);
-                        event.setCancelled(true);   // do not drop snowballs
+                if (hasEnch(item, SILK_TOUCH, player)) {
+                    int minLevel = getConfigInt("minLevel", 2, item, SILK_TOUCH, player); 
+                    if (getLevel(item, SILK_TOUCH, player) >= minLevel) {
+                        if (block.getType() == Material.SNOW) {
+                            world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
+                            plugin.safeSetBlock(player, block, Material.AIR);
+                            event.setCancelled(true);   // do not drop snowballs
+                        }
                     }
                 }
 

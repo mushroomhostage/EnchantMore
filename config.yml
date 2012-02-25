@@ -160,8 +160,9 @@ effects:
         enable: true
     Shovel + Power:
         enable: true
-    Shovel + Silk Touch:    # only level II
+    Shovel + Silk Touch:
         enable: true
+        minLevel: 2         # since Silk Touch I already exists in vanilla, we require higher levels by default
     Sword + Fire Protection:
         enable: true
     Sword + Flame:
