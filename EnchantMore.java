@@ -167,14 +167,38 @@ class EnchantMoreListener implements Listener {
         return tool.getEnchantmentLevel(ench);
     }
 
-    // Get per-item/enchantment configuration option
-    static public int getConfigInt(String name, int defaultValue, ItemStack tool, Enchantment ench, Player player) {
-        String section = effectConfigSections.get(packEnchItem(tool.getTypeId(), ench));
+    // Per-item/enchantment configuration 
 
-        //plugin.log.info("sect "+section);
-
-        return plugin.getConfig().getInt(section + "." + name, defaultValue);
+    // Gets the unique section, like effects.Bow + Feather Falling
+    static public String getConfigSection(ItemStack item, Enchantment ench) {
+        return effectConfigSections.get(packEnchItem(item.getTypeId(), ench));
     }
+        
+    static public int getConfigInt(String name, int defaultValue, ItemStack item, Enchantment ench, Player player) {
+        return plugin.getConfig().getInt(getConfigSection(item, ench) + "." + name, defaultValue);
+    }
+
+    static public String getConfigString(String name, String defaultValue, ItemStack item, Enchantment ench, Player player) {
+        return plugin.getConfig().getString(getConfigSection(item, ench) + "." + name, defaultValue);
+    }
+
+    static public Material getConfigMaterial(String name, Material defaultValue, ItemStack item, Enchantment ench, Player player) {
+        String s = getConfigString(name, null, item, ench, player);
+
+        if (s == null) {
+            return defaultValue;
+        }
+        
+        int id = getTypeIdByName(s);
+
+        if (id == -1) {
+            return defaultValue;
+        }
+
+        return Material.getMaterial(id);
+    }
+
+
 
     @SuppressWarnings("unchecked")   // not helpful: list.add(id); warning: [unchecked] unchecked call to add(E) as a member of the raw type java.util.List
     private void loadConfig() {
@@ -456,7 +480,7 @@ class EnchantMoreListener implements Listener {
             if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
                 // Sword + Power = strike lightning 100+ meters away
                 if (hasEnch(item, POWER, player)) {
-                    int maxDistance = 100;  // TODO: configurable
+                    int maxDistance = getConfigInt("rangePerLevel", 100, item, POWER, player);
                     Block target = player.getTargetBlock(null, maxDistance * getLevel(item, FLAME, player));
 
                     if (target != null) {
@@ -697,15 +721,13 @@ class EnchantMoreListener implements Listener {
             // Hoe + Fortune = chance to drop seeds
             if (hasEnch(item, FORTUNE, player) && action == Action.RIGHT_CLICK_BLOCK) {
                 if (block.getType() == Material.DIRT || block.getType() == Material.GRASS) {
-                    if (random.nextInt(2) != 0) {   // TODO: configurable, and depend on level
-                        Material seedType;
+                    int chance = getConfigInt("chanceDropSeeds", 2, item, FORTUNE, player);
+                    if (random.nextInt(chance) == 0) {   // TODO: depend on level?
+                        int rollMax = getConfigInt("dropRollMax", 4, item, FORTUNE, player);
+                       
+                        int roll = random.nextInt(rollMax);
 
-                        // TODO: configurable probabilities
-                        switch (random.nextInt(4)) {
-                        case 2: seedType = Material.MELON_SEEDS; break;
-                        case 3: seedType = Material.PUMPKIN_SEEDS; break;
-                        default: seedType = Material.SEEDS; // wheat, 50%
-                        }
+                        Material seedType = getConfigMaterial("drops." + roll, Material.SEEDS, item, FORTUNE, player);
 
                         // TODO: configurable and random quantity
                       
