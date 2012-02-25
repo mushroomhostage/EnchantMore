@@ -132,11 +132,11 @@ class EnchantMoreListener implements Listener {
     static EnchantMore plugin;
 
     static ConcurrentHashMap<String, Enchantment> enchByName;
-    static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;        // indexed by packed ench + item, for quick enable/disable lookup
+    static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;        // indexed by packed ench, item, for quick enable/disable lookup
     static ConcurrentHashMap<Integer, EnchantMoreItemCategory> itemToCategory;
     static ConcurrentHashMap<EnchantMoreItemCategory, Object> categoryToItems;
     
-    static ConcurrentHashMap<Integer, String> effectConfigSections;     // indexed by packed ench + item, for arbitrary config settings
+    static ConcurrentHashMap<Integer, String> effectConfigSections;     // indexed by packed ench, item, for arbitrary config settings
 
     static boolean defaultEnabledEffectState = true;
 
@@ -169,7 +169,7 @@ class EnchantMoreListener implements Listener {
 
     // Per-item/enchantment configuration 
 
-    // Gets the unique section, like effects.Bow + Feather Falling
+    // Gets the unique section, in effects.*
     static public String getConfigSection(ItemStack item, Enchantment ench) {
         return effectConfigSections.get(packEnchItem(item.getTypeId(), ench));
     }
@@ -483,7 +483,7 @@ class EnchantMoreListener implements Listener {
 
         } else if (isSword(item.getType())) {
             if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-                // Sword + Power = strike lightning 100+ meters away
+                // Sword + Power = strike lightning far away
                 if (hasEnch(item, POWER, player)) {
                     int maxDistance = getConfigInt("rangePerLevel", 100, item, POWER, player);
                     Block target = player.getTargetBlock(null, maxDistance * getLevel(item, FLAME, player));
@@ -995,7 +995,7 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            // Shears + Looting = feathers from chicken, leather from cows (secondary)
+            // Shears + Looting = feathers from chicken, leather from cows, saddles from pigs (secondary)
             if (hasEnch(item, LOOTING, player)) {
                 if (entity instanceof Chicken) {
                     Creature bird = (Creature)entity;
@@ -1190,7 +1190,7 @@ class EnchantMoreListener implements Listener {
 
             // Pickaxe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
             // Shovel + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
-            // exe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
+            // Axe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
             if (hasEnch(item, FLAME, player)) {
                 Collection<ItemStack> rawDrops = block.getDrops(item);
 
@@ -1643,7 +1643,7 @@ class EnchantMoreListener implements Listener {
         }
         // TODO: mooshroom?
 
-        // Shears + Looting = more wool (random colors); feathers from chickens, leather from cows
+        // Shears + Looting = more wool (random colors); feathers from chickens, leather from cows, saddles from saddled pigs
         // see also secondary effect above
         if (tool.getType() == Material.SHEARS && hasEnch(tool, LOOTING, player)) {
             Location loc = entity.getLocation();

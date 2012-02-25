@@ -1,6 +1,6 @@
 name: EnchantMore
 main: me.exphc.EnchantMore.EnchantMore
-version: 0.6.4x
+version: 0.7.5
 website: http://dev.bukkit.org/server-mods/enchantmore/
 description: enchanted hoes, enchanted fishing rods, enchanted shears and more!
 softdepend: 
