@@ -6,11 +6,12 @@ X X
     * Add Leggings + Feather Falling = surface (triple-tap shift)
     * Add Hoe + Punch = grow animal
     * Add Pickaxe/Shovel/Axe + Flame II = auto-smelt and light path
-    * Add support for Metallurgy items in default config
+    * Add support for custom items from Metallurgy mod in default config
     * Change Hoe + Bane of Arthropods, now left-click starts storm, right-click stops
     * Enhance Bow + Respiration = stapled arrows: try TNT, water, lava (spawn egg, potions...)
     * Enhance Shears + Looting, now can be used to acquire saddle from saddled pigs
     * Enhance Hoe + Fire Protection = sensor, now can show information on entities
+    * Enhance Pickaxe + Silk Touch II, now can harvest/place double slabs
     * Partial (warning: incomplete!) WorldGuard support
       Caution: some effects (particularly explosions) still bypass protections (ticket 4)
 

@@ -1262,7 +1262,7 @@ class EnchantMoreListener implements Listener {
 
             }
             if (isPickaxe(item.getType())) {
-                // Pickaxe + Silk Touch II = harvest ice
+                // Pickaxe + Silk Touch II = harvest ice, double slabs
                 if (hasEnch(item, SILK_TOUCH, player)) {
                     int minLevel = getConfigInt("minLevel", 2, item, SILK_TOUCH, player);
                     if (getLevel(item, SILK_TOUCH, player) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", minLevel)) {
@@ -1277,14 +1277,20 @@ class EnchantMoreListener implements Listener {
                                 // no extra damage
                             }
                         } else if (block.getType() == Material.DOUBLE_STEP) {
-                            if (getConfigBoolean("harvestDoubleSlab", true, item, SILK_TOUCH, player)) {
-                                // TODO: we can harvest double slabs, but, they don't place properly :(
-                                world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1, (short)block.getData()));
+                            if (getConfigBoolean("harvestDoubleSlabs", true, item, SILK_TOUCH, player)) {
+                                ItemStack drop = new ItemStack(block.getType(), 1, (short)block.getData());
+
+                                // Store data as enchantment level in addition to damage, workaround Bukkit
+                                // We restore this metadata on place
+                                drop.addUnsafeEnchantment(SILK_TOUCH, block.getData());
+
+                                world.dropItemNaturally(block.getLocation(), drop);
                                 plugin.safeSetBlock(player, block, Material.AIR);
                                 event.setCancelled(true);
                             }
                         }
                     }
+                    // TODO: how about Silk Touch III = harvest mob spawners? integrate SilkSpawners!
                 }
 
                 // Pickaxe + Looting = deconstruct (reverse crafting)
@@ -1403,10 +1409,10 @@ class EnchantMoreListener implements Listener {
         // Set data of farm-related block
         if (item != null && hasEnch(item, SILK_TOUCH, player)) {
             if (isFarmBlock(item.getType())) {
-                plugin.log.info("data"+getLevel(item, SILK_TOUCH, player));
-                // broken in 1.1-R2??
-                // TODO
-                block.setData((byte)getLevel(item, SILK_TOUCH, player));
+                // Make sure we get data from item, not through hasEnch since not player-related
+                if (item.containsEnchantment(SILK_TOUCH)) {
+                    block.setData((byte)item.getEnchantmentLevel(SILK_TOUCH));
+                }
             }
         }
 
@@ -1426,10 +1432,24 @@ class EnchantMoreListener implements Listener {
                     // "Allow plugins to change ID and Data during BlockPlace event." Fixes BUKKIT-674
                     // https://github.com/Bukkit/CraftBukkit/commit/f29b84bf1579cf3af31ea3be6df0bc8917c1de0b
 
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block));
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreChangeMaterialTask(block, player, Material.AIR, this));
                 }
             } else if (block.getType() == Material.DOUBLE_STEP) {
-                // TODO: set data! for placeDoubleSlab
+                ItemStack fakeItem = new ItemStack(Material.DIAMOND_PICKAXE, 1); 
+
+                boolean shouldSetData = getConfigBoolean("placeDoubleSlabs", true, fakeItem, SILK_TOUCH, player);
+                if (shouldSetData) {
+                    int data = (int)item.getData().getData();
+                    // One of the rare cases we get the enchantment level directly.. storing type in ench tag, to workaround Bukkit damage
+                    if (item.containsEnchantment(SILK_TOUCH)) {
+                        data = item.getEnchantmentLevel(SILK_TOUCH);
+                    }
+
+                    block.setData((byte)data);
+
+                    // Oddly, if delay and change, then it will take effect but texture won't be updated. Have to set now ^
+                    //Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreChangeMaterialTask(block, player, Material.DOUBLE_STEP, data, this));
+                }
             }
         }
     }
@@ -1842,25 +1862,9 @@ class EnchantMoreListener implements Listener {
                         //player.setSneaking(true); // only sets appearance, not really if is sneaking - do need to hold shift
 
                         // Expire the platform after a while, can't hang on forever 
-                        class EnchantMoreGrappleHookRemoveTask implements Runnable {
-                            Block block;
-                            Player player;
-                            EnchantMoreListener listener;
-
-                            public EnchantMoreGrappleHookRemoveTask(Block block, Player player, EnchantMoreListener listener) {
-                                this.block = block;
-                                this.player = player;
-                                this.listener = listener;
-                            }
-
-                            public void run() {
-                                listener.plugin.safeSetBlock(player, block, Material.AIR);
-                            }
-                        }
-
                         long delayTicks = (long)getConfigInt("grappleHangOnTicks", 20 * 10, bow, FEATHER_FALLING, player);
 
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreGrappleHookRemoveTask(below, player, this), delayTicks);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreChangeMaterialTask(below, player, Material.AIR, this), delayTicks);
                     }
                 }
             }
@@ -2669,17 +2673,41 @@ class EnchantMoreFishTask implements Runnable {
     }
 }
 
-class EnchantMoreAirTask implements Runnable {
+// Task to simply change a block material at some time
+class EnchantMoreChangeMaterialTask implements Runnable {
     Block block;
+    Player player;
+    EnchantMoreListener listener;
+    Material material;
+    int data;
 
-    public EnchantMoreAirTask(Block block) {
+    /*
+    public EnchantMoreChangeMaterialTask(Block block, Player player, EnchantMoreListener listener) {
+        this(block, player, Material.AIR, listener);
+    }
+    */
+
+    public EnchantMoreChangeMaterialTask(Block block, Player player, Material material, EnchantMoreListener listener) {
+        this(block, player, material, -1, listener);
+    }
+
+    public EnchantMoreChangeMaterialTask(Block block, Player player, Material material, int data, EnchantMoreListener listener) {
         this.block = block;
+        this.player = player;
+        this.material = material;
+        this.listener = listener;
+        this.data = data;
     }
 
     public void run() {
-        block.setType(Material.AIR);
+        if (listener.plugin.safeSetBlock(player, block, material)) {
+            if (data != -1) {
+                block.setData((byte)data);
+            }
+        }
     }
 }
+
 
 class EnchantMorePlayerMoveListener implements Listener {
     EnchantMore plugin;

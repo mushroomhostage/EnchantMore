@@ -137,7 +137,8 @@ effects:
         minLevel: 2         # since Silk Touch I already exists in vanilla, we require higher levels by default
         sublimateIce: false # vaporize ice placed in The Nether (note: must be configured in diamond pickaxe section)
         harvestIce: true
-        harvestDoubleSlab: true
+        harvestDoubleSlabs: true
+        placeDoubleSlabs: true
     Shears + Bane of Arthropods:
         enable: true
     Shears + Fortune:
