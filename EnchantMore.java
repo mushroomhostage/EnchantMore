@@ -396,6 +396,38 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
 
+            // Flint & Steel + Silk Touch = remote detonate (ignite TNT)
+            if (hasEnch(item, SILK_TOUCH, player)) {
+                int r = getLevel(item, SILK_TOUCH, player) * 10;
+
+                int x0 = player.getLocation().getBlockX();
+                int y0 = player.getLocation().getBlockY();
+                int z0 = player.getLocation().getBlockZ();
+
+                int tntId = Material.TNT.getId();
+
+                for (int dx = -r; dx < r; dx += 1) {
+                    for (int dy = -r; dy < r; dy += 1) {
+                        for (int dz = -r; dz < r; dz += 1) {
+                            int x = dx + x0;
+                            int y = dy + y0;
+                            int z = dz + z0;
+
+                            int type = world.getBlockTypeIdAt(x, y, z);
+
+                            if (type == tntId) {
+                                Block b = world.getBlockAt(x, y, z);
+
+                                if (safeSetBlock(player, b, Material.AIR)) {
+                                    TNTPrimed tnt = (TNTPrimed)world.spawn(new Location(world, x, y, z), TNTPrimed.class);
+                                    tnt.setFuseTicks(0); // boom !
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
         } else if (isSword(item.getType())) {
             if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
                 // Sword + Power = strike lightning 100+ meters away

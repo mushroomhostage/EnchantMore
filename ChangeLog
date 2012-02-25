@@ -1,6 +1,7 @@
 X X
     * Add Chestplate + Sharpness = reflect damage
     * Add Sword + Silk Touch = itemize (right-click creature/boat/minecart/primedTNT to drop item)
+    * Add Flint & Steel + Silk Touch = remote detonate (ignite TNT)
     * Add Hoe + Punch = grow animal
     * Add Pickaxe/Shovel/Axe + Flame II = auto-smelt and light path
     * Add Leggings + Feather Falling = surface (triple-tap shift)
