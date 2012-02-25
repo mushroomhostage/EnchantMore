@@ -178,6 +178,11 @@ class EnchantMoreListener implements Listener {
         return plugin.getConfig().getInt(getConfigSection(item, ench) + "." + name, defaultValue);
     }
 
+    static public boolean getConfigBoolean(String name, boolean defaultValue, ItemStack item, Enchantment ench, Player player) {
+        return plugin.getConfig().getBoolean(getConfigSection(item, ench) + "." + name, defaultValue);
+    }
+
+
     static public String getConfigString(String name, String defaultValue, ItemStack item, Enchantment ench, Player player) {
         return plugin.getConfig().getString(getConfigSection(item, ench) + "." + name, defaultValue);
     }
@@ -1258,15 +1263,27 @@ class EnchantMoreListener implements Listener {
             }
             if (isPickaxe(item.getType())) {
                 // Pickaxe + Silk Touch II = harvest ice
-                if (hasEnch(item, SILK_TOUCH, player) && getLevel(item, SILK_TOUCH, player) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", 2)) {
-                    if (block.getType() == Material.ICE) {
-                        world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
-                        plugin.safeSetBlock(player, block, Material.AIR);
-                        // ModLoader NPE net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
-                        // if we don't do this, so do it
-                        // see http://dev.bukkit.org/server-mods/enchantmore/tickets/6-on-modded-craft-bukkit-with-mod-loader-mp-forge-hoe/
-                        event.setCancelled(true); 
-                        // no extra damage
+                if (hasEnch(item, SILK_TOUCH, player)) {
+                    int minLevel = getConfigInt("minLevel", 2, item, SILK_TOUCH, player);
+                    if (getLevel(item, SILK_TOUCH, player) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", minLevel)) {
+                        if (block.getType() == Material.ICE) {
+                            if (getConfigBoolean("harvestIce", true, item, SILK_TOUCH, player)) {
+                                world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
+                                plugin.safeSetBlock(player, block, Material.AIR);
+                                // ModLoader NPE net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
+                                // if we don't do this, so do it
+                                // see http://dev.bukkit.org/server-mods/enchantmore/tickets/6-on-modded-craft-bukkit-with-mod-loader-mp-forge-hoe/
+                                event.setCancelled(true); 
+                                // no extra damage
+                            }
+                        } else if (block.getType() == Material.DOUBLE_STEP) {
+                            if (getConfigBoolean("harvestDoubleSlab", true, item, SILK_TOUCH, player)) {
+                                // TODO: we can harvest double slabs, but, they don't place properly :(
+                                world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1, (short)block.getData()));
+                                plugin.safeSetBlock(player, block, Material.AIR);
+                                event.setCancelled(true);
+                            }
+                        }
                     }
                 }
 
@@ -1393,19 +1410,26 @@ class EnchantMoreListener implements Listener {
             }
         }
 
-        if (block != null && block.getType() == Material.ICE) {
-            if (world.getEnvironment() == World.Environment.NETHER && plugin.getConfig().getBoolean("sublimateIce", false)) {
-                // sublimate ice to vapor
-                plugin.safeSetBlock(player, block, Material.AIR);
+        if (block != null) {
+            if (block.getType() == Material.ICE) {
+                ItemStack fakeItem = new ItemStack(Material.DIAMOND_PICKAXE, 1); // since configured by item, have to fake it..
+                boolean shouldSublimate = getConfigBoolean("sublimateIce", false, fakeItem, SILK_TOUCH, player);
 
-                // turn into smoke
-                world.playEffect(block.getLocation(), Effect.SMOKE, 0);
+                if (world.getEnvironment() == World.Environment.NETHER && shouldSublimate) {
+                    // sublimate ice to vapor
+                    plugin.safeSetBlock(player, block, Material.AIR);
 
-                // Workaround type not changing, until fix is in a build:
-                // "Allow plugins to change ID and Data during BlockPlace event." Fixes BUKKIT-674
-                // https://github.com/Bukkit/CraftBukkit/commit/f29b84bf1579cf3af31ea3be6df0bc8917c1de0b
+                    // turn into smoke
+                    world.playEffect(block.getLocation(), Effect.SMOKE, 0);
 
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block));
+                    // Workaround type not changing, until fix is in a build:
+                    // "Allow plugins to change ID and Data during BlockPlace event." Fixes BUKKIT-674
+                    // https://github.com/Bukkit/CraftBukkit/commit/f29b84bf1579cf3af31ea3be6df0bc8917c1de0b
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreAirTask(block));
+                }
+            } else if (block.getType() == Material.DOUBLE_STEP) {
+                // TODO: set data! for placeDoubleSlab
             }
         }
     }
