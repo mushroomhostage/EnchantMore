@@ -11,7 +11,7 @@ X X
     * Enhance Bow + Respiration = stapled arrows: try TNT, water, lava (spawn egg, potions...)
     * Enhance Shears + Looting, now can be used to acquire saddle from saddled pigs
     * Enhance Hoe + Fire Protection = sensor, now can show information on entities
-    * (XXX) Partial (warning: incomplete!) WorldGuard support
+    * Partial (warning: incomplete!) WorldGuard support
       Caution: some effects (particularly explosions) still bypass protections (ticket 4)
 
 2012-02-22  0.6.4

@@ -82,7 +82,7 @@ import net.minecraft.server.ItemDye;
 import net.minecraft.server.EntityArrow;
 import net.minecraft.server.EnumSkyBlock;
 
-//import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 enum EnchantMoreItemCategory 
 {
@@ -364,7 +364,7 @@ class EnchantMoreListener implements Listener {
         Action action = event.getAction();
         Player player = event.getPlayer();
 
-        if (!canBuildHere(player, block)) {
+        if (!plugin.canBuildHere(player, block)) {
             return;
         }
 
@@ -418,7 +418,7 @@ class EnchantMoreListener implements Listener {
                             if (type == tntId) {
                                 Block b = world.getBlockAt(x, y, z);
 
-                                if (safeSetBlock(player, b, Material.AIR)) {
+                                if (plugin.safeSetBlock(player, b, Material.AIR)) {
                                     TNTPrimed tnt = (TNTPrimed)world.spawn(new Location(world, x, y, z), TNTPrimed.class);
                                     tnt.setFuseTicks(0); // boom !
                                 }
@@ -550,7 +550,7 @@ class EnchantMoreListener implements Listener {
                 int n = getLevel(item, POWER, player);
                 // on grass: cut into dirt
                 if (block.getType() == Material.GRASS) {
-                    safeSetBlock(player, block, Material.DIRT);
+                    plugin.safeSetBlock(player, block, Material.DIRT);
                 // on leaves: build hedges
                 } else if (block.getType() == Material.LEAVES) {
                     int leavesSlot = player.getInventory().first(Material.LEAVES);
@@ -562,7 +562,7 @@ class EnchantMoreListener implements Listener {
                                 for (int dz = -n; dz <= n; dz += 1) {
                                     Block b = block.getRelative(dx, dy, dz);
                                     if (b.getType() == Material.AIR && leavesStack.getAmount() > 0) {
-                                        safeSetBlock(player, b, leavesStack.getType());
+                                        plugin.safeSetBlock(player, b, leavesStack.getType());
 
                                         byte data = leavesStack.getData().getData();
                                         data |= 4;  // permanent, player-placed leaves, never decay
@@ -613,7 +613,7 @@ class EnchantMoreListener implements Listener {
                             Block b = world.getBlockAt(dx+x0, dy+y0, dz+z0);
                            
                             if (b.getType() == Material.STATIONARY_WATER || b.getType() == Material.WATER) {
-                                safeSetBlock(player, b, Material.AIR);
+                                plugin.safeSetBlock(player, b, Material.AIR);
                                 world.playEffect(b.getLocation(), Effect.SMOKE, 0); // TODO: direction
                             }
                         }
@@ -634,7 +634,7 @@ class EnchantMoreListener implements Listener {
             // Flint & Steel + Efficiency = burn faster (turn wood to grass)
             if (hasEnch(item, EFFICIENCY, player)) {
                 if (isWoodenBlock(block.getType(), block.getData())) {
-                    safeSetBlock(player, block, Material.LEAVES);
+                    plugin.safeSetBlock(player, block, Material.LEAVES);
                     // TODO: data? just leaving as before, but type may be unexpected
                 }
                 // no extra damage
@@ -653,7 +653,7 @@ class EnchantMoreListener implements Listener {
                             Block near = block.getRelative(dx * n, 0, dz * n);
                             // if either air or flowing water, make stationary water
                             if (near.getType() == Material.AIR || near.getType() == Material.WATER) {
-                                safeSetBlock(player, near, Material.STATIONARY_WATER);
+                                plugin.safeSetBlock(player, near, Material.STATIONARY_WATER);
                             }
                         }
                     }
@@ -707,7 +707,7 @@ class EnchantMoreListener implements Listener {
                         Block b = world.getBlockAt(dx+x0, y0, dz+z0);
                        
                         if (b.getType() == Material.DIRT || b.getType() == Material.GRASS) {
-                            safeSetBlock(player, b, Material.SOIL);
+                            plugin.safeSetBlock(player, b, Material.SOIL);
                         }
                     }
                 }
@@ -1113,77 +1113,14 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    // http://wiki.sk89q.com/wiki/WorldGuard/Regions/API
-    /*
-    public WorldGuardPlugin getWorldGuard() {
-        return null;
-
-        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-        if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-            return null;
-        }
-
-        return (WorldGuardPlugin)plugin;
-    }
-        */
-
-    /* We ignore cancelled events, but that isn't good enough for WorldGuard
-    #worldguard @ irc.esper.net 2012/02/23 
-> when blocks are broken in protected regions, why doesn't WorldGuard cancel the event so other plugins could just use ignoreCancelled=true to respect regions, instead of hooking into WorldGuard's API?
-<zml2008> It does do that, just at a priority that is too high
-> hmm, interesting. if I register my handler as priority MONITOR, I do see the event is cancelled, as expected. but what's the best practice? should I be registering all my listeners as MONITOR?
-<zml2008> That's generally a terrible idea. The event priorities need to be corrected in WG
-> is that something I can change in the config? or is it a bug in WorldGuard that needs to be fixed?
-<zml2008> It's a WG bug
-> so all plugins have to workaround it?
-<zml2008> Until I have time, yes.
-> what would you recommend in the meantime?
-<zml2008>  Using WG's API
-*/
-    public boolean canBuildHere(Player player, Location location) {
-        return true;
-        /*
-        WorldGuardPlugin wg = getWorldGuard();
-        if (wg == null) {
-            return true;
-        }
-
-        return wg.canBuild(player, location);
-        */
-    }
-
-    public boolean canBuildHere(Player player, Block block) {
-        return true;
-        /*
-        WorldGuardPlugin wg = getWorldGuard();
-        if (wg == null) {
-            return true;
-        }
-
-        return wg.canBuild(player, block);
-        */
-    }
-
-    public boolean safeSetBlock(Player player, Block block, Material type) {
-        if (!canBuildHere(player, block)) {
-            return false;
-        }
-
-        block.setType(type);
-
-        return true;
-    }
-
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
     public void onBlockBreak(BlockBreakEvent event) {
-        plugin.log.info("break "+event);
-
         Player player = event.getPlayer();
         Block block = event.getBlock();
         ItemStack item = player.getItemInHand();
         final World world = player.getWorld();
 
-        if (!canBuildHere(player, block)) {
+        if (!plugin.canBuildHere(player, block)) {
             return;
         }
 
@@ -1216,7 +1153,7 @@ class EnchantMoreListener implements Listener {
 
                 naturalDrop = false;
                 if (!naturalDrop) {
-                    safeSetBlock(player, block, Material.AIR);
+                    plugin.safeSetBlock(player, block, Material.AIR);
                     event.setCancelled(true);
                 }
 
@@ -1253,7 +1190,7 @@ class EnchantMoreListener implements Listener {
                                 int type = world.getBlockTypeIdAt(x, y, z);
                                 if (isExcavatable(type)) {
                                     Block b = world.getBlockAt(x, y, z);
-                                    safeSetBlock(player, b, Material.AIR);
+                                    plugin.safeSetBlock(player, b, Material.AIR);
                                 }
                             }
                         }
@@ -1267,7 +1204,7 @@ class EnchantMoreListener implements Listener {
                 if (hasEnch(item, SILK_TOUCH, player) && getLevel(item, SILK_TOUCH, player) >= 2) {
                     if (block.getType() == Material.SNOW) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
-                        safeSetBlock(player, block, Material.AIR);
+                        plugin.safeSetBlock(player, block, Material.AIR);
                         event.setCancelled(true);   // do not drop snowballs
                     }
                 }
@@ -1278,7 +1215,7 @@ class EnchantMoreListener implements Listener {
                 if (hasEnch(item, SILK_TOUCH, player) && getLevel(item, SILK_TOUCH, player) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", 2)) {
                     if (block.getType() == Material.ICE) {
                         world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
-                        safeSetBlock(player, block, Material.AIR);
+                        plugin.safeSetBlock(player, block, Material.AIR);
                         // ModLoader NPE net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
                         // if we don't do this, so do it
                         // see http://dev.bukkit.org/server-mods/enchantmore/tickets/6-on-modded-craft-bukkit-with-mod-loader-mp-forge-hoe/
@@ -1315,7 +1252,7 @@ class EnchantMoreListener implements Listener {
                     }
 
                     if (!naturalDrop) {
-                        safeSetBlock(player, block, Material.AIR);
+                        plugin.safeSetBlock(player, block, Material.AIR);
                         event.setCancelled(true);
                     }
                 }
@@ -1330,7 +1267,7 @@ class EnchantMoreListener implements Listener {
 
                     world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
 
-                    safeSetBlock(player, block, Material.AIR);
+                    plugin.safeSetBlock(player, block, Material.AIR);
                     event.setCancelled(true);
                 } 
                 // no extra damage
@@ -1349,7 +1286,7 @@ class EnchantMoreListener implements Listener {
 
                     world.dropItemNaturally(block.getLocation(), new ItemStack(dropType, 1));
                     
-                    safeSetBlock(player, block, Material.AIR);
+                    plugin.safeSetBlock(player, block, Material.AIR);
                     event.setCancelled(true);
                 }
                 // no extra damage
@@ -1377,7 +1314,7 @@ class EnchantMoreListener implements Listener {
 
                     world.dropItemNaturally(block.getLocation(), drop);
                     
-                    safeSetBlock(player, block, Material.AIR);
+                    plugin.safeSetBlock(player, block, Material.AIR);
                     event.setCancelled(true);
                 }
                 // no extra damage
@@ -1391,7 +1328,7 @@ class EnchantMoreListener implements Listener {
         World world = block.getWorld();
         Player player = event.getPlayer();
 
-        if (!canBuildHere(player, block)) {
+        if (!plugin.canBuildHere(player, block)) {
             return;
         }
 
@@ -1413,7 +1350,7 @@ class EnchantMoreListener implements Listener {
         if (block != null && block.getType() == Material.ICE) {
             if (world.getEnvironment() == World.Environment.NETHER && plugin.getConfig().getBoolean("sublimateIce", false)) {
                 // sublimate ice to vapor
-                safeSetBlock(player, block, Material.AIR);
+                plugin.safeSetBlock(player, block, Material.AIR);
 
                 // turn into smoke
                 world.playEffect(block.getLocation(), Effect.SMOKE, 0);
@@ -1625,25 +1562,25 @@ class EnchantMoreListener implements Listener {
                         } else if (itemStack.getType() == Material.WATER_BUCKET) {
                             // water bucket, spill and leave empty bucket
                             if (dest.getBlock() == null || dest.getBlock().getType() == Material.AIR) {
-                                if (safeSetBlock(player, dest.getBlock(), Material.WATER)) {
+                                if (plugin.safeSetBlock(player, dest.getBlock(), Material.WATER)) {
                                     world.dropItem(dest, new ItemStack(Material.BUCKET, 1));
                                 }
                             }
                         } else if (itemStack.getType() == Material.LAVA_BUCKET) {
                             // lava bucket, same
                             if (dest.getBlock() == null || dest.getBlock().getType() == Material.AIR) {
-                                if (safeSetBlock(player, dest.getBlock(), Material.LAVA)) {
+                                if (plugin.safeSetBlock(player, dest.getBlock(), Material.LAVA)) {
                                     world.dropItem(dest, new ItemStack(Material.BUCKET, 1));    // probably will be destroyed, but whatever
                                 }
                             }
                         /* this already works - they're blocks!
                         // hacked in water/lava/fire blocks - no drop
                         } else if (itemStack.getType() == Material.WATER) {
-                            safeSetBlock(player, dest.getBlock(), Material.WATER);
+                            plugin.safeSetBlock(player, dest.getBlock(), Material.WATER);
                         } else if (itemStack.getType() == Material.LAVA) {
-                            safeSetBlock(player, dest.getBlock(), Material.LAVA);
+                            plugin.safeSetBlock(player, dest.getBlock(), Material.LAVA);
                         } else if (itemStack.getType() == Material.FIRE) {
-                            safeSetBlock(player, dest.getBlock(), Material.FIRE);
+                            plugin.safeSetBlock(player, dest.getBlock(), Material.FIRE);
                             */
                         } else if (isSplashPotion(itemStack)) {
                             // Splash potion = throw
@@ -1828,7 +1765,7 @@ class EnchantMoreListener implements Listener {
                 Block below = dest.add(0, -1, 0).getBlock();
                 if (below != null && below.getType() == Material.AIR) {
                     // a ladder to hang on to
-                    if (safeSetBlock(player, below, Material.LADDER)) {
+                    if (plugin.safeSetBlock(player, below, Material.LADDER)) {
                         // The data isn't set, so the ladder appears invisible - I kinda like that
                         // Player can break it to get a free ladder, but its not a big deal (free sticks, wood, renewable..)
 
@@ -1847,7 +1784,7 @@ class EnchantMoreListener implements Listener {
                             }
 
                             public void run() {
-                                listener.safeSetBlock(player, block, Material.AIR);
+                                listener.plugin.safeSetBlock(player, block, Material.AIR);
                             }
                         }
 
@@ -2848,4 +2785,57 @@ public class EnchantMore extends JavaPlugin {
     
     public void onDisable() {
     }
+
+    // http://wiki.sk89q.com/wiki/WorldGuard/Regions/API
+    public WorldGuardPlugin getWorldGuard() {
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+        if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+            return null;
+        }
+
+        return (WorldGuardPlugin)plugin;
+    }
+
+    /* We ignore cancelled events, but that isn't good enough for WorldGuard
+    #worldguard @ irc.esper.net 2012/02/23 
+> when blocks are broken in protected regions, why doesn't WorldGuard cancel the event so other plugins could just use ignoreCancelled=true to respect regions, instead of hooking into WorldGuard's API?
+<zml2008> It does do that, just at a priority that is too high
+> hmm, interesting. if I register my handler as priority MONITOR, I do see the event is cancelled, as expected. but what's the best practice? should I be registering all my listeners as MONITOR?
+<zml2008> That's generally a terrible idea. The event priorities need to be corrected in WG
+> is that something I can change in the config? or is it a bug in WorldGuard that needs to be fixed?
+<zml2008> It's a WG bug
+> so all plugins have to workaround it?
+<zml2008> Until I have time, yes.
+> what would you recommend in the meantime?
+<zml2008>  Using WG's API
+*/
+    public boolean canBuildHere(Player player, Location location) {
+        WorldGuardPlugin wg = getWorldGuard();
+        if (wg == null) {
+            return true;
+        }
+
+        return wg.canBuild(player, location);
+    }
+
+    public boolean canBuildHere(Player player, Block block) {
+        WorldGuardPlugin wg = getWorldGuard();
+        if (wg == null) {
+            return true;
+        }
+
+        return wg.canBuild(player, block);
+    }
+
+    public boolean safeSetBlock(Player player, Block block, Material type) {
+        if (!canBuildHere(player, block)) {
+            return false;
+        }
+
+        block.setType(type);
+
+        return true;
+    }
+
+
 }
