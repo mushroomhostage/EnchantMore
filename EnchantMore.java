@@ -132,11 +132,11 @@ class EnchantMoreListener implements Listener {
     static EnchantMore plugin;
 
     static ConcurrentHashMap<String, Enchantment> enchByName;
-    static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;        // indexed by packed ench + item
+    static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;        // indexed by packed ench + item, for quick enable/disable lookup
     static ConcurrentHashMap<Integer, EnchantMoreItemCategory> itemToCategory;
     static ConcurrentHashMap<EnchantMoreItemCategory, Object> categoryToItems;
     
-    static ConcurrentHashMap<Integer, Integer> configInts;              // indexed by packed ench + item
+    static ConcurrentHashMap<Integer, String> effectConfigSections;     // indexed by packed ench + item, for arbitrary config settings
 
     static boolean defaultEnabledEffectState = true;
 
@@ -168,8 +168,12 @@ class EnchantMoreListener implements Listener {
     }
 
     // Get per-item/enchantment configuration option
-    static public int getConfigInt(ItemStack tool, Enchantment ench, Player player) {
-        return configInts.get(packEnchItem(tool.getTypeId(), ench));
+    static public int getConfigInt(String name, int defaultValue, ItemStack tool, Enchantment ench, Player player) {
+        String section = effectConfigSections.get(packEnchItem(tool.getTypeId(), ench));
+
+        //plugin.log.info("sect "+section);
+
+        return plugin.getConfig().getInt(section + "." + name, defaultValue);
     }
 
     @SuppressWarnings("unchecked")   // not helpful: list.add(id); warning: [unchecked] unchecked call to add(E) as a member of the raw type java.util.List
@@ -259,12 +263,14 @@ class EnchantMoreListener implements Listener {
         // Map of item ids and effects to whether they are enabled
         enabledEffectMap = new ConcurrentHashMap<Integer, Boolean>();
 
-        configInts = new ConcurrentHashMap<Integer, Integer>();
+        effectConfigSections = new ConcurrentHashMap<Integer, String>();
 
         MemorySection effectsSection = (MemorySection)plugin.getConfig().get("effects");
 
         for (String effectName: effectsSection.getKeys(false)) {
-            boolean enable = plugin.getConfig().getBoolean("effects." + effectName + ".enable");
+
+            String sectionName = "effects." + effectName;
+            boolean enable = plugin.getConfig().getBoolean(sectionName + ".enable");
 
             String[] parts = effectName.split(" \\+ ", 2);
             if (parts.length != 2) {
@@ -296,6 +302,7 @@ class EnchantMoreListener implements Listener {
                 for (Object item: list) {
                     if (item instanceof Integer) {
                         putEffectEnabled(((Integer)item).intValue(), ench, enable);
+                        effectConfigSections.put(packEnchItem(((Integer)item).intValue(), ench), sectionName);
                     }
                 }
             } else {
@@ -305,6 +312,7 @@ class EnchantMoreListener implements Listener {
                     continue;
                 }
                 putEffectEnabled(id, ench, enable);
+                effectConfigSections.put(packEnchItem(id, ench), sectionName);
             }
 
         }
@@ -1777,7 +1785,7 @@ class EnchantMoreListener implements Listener {
             // [FUN] HookShot v1.3.3 - Scale mountains with a Hookshot [1060] http://forums.bukkit.org/threads/fun-hookshot-v1-3-3-scale-mountains-with-a-hookshot-1060.16494/
             // more complex: "Right-Click arrows to fire a "hook", then right-click whilst holding string to "pull""
             int n = getLevel(bow, FEATHER_FALLING, player);
-            if (n >= 2) {
+            if (n >= getConfigInt("minLevelGrappleHook", 2, bow, FEATHER_FALLING, player)) {
                 Block below = dest.add(0, -1, 0).getBlock();
                 if (below != null && below.getType() == Material.AIR) {
                     // a ladder to hang on to
@@ -1804,7 +1812,7 @@ class EnchantMoreListener implements Listener {
                             }
                         }
 
-                        long delayTicks = 20 * 10;
+                        long delayTicks = (long)getConfigInt("grappleHangOnTicks", 20 * 10, bow, FEATHER_FALLING, player);
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new EnchantMoreGrappleHookRemoveTask(below, player, this), delayTicks);
                     }

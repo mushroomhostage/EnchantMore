@@ -36,6 +36,8 @@ effects:
         enable: true
     Bow + Feather Falling:
         enable: true
+        minLevelGrappleHook: 2      # level needed to make an invisible ladder at teleport destination
+        grappleHangOnTicks: 200     # time to delay before removing temporary ladder (10 seconds)
     Bow + Fire Aspect:
         enable: true
     Bow + Knockback:
