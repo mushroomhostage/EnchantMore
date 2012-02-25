@@ -90,6 +90,8 @@ effects:
         enable: true
     Flint & Steel + Smite:
         enable: true
+    Flint & Steel + Silk Touch:
+        enable: true
     Helmet + Fire Aspect:
         enable: true
     Hoe + Aqua Affinity:
@@ -186,51 +188,83 @@ items:
     - iron_pickaxe
     - stone_pickaxe
     - wood_pickaxe
-    # Add your RP2 Ruby, Sapphire, Emerald or IC2 bronze tools here (item IDs)..
-    - '1281'    # RP2 RubyPickaxe
-    - '1282'    # RP2 EmeraldPickaxe
-    - '1283'    # RP2 SapphirePickaxe
-    - '30200'   # IC2 ToolBronzePickaxe
+    # Add your custom tools here (item IDs)... defaults from http://www.mcportcentral.co.za/
+    # If these items don't exist, they'll never be accessed, so they are harmless on vanilla,
+    # but, if the IDs conflict or are different you can change/remove them.
+    - '1281'    # RedPower2 RubyPickaxe
+    - '1282'    # RedPower2 EmeraldPickaxe
+    - '1283'    # RedPower2 SapphirePickaxe
+    - '21259'   # Metallurgy CopperPickaxe
+    - '21273'   # Metallurgy BronzePickaxe
+    - '21289'   # Metallurgy SteelPickaxe
+    - '21301'   # Metallurgy MithrilPickaxe
+    - '21313'   # Metallurgy OrichalcumPickaxe
+    - '21325'   # Metallurgy AdamantinePickaxe
+    - '30200'   # IndustrialCraft2 ToolBronzePickaxe
     Hoe:
     - diamond_hoe
     - gold_hoe 
     - iron_hoe
     - stone_hoe
     - wood_hoe
-    - '1287'    # RP2 RubyHoe
-    - '1288'    # RP2 EmeraldHoe
-    - '1289'    # RP2 SapphireHoe
-    - '30119'   # IC2 ToolHoe (electric)
-    - '30196'   # IC2 ToolBronzeHoe
+    - '1287'    # RedPower2 RubyHoe
+    - '1288'    # RedPower2 EmeraldHoe
+    - '1289'    # RedPower2 SapphireHoe
+    - '21262'   # Metallurgy CopperHoe
+    - '21276'   # Metallurgy BronzeHoe
+    - '21292'   # Metallurgy SteelHoe
+    - '21304'   # Metallurgy MithrilHoe
+    - '21328'   # Metallurgy AdamantineHoe
+    - '21316'   # Metallurgy OrichalcumHoe
+    - '30119'   # IndustrialCraft2 ToolHoe (electric)
+    - '30196'   # IndustrialCraft2 ToolBronzeHoe
     Sword:
     - diamond_sword   
     - gold_sword
     - iron_sword
     - stone_sword
     - wood_sword
-    - '1275'    # RP2 RubySword
-    - '1276'    # RP2 EmeraldSword
-    - '1277'    # RP2 SapphireSword
-    - '30198'   # IC2 ToolBronzeSword
+    - '1275'    # RedPower2 RubySword
+    - '1276'    # RedPower2 EmeraldSword
+    - '1277'    # RedPower2 SapphireSword
+    - '21263'   # Metallurgy CopperSword
+    - '21277'   # Metallurgy BronzeSword
+    - '21293'   # Metallurgy SteelSword
+    - '21305'   # Metallurgy MithrilSword
+    - '21317'   # Metallurgy OrichalcumSword
+    - '21329'   # Metallurgy AdamantineSword
+    - '30198'   # IndustrialCraft2 ToolBronzeSword
     Shovel:
     - diamond_spade
     - gold_spade
     - iron_spade
     - stone_spade
     - wood_spade
-    - '1279'    # RP2 EmeraldShovel
-    - '1280'    # RP2 SapphireShovel
-    - '1278'    # RP2 RubyShovel
+    - '1279'    # RedPower2 EmeraldShovel
+    - '1280'    # RedPower2 SapphireShovel
+    - '1278'    # RedPower2 RubyShovel
+    - '21260'   # Metallurgy CopperShovel
+    - '21274'   # Metallurgy BronzeShovel
+    - '21290'   # Metallurgy SteelShovel
+    - '21302'   # Metallurgy MithrilShovel
+    - '21314'   # Metallurgy OrichalcumShovel
+    - '21326'   # Metallurgy AdamantineShovel
     Axe:
     - diamond_axe
     - gold_axe
     - iron_axe
     - stone_axe
     - wood_axe
-    - '1284'    # RP2 RubyAxe
-    - '1285'    # RP2 EmeraldAxe
-    - '1286'    # RP2 SapphireAxe
-    - '30199'   # IC2 ToolBronzeAxe
+    - '1284'    # RedPower2 RubyAxe
+    - '1285'    # RedPower2 EmeraldAxe
+    - '1286'    # RedPower2 SapphireAxe
+    - '21261'   # Metallurgy CopperAxe
+    - '21275'   # Metallurgy BronzeAxe
+    - '21291'   # Metallurgy SteelAxe
+    - '21303'   # Metallurgy MithrilAxe
+    - '21315'   # Metallurgy OrichalcumAxe
+    - '21327'   # Metallurgy AdamantineAxe
+    - '30199'   # IndustrialCraft2 ToolBronzeAxe
     # Farm-related block, either land or growing crops 
     Farmblock:
     - soil      # Farmland
@@ -240,7 +274,7 @@ items:
     - pumpkin_stem
     - melon_stem
     - nether_warts # Not the item, that is nether_stalk (confusingly)
-    # TODO: flaxseed from RP2?
+    # TODO: flaxseed from RedPower2?
     # Able to be excavated by shovel
     Excavatable:
     - dirt
@@ -260,8 +294,8 @@ items:
     - double_step;2     # wooden double slab
 
     # Categories below only used for effects shortcuts
-    # Normally, armor effect determined by slot - if other item is in
-    # slot, then it will trigger the default enable state
+    # Normally, armor effect determined by *slot* not *type* - if other item is in
+    # slot, then it will trigger if defaultEffectEnabled, so I haven't listed custom items here
     Helmet:
     - chainmail_helmet
     - diamond_helmet
