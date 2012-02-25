@@ -4,7 +4,7 @@ EnchantMore adds dozens of new item enchantment effects,
 on flint & steel, hoes, shears, fishing rods, and other items --
 ranging from entertainingly destructive to legitimately useful.
 
-***New! [Download 0.6.4 here](http://dev.bukkit.org/server-mods/enchantmore/files/7-enchant-more-0-6-4/)*** - released 2012/02/22, *use this link instead of on the sidebar*
+***[Download 0.6.4 here](http://dev.bukkit.org/server-mods/enchantmore/files/7-enchant-more-0-6-4/)*** - released 2012/02/22
 
 ## Features
 * More than 50 new enchantment/item combinations
@@ -22,6 +22,8 @@ If you know of any other compatible plugins, let me know and I'll add them here.
 ignore canEnchantItem(), then it should be compatible with EnchantMore.)
 
 ## Available Effects
+*[Vote for your favorite!](http://dev.bukkit.org/server-mods/enchantmore/polls/what-is-your-favorite-enchantment-in-enchant-more-0/)*
+
 * Axe + Aqua Affinity = slowness effect
 * Axe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
 * Axe + Power = fell tree ([details](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
