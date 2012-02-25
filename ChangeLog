@@ -5,6 +5,7 @@ X X
     * Add Sword + Silk Touch = capture (right-click to drop creature/boat/minecart/primedTNT as item)
     * Add Chestplate + Sharpness = reflect damage
     * Add Leggings + Feather Falling = surface (triple-tap shift)
+    * Add Fishing Rod + Sharpness = damage mobs
     * Add Hoe + Punch = grow animal
     * Add Pickaxe/Shovel/Axe + Flame II = auto-smelt and light path
     * Add support for custom items from Metallurgy mod in default config

@@ -74,6 +74,9 @@ effects:
         enable: true
     Fishing Rod + Smite:
         enable: true
+    Fishing Rod + Sharpness:
+        damagePerLevel: 10
+        enable: true
     Flint & Steel + Aqua Affinity:
         enable: true
     Flint & Steel + Blast Protection:

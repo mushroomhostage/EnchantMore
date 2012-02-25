@@ -1982,6 +1982,17 @@ class EnchantMoreListener implements Listener {
 
                 damage(item, player);
             }
+
+            // Fishing Rod + Sharpness = damage mobs
+            if (hasEnch(item, SHARPNESS, player)) {
+                if (entity instanceof LivingEntity) {
+                    int amount = getLevel(item, SHARPNESS, player) * getConfigInt("damagePerLevel", 10, item, SHARPNESS, player);
+
+                    ((LivingEntity)entity).damage(amount, player);
+                }
+                
+                damage(item, player);
+            }
         } else if (state == PlayerFishEvent.State.CAUGHT_FISH) {
             // Fishing Rod + Flame = catch cooked fish
             if (hasEnch(item, FLAME, player)) {
