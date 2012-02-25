@@ -135,6 +135,42 @@ effects:
         enable: true
     Pickaxe + Power:
         enable: true
+    Pickaxe + Sharpness:
+        enable: true
+        rangePerLevel: 5                # mine up to a cube of this size per enchantment level
+        ores:
+            '14;0': true        # Gold
+            '15;0': true        # Iron
+            '16;0': true        # Coal
+            '21;0': true        # Lapis
+            '56;0': true        # Diamond
+            '73;0': true        # Redstone
+            '74;0': true        # Redstone
+            # New ores added by mods (harmless to leave if block IDs not used)
+            '125;0': true       # Metallurgy CopperVein
+            '127;0': true       # Metallurgy TinVein
+            '130;0': true       # Metallurgy IronVein
+            '132;0': true       # Metallurgy ManganeseVein
+            '134;0': true       # Metallurgy MithrilVein
+            '138;0': true       # Metallurgy AdamantineVein
+            '140;0': true       # Metallurgy ZincVein / RedPower2 RubyOre
+            '140;1': true       # RedPower2 EmeraldOre
+            '140;2': true       # RedPower2 SapphireOre
+            '140;3': true       # RedPower2 SilverOre
+            '140;4': true       # RedPower2 TinOre
+            '140;5': true       # RedPower2 CopperOre
+            '140;6': true       # RedPower2 TungstenOre
+            '140;7': true       # RedPower2 NikoliteOre
+            '143;0': true       # Metallurgy SilverVein
+            '145;0': true       # Metallurgy GoldVein
+            '146;0': true       # Metallurgy PlatinumVein
+            '247;0': true       # IndustrialCraft2 BlockOreUran
+            '248;0': true       # IndustrialCraft2 BlockOreTin
+            '249;0': true       # IndustrialCraft2 BlockOreCopper
+            # TODO: why does FT find MAX_VALUE - 1 data values? it does for Metallurgy too
+            #'247;32766': true   # IndustrialCraft2 BlockOreUran
+            #'248;32766': true   # IndustrialCraft2 BlockOreTin
+            #'249;32766': true   # IndustrialCraft2 BlockOreCopper
     Pickaxe + Silk Touch:
         enable: true 
         minLevel: 2         # since Silk Touch I already exists in vanilla, we require higher levels by default

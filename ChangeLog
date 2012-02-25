@@ -6,6 +6,7 @@ X X
     * Add Chestplate + Sharpness = reflect damage
     * Add Leggings + Feather Falling = surface (triple-tap shift)
     * Add Fishing Rod + Sharpness = damage mobs
+    * Add Pickaxe + Sharpness = mine ore vein
     * Add Hoe + Punch = grow animal
     * Add Pickaxe/Shovel/Axe + Flame II = auto-smelt and light path
     * Add support for custom items from Metallurgy mod in default config

@@ -1236,7 +1236,8 @@ class EnchantMoreListener implements Listener {
                     int x0 = loc.getBlockX();
                     int y0 = loc.getBlockY();
                     int z0 = loc.getBlockZ();
-                   
+                  
+                    // cube
                     for (int dx = -r; dx <= r; dx += 1) {
                         for (int dy = -r; dy <= r; dy += 1) {
                             for (int dz = -r; dz <= r; dz += 1) {
@@ -1250,6 +1251,9 @@ class EnchantMoreListener implements Listener {
                             }
                         }
                     }
+
+                    // TODO: really would like to clear up all above (contiguous), so nothing falls..
+
                     event.setCancelled(true);
                     // no extra damage
                 }
@@ -1339,6 +1343,57 @@ class EnchantMoreListener implements Listener {
 
                     if (!naturalDrop) {
                         plugin.safeSetBlock(player, block, Material.AIR);
+                        event.setCancelled(true);
+                    }
+                }
+
+                // Pickaxe + Sharpness = mine ore vein
+                if (hasEnch(item, SHARPNESS, player)) {
+                    int oreId = block.getTypeId();
+                    byte oreData = block.getData();
+
+                    boolean defaultValue = false;
+                    switch(oreId)
+                    {
+                    case 14:    // Gold Ore
+                    case 15:    // Iron ore
+                    case 16:    // Coal Ore
+                    case 21:    // Lapis Lazuli Ore
+                    case 56:    // Diamond Ore
+                    case 73:    // Redstone Ore
+                    case 74:    // Glowing Redstone Ore
+                        defaultValue = true;
+                    }
+
+                    if (getConfigBoolean("ores." + oreId + ";" + oreData, defaultValue, item, SHARPNESS, player)) {
+                        int r = getLevel(item, SHARPNESS, player) * getConfigInt("rangePerLevel", 5, item, SHARPNESS, player); 
+                        int x0 = block.getLocation().getBlockX();
+                        int y0 = block.getLocation().getBlockY();
+                        int z0 = block.getLocation().getBlockZ();
+                      
+                        // cube
+                        for (int dx = -r; dx <= r; dx += 1) {
+                            for (int dy = -r; dy <= r; dy += 1) {
+                                for (int dz = -r; dz <= r; dz += 1) {
+                                    int x = dx + x0, y = dy + y0, z = dz + z0;
+
+                                    int type = world.getBlockTypeIdAt(x, y, z);
+                                    if (type == oreId) {
+                                        Block b = world.getBlockAt(x, y, z);
+                                        if (b.getData() == oreData) {
+                                            Collection<ItemStack> drops = b.getDrops(item);
+                                            if (plugin.safeSetBlock(player, b, Material.AIR)) {
+                                                for (ItemStack drop: drops) {
+                                                    // drop all at _central_ location of original block breakage!
+                                                    // so this effect can be useful to gather diamonds over dangerous lava
+                                                    world.dropItemNaturally(block.getLocation(), drop);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         event.setCancelled(true);
                     }
                 }
