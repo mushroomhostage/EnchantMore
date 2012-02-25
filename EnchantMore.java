@@ -82,7 +82,7 @@ import net.minecraft.server.ItemDye;
 import net.minecraft.server.EntityArrow;
 import net.minecraft.server.EnumSkyBlock;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+//import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 enum EnchantMoreItemCategory 
 {
@@ -1114,7 +1114,10 @@ class EnchantMoreListener implements Listener {
     }
 
     // http://wiki.sk89q.com/wiki/WorldGuard/Regions/API
+    /*
     public WorldGuardPlugin getWorldGuard() {
+        return null;
+
         Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
         if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
             return null;
@@ -1122,6 +1125,7 @@ class EnchantMoreListener implements Listener {
 
         return (WorldGuardPlugin)plugin;
     }
+        */
 
     /* We ignore cancelled events, but that isn't good enough for WorldGuard
     #worldguard @ irc.esper.net 2012/02/23 
@@ -1137,21 +1141,27 @@ class EnchantMoreListener implements Listener {
 <zml2008>  Using WG's API
 */
     public boolean canBuildHere(Player player, Location location) {
+        return true;
+        /*
         WorldGuardPlugin wg = getWorldGuard();
         if (wg == null) {
             return true;
         }
 
         return wg.canBuild(player, location);
+        */
     }
 
     public boolean canBuildHere(Player player, Block block) {
+        return true;
+        /*
         WorldGuardPlugin wg = getWorldGuard();
         if (wg == null) {
             return true;
         }
 
         return wg.canBuild(player, block);
+        */
     }
 
     public boolean safeSetBlock(Player player, Block block, Material type) {
@@ -1166,6 +1176,8 @@ class EnchantMoreListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true) 
     public void onBlockBreak(BlockBreakEvent event) {
+        plugin.log.info("break "+event);
+
         Player player = event.getPlayer();
         Block block = event.getBlock();
         ItemStack item = player.getItemInHand();
