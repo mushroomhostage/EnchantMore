@@ -4,8 +4,7 @@ EnchantMore adds dozens of new item enchantment effects,
 on flint & steel, hoes, shears, fishing rods, and other items --
 ranging from entertainingly destructive to legitimately useful.
 
-***New! [Download 0.7.5 here](http://dev.bukkit.org/server-mods/enchantmore/files/8-enchant-more-0-7-5/)*** - released 2012/02/25, 
-*use this link instead of the links on the sidebar to get the newest version*
+***New! [Download 0.7.5 here](http://dev.bukkit.org/server-mods/enchantmore/files/8-enchant-more-0-7-5/)*** - released 2012/02/25
 
 ## Features
 * More than 50 new enchantment/item combinations
