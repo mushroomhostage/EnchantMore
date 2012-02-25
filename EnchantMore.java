@@ -132,9 +132,11 @@ class EnchantMoreListener implements Listener {
     static EnchantMore plugin;
 
     static ConcurrentHashMap<String, Enchantment> enchByName;
-    static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;
+    static ConcurrentHashMap<Integer, Boolean> enabledEffectMap;        // indexed by packed ench + item
     static ConcurrentHashMap<Integer, EnchantMoreItemCategory> itemToCategory;
     static ConcurrentHashMap<EnchantMoreItemCategory, Object> categoryToItems;
+    
+    static ConcurrentHashMap<Integer, Integer> configInts;              // indexed by packed ench + item
 
     static boolean defaultEnabledEffectState = true;
 
@@ -163,6 +165,11 @@ class EnchantMoreListener implements Listener {
         // TODO: config max level support
         // TODO: optional player permission max level support
         return tool.getEnchantmentLevel(ench);
+    }
+
+    // Get per-item/enchantment configuration option
+    static public int getConfigInt(ItemStack tool, Enchantment ench, Player player) {
+        return configInts.get(packEnchItem(tool.getTypeId(), ench));
     }
 
     @SuppressWarnings("unchecked")   // not helpful: list.add(id); warning: [unchecked] unchecked call to add(E) as a member of the raw type java.util.List
@@ -251,6 +258,9 @@ class EnchantMoreListener implements Listener {
 
         // Map of item ids and effects to whether they are enabled
         enabledEffectMap = new ConcurrentHashMap<Integer, Boolean>();
+
+        configInts = new ConcurrentHashMap<Integer, Integer>();
+
         MemorySection effectsSection = (MemorySection)plugin.getConfig().get("effects");
 
         for (String effectName: effectsSection.getKeys(false)) {
@@ -300,8 +310,14 @@ class EnchantMoreListener implements Listener {
         }
     }
 
+    // Pack an item id and enchantment id into one integer for ease of lookup
+    // itemId is up to 32000 and enchantment id currently only single-digits, so int is plenty for both
+    private static int packEnchItem(int itemId, Enchantment ench) {
+        return itemId + (ench.getId() << 20);
+    }
+
     private static void putEffectEnabled(int itemId, Enchantment ench, boolean enable) {
-        int packed = itemId + (ench.getId() << 20);
+        int packed = packEnchItem(itemId, ench);
 
         if (plugin.getConfig().getBoolean("verboseConfig", false)) {
             plugin.log.info("Effect "+Material.getMaterial(itemId)+" ("+itemId+") + "+ench+" = "+packed+" = "+enable);
@@ -316,7 +332,7 @@ class EnchantMoreListener implements Listener {
     }
 
     static public boolean getEffectEnabled(int itemId, Enchantment ench) {
-        int packed = itemId + (ench.getId() << 20);
+        int packed = packEnchItem(itemId, ench);
 
         Object obj = enabledEffectMap.get(packed);
         if (obj == null) {
