@@ -252,6 +252,7 @@ items:
     # Add your custom tools here (item IDs)... defaults from http://www.mcportcentral.co.za/
     # If these items don't exist, they'll never be accessed, so they are harmless on vanilla,
     # but, if the IDs conflict or are different you can change/remove them.
+    - '1051'    # PlasticCraft PPickaxe
     - '1281'    # RedPower2 RubyPickaxe
     - '1282'    # RedPower2 EmeraldPickaxe
     - '1283'    # RedPower2 SapphirePickaxe
@@ -301,6 +302,7 @@ items:
     - iron_spade
     - stone_spade
     - wood_spade
+    - '1050'    # PlasticCraft PShovel
     - '1279'    # RedPower2 EmeraldShovel
     - '1280'    # RedPower2 SapphireShovel
     - '1278'    # RedPower2 RubyShovel
@@ -316,6 +318,7 @@ items:
     - iron_axe
     - stone_axe
     - wood_axe
+    - '1052'    # PlasticCraft PAxe
     - '1284'    # RedPower2 RubyAxe
     - '1285'    # RedPower2 EmeraldAxe
     - '1286'    # RedPower2 SapphireAxe
