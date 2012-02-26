@@ -206,6 +206,9 @@ effects:
     Sword + Power:
         enable: true
         rangePerLevel: 100  # distance in blocks will strike away for each enchantment level
+    Sword + Punch:
+        enable: true
+        maxLevel: 10        # level:maxLevel probability to succeed
     Sword + Protection:
         enable: true
     Sword + Silk Touch:

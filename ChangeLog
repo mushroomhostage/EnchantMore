@@ -1,5 +1,5 @@
 X   X
-
+    * Add Sword + Punch = knock item out of player hand (right-click)
     * Fix Sword + Silk Touch = capture creating invalid spawn eggs on non-standard mobs
 
 2012-02-25  0.7.5

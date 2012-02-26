@@ -1080,6 +1080,27 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
+            // Sword + Punch = knock item out of player hand (right-click)
+            if (hasEnch(item, PUNCH, player)) {
+                if (entity instanceof Player) {
+                    Player victim = (Player)entity;
+                    int level = getLevel(item, PUNCH, player);
+                    int roll = random.nextInt(getConfigInt("maxLevel", 10, item, PUNCH, player));
+                    //plugin.log.info("r "+roll+", n "+level);
+                    if (roll <= level) {
+                        //plugin.log.info("punch");
+                        // Knock item out of hand!
+                        ItemStack drop = victim.getItemInHand();
+                        if (drop != null && drop.getType() != Material.AIR) {
+                            world.dropItemNaturally(victim.getLocation(), drop); // TODO: bigger variation?
+                            victim.setItemInHand(null);
+                        }
+                    } else {
+                        //plugin.log.info("fail");
+                    }
+                }
+            }
+
         } else if (isHoe(item.getType())) {
             // Hoe + Punch = grow animal
             if (hasEnch(item, PUNCH, player)) {
