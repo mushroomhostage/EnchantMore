@@ -1,3 +1,7 @@
+X   X
+
+    * Fix Sword + Silk Touch = capture creating invalid spawn eggs on non-standard mobs
+
 2012-02-25  0.7.5
     * Add Bow + Feather Falling II = grapple hook (hold Shift to hang on)
     * Add Sword + Silk Touch = capture (right-click to drop creature/boat/minecart/primedTNT as item)

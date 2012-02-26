@@ -1055,8 +1055,14 @@ class EnchantMoreListener implements Listener {
                     Creature creature = (Creature)entity;
                     short eid = getEntityTypeId(creature);
 
-                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MONSTER_EGG, 1, eid));
-                    entity.remove();
+                    if (eid == -1) {
+                        // sorry, can't capture this :(
+                        // play an effect so the player knows something is happening
+                        world.playEffect(entity.getLocation(), Effect.SMOKE, 0);
+                    } else {
+                        world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MONSTER_EGG, 1, eid));
+                        entity.remove();
+                    }
                 } else if (entity instanceof Boat) {
                     // boat item.. very useful (some plugins make boats drop items when broken)
                     world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.BOAT, 1));
@@ -1118,6 +1124,9 @@ class EnchantMoreListener implements Listener {
         if (creatureType == null) {
             return -1;
         }
+        
+        // TODO: would also like to support capturing creatures from Natural Selection mod!
+        // they aren't registered in CreatureType, so I have to workaround it in SilkSpawners
 
         return creatureType.getTypeId();
     }
