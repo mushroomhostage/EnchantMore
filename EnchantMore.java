@@ -1215,6 +1215,11 @@ class EnchantMoreListener implements Listener {
                 // no extra damage
             }
 
+            // TODO: Pickaxe + Looting = drop extra iron gold ore
+            // http://forums.bukkit.org/threads/mech-enchantfix-fortune-looting.61856/
+            // but when placed by player (set data value), if mined won't fortune this item
+            // (but, only do at higher levels by default, so doesn't alter normal enchantment)
+
             if (isAxe(item.getType())) {
                 // Axe + Power = fell tree ([details](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/))
                 if (hasEnch(item, POWER, player) && block.getType() == Material.LOG) {
@@ -2023,6 +2028,12 @@ class EnchantMoreListener implements Listener {
 
         PlayerFishEvent.State state = event.getState();
         World world = player.getWorld();
+        
+        // TODO: Fishing Rod + Feather Falling = reel yourself in
+        // see http://dev.bukkit.org/server-mods/dragrod/ - drags caught entities to you
+        // and crouch and reel to bring yourself to an entity
+        // but can we do it in general? reel into anywhere, not just to an entity, even blocks..
+        // see http://forums.bukkit.org/threads/grappling-hook-mod.8177/#post-983920
 
         if (state == PlayerFishEvent.State.CAUGHT_ENTITY) {
             Entity entity = event.getCaught();
@@ -2936,6 +2947,19 @@ public class EnchantMore extends JavaPlugin {
         if (getConfig().getBoolean("moveListener", true)) {
             new EnchantMorePlayerMoveListener(this);
         }
+
+        // TODO: how about crafting recipes for specially enchanted items??
+        // this mod http://www.minecraftforum.net/topic/506109-110-cubex2s-mods-custom-stuff-multi-page-chest-smp/
+        // adds
+        // DDD
+        // DS-
+        // DS-
+        // where D = diamond, S = stick, for a "Whole Tree Axe" crafting recipe, similar to our Power - Axe
+        // should we add more recipes, like 8 diamonds around pickaxe, to make a power axe?
+        // or 8 lava buckets around to make flame? saplings around to make tree? feathers for ff? then you know
+        // what you're getting, no fumbling with enchantment tables.
+        // But if so, should make optional, and off by default. And perhaps best handled by other plugins? can they craft enchanted?
+        // still, could provide default recipes.
     }
 
     // Copy default configuration
