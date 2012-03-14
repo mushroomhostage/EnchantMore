@@ -56,6 +56,9 @@ effects:
         enable: true
     Chestplate + Knockback:
         enable: true
+    Chestplate + Punch:
+        enable: true
+        damagePerLevel: 5
     Chestplate + Silk Touch:
         enable: true
     Chestplate + Sharpness:
@@ -129,6 +132,9 @@ effects:
         enable: true
     Leggings + Feather Falling:
         enable: true
+    Leggings + Knockback:
+        enable: true
+        damagePerLevel: 5
     Pickaxe + Flame:
         enable: true
     Pickaxe + Looting:

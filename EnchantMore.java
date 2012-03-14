@@ -368,6 +368,7 @@ class EnchantMoreListener implements Listener {
         enabledEffectMap.put(packed, enable);
     }
 
+    // TODO: make API for other plugins
     static public boolean getEffectEnabled(int itemId, Enchantment ench) {
         int packed = packEnchItem(itemId, ench);
 
@@ -876,7 +877,7 @@ class EnchantMoreListener implements Listener {
         // Use bonemeal (white dye/ink) to grow
         CraftItemStack bonemealStack = (new CraftItemStack(Material.INK_SACK, 1, (short)15));
 
-        // MCP onItemUse ('interactWith' in 1.1-R5+, 'a' obfuscated in 1.1-R4)
+        // MCP onItemUse ('interactWith' in >1.1-R5, 'a' obfuscated in 1.1-R4)
         // see my posts at http://forums.bukkit.org/threads/apply-bonemeal-effect-programmatically.63470/#post-1001005
         net.minecraft.server.Item.INK_SACK.interactWith(bonemealStack.getHandle(), ((CraftPlayer)player).getHandle(), ((CraftWorld)world).getHandle(), x, y, z, 0/*unused*/);
     }
@@ -2518,15 +2519,27 @@ class EnchantMoreListener implements Listener {
             }
         }
 
-        // Chestplate + Punch = brass knuckles (more damage with fists)
-        if (weapon == null || weapon.getType() == Material.AIR) {
-            ItemStack chestplate = attacker.getInventory().getChestplate();
-            if (chestplate != null && chestplate.getType() != Material.AIR) {
-                if (hasEnch(chestplate, PUNCH, attacker)) {
+        ItemStack chestplate = attacker.getInventory().getChestplate();
+        if (chestplate != null && chestplate.getType() != Material.AIR) {
+            // Chestplate + Punch = brass knuckles (more damage with fists)
+            if (hasEnch(chestplate, PUNCH, attacker)) {
+                if (weapon == null || weapon.getType() == Material.AIR) {
                     if (entity instanceof LivingEntity) {
                         int amount = getConfigInt("damagePerLevel", 5, chestplate, PUNCH, attacker) * getLevel(chestplate, PUNCH, attacker);
                         ((LivingEntity)entity).damage(amount, null /*attacker - not passed so doesn't recurse*/);
                     }
+                }
+            }
+        }
+
+        ItemStack leggings = attacker.getInventory().getLeggings();
+        if (leggings != null && leggings.getType() != Material.AIR) {
+            // Leggings + Knockback = tackle (more damage when sprinting)
+            if (hasEnch(leggings, KNOCKBACK, attacker)) {
+                if (attacker.isSprinting()) {
+                    // TODO: multiplier, with current weapon?
+                    int amount = getConfigInt("damagePerLevel", 5, leggings, KNOCKBACK, attacker) * getLevel(leggings, KNOCKBACK, attacker);
+                    ((LivingEntity)entity).damage(amount, null /*attacker - not passed so doesn't recurse*/);
                 }
             }
         }

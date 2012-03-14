@@ -1,9 +1,10 @@
 X   X
-    * Add Sword + Fortune = pickpocket (right-click player)
     * Add Sword + Punch = knock out of hand (right-click player)
+    * Add Sword + Fortune = pickpocket (right-click player)
     * Add Sword + Infinity = selective invisibility (right-click player)
     * Add Chestplate + Punch = brass knuckles (more damage with fists)
     * Add Chestplate + Respiration = fish mode (no damage in water)
+    * Add Leggings + Knockback = tackle (more damage when sprinting)
     * Add support for custom items from PlasticCraft, Forestry, Mo' Foods mods in default config
     * Fix Sword + Silk Touch = capture creating invalid spawn eggs on non-standard mobs
 
