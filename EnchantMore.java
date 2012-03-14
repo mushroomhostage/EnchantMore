@@ -523,6 +523,8 @@ class EnchantMoreListener implements Listener {
                         world.dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1));
                     }
                 }
+                // TODO: Silk Touch III to pickup water and lava blocks?
+                // like NeonStick http://dev.bukkit.org/server-mods/neonstick/
             }
         } else if (isHoe(item.getType())) {
             // Hoe + Power = move time
@@ -786,6 +788,7 @@ class EnchantMoreListener implements Listener {
                 // level 1 just breaks one block, but,
                 // higher powers cut diagonal strip in direction facing
                 // TODO: cut only in orthogonal directions? or only if in threshold?
+                // TODO: or like BlastPick? 'clear your path' http://forums.bukkit.org/threads/edit-fun-blastpick-clear-your-path-1-1-rb.7007/
                 int level = getLevel(item, POWER, player);
                 int dx = (int)Math.signum(block.getLocation().getX() - player.getLocation().getX());
                 int dy = (int)Math.signum(block.getLocation().getY() - player.getLocation().getY());
@@ -1576,6 +1579,7 @@ class EnchantMoreListener implements Listener {
 
     // Get item as if it was smelted
     private ItemStack smelt(ItemStack raw) {
+        // TODO: update for 1.1-R6
         net.minecraft.server.ItemStack smeltNMS = net.minecraft.server.FurnaceRecipes.getInstance().a(raw.getTypeId());
 
         ItemStack smelted = (ItemStack)(new CraftItemStack(smeltNMS));
@@ -2310,6 +2314,16 @@ class EnchantMoreListener implements Listener {
                 event.setCancelled(true);
                 // in case damaged by bypassing event
                 playerDamaged.setHealth(playerDamaged.getMaxHealth());
+            }
+
+            // Chestplate + Respiration = fish mode (no damage in water)
+            if (hasEnch(chestplate, RESPIRATION, playerDamaged)) {
+                Block blockIn = playerDamaged.getLocation().getBlock();
+                plugin.log.info("damaged "+blockIn);
+                if (blockIn.getType() == Material.STATIONARY_WATER || blockIn.getType() == Material.WATER) {
+                    // player underwater
+                    event.setCancelled(true);
+                }
             }
         }
 

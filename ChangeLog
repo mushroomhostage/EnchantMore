@@ -1,5 +1,6 @@
 X   X
     * Add Sword + Punch = knock item out of player hand (right-click)
+    * Add Chestplate + Respiration = fish mode (no damage in water)
     * Add support for custom items from PlasticCraft mod in default config
     * Fix Sword + Silk Touch = capture creating invalid spawn eggs on non-standard mobs
 
