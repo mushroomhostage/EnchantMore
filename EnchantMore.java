@@ -682,7 +682,7 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
 
-            // Flint & Steel + Efficiency = burn faster (turn wood to grass)
+            // Flint & Steel + Efficiency = burn faster (turn wood to leaves)
             if (hasEnch(item, EFFICIENCY, player)) {
                 if (isWoodenBlock(block.getType(), block.getData())) {
                     plugin.safeSetBlock(player, block, Material.LEAVES);
@@ -2518,15 +2518,14 @@ class EnchantMoreListener implements Listener {
             }
         }
 
-        // Chestplate + Punch = more damage with fists
+        // Chestplate + Punch = brass knuckles (more damage with fists)
         if (weapon == null || weapon.getType() == Material.AIR) {
             ItemStack chestplate = attacker.getInventory().getChestplate();
             if (chestplate != null && chestplate.getType() != Material.AIR) {
                 if (hasEnch(chestplate, PUNCH, attacker)) {
                     if (entity instanceof LivingEntity) {
-                        int amount = getConfigInt("damagePerLevel", 10, chestplate, PUNCH, attacker) * getLevel(chestplate, PUNCH, attacker);
-                        // TODO: stop infinite recursion!
-                        ((LivingEntity)entity).damage(amount, attacker);
+                        int amount = getConfigInt("damagePerLevel", 5, chestplate, PUNCH, attacker) * getLevel(chestplate, PUNCH, attacker);
+                        ((LivingEntity)entity).damage(amount, null /*attacker - not passed so doesn't recurse*/);
                     }
                 }
             }
