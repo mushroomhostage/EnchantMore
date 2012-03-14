@@ -496,17 +496,8 @@ class EnchantMoreListener implements Listener {
             } /* else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
                 // TODO: Sword + Blast Protection = blocking summons summon fireballs
                 if (hasEnch(item, BLAST_PROTECTION, player)) {
-                    Location from = player.getLocation().add(0, 5, 0);
-
-                    Fireball fireball = from.getWorld().spawn(from, Fireball.class);
-                    int n = getLevel(item, BLAST_PROTECTION, player);
-                    // "Fireballs fly straight and do not take setVelocity(...) well."
-                    //entity.setVelocity(player.getLocation().getDirection().normalize().multiply(n));
-                    fireball.setDirection(player.getLocation().getDirection().normalize().multiply(n));
-
-                    plugin.log.info("fb "+fireball);
-
-                    // http://forums.bukkit.org/threads/summoning-a-fireball.40724/#post-738436
+                    // This still doesn't work - explodes instantly
+                    player.launchProjectile(Fireball.class);
                 }
             }*/
 
