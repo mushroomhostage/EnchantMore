@@ -1171,10 +1171,27 @@ class EnchantMoreListener implements Listener {
                         (animal.canBreed() ? "fertile" : "infertile") + ", " +
                         (animal.isAdult() ? "adult" : "baby"));
                 }
+
+                if (entity instanceof Player) {
+                    Player other = (Player)entity;
+
+                    player.sendMessage("Player "+other.getName()+" ("+other.getDisplayName()+"), IP="+other.getAddress()+
+                        ", XP="+other.getTotalExperience()+" (level "+other.getLevel()+")" +
+                        ", food "+other.getFoodLevel()+", sat "+other.getSaturation()+", exh "+other.getExhaustion() +
+                        ", spawn "+stringifyLocation(other.getBedSpawnLocation())+", compass "+stringifyLocation(other.getCompassTarget()));
+                }
                 // TODO: more entities
 
                 damage(item, player);
             }
+        }
+    }
+
+    private String stringifyLocation(Location loc) {
+        if (loc == null) {
+            return "()";
+        } else {
+            return "("+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ()+","+loc.getWorld().getName()+")";
         }
     }
 
