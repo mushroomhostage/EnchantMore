@@ -432,7 +432,8 @@ class EnchantMoreListener implements Listener {
         if (item.getType() == Material.BOW && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
             // Bow + Efficiency = instant shoot
             if (hasEnch(item, EFFICIENCY, player)) {
-                player.shootArrow();
+                player.launchProjectile(Arrow.class);
+                // TODO: remove from inventory!
             }
         } else if (item.getType() == Material.FLINT_AND_STEEL && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
             // Flint & Steel + Punch = cannon
@@ -884,8 +885,9 @@ class EnchantMoreListener implements Listener {
         // Use bonemeal (white dye/ink) to grow
         CraftItemStack bonemealStack = (new CraftItemStack(Material.INK_SACK, 1, (short)15));
 
-        // 'a' unobfuscated = onItemUse
-        net.minecraft.server.Item.INK_SACK.a(bonemealStack.getHandle(), ((CraftPlayer)player).getHandle(), ((CraftWorld)world).getHandle(), x, y, z, 0/*unused*/);
+        // MCP onItemUse ('interactWith' in 1.1-R5+, 'a' obfuscated in 1.1-R4)
+        // see my posts at http://forums.bukkit.org/threads/apply-bonemeal-effect-programmatically.63470/#post-1001005
+        net.minecraft.server.Item.INK_SACK.interactWith(bonemealStack.getHandle(), ((CraftPlayer)player).getHandle(), ((CraftWorld)world).getHandle(), x, y, z, 0/*unused*/);
     }
 
     // TODO: would really like to support IC2/RP2 extra items
@@ -1166,13 +1168,13 @@ class EnchantMoreListener implements Listener {
             return -1;
         }
         Class<?> clazz = clazzes[0];
-        CreatureType creatureType = CreatureType.fromName(clazz.getSimpleName());
+        EntityType creatureType = EntityType.fromName(clazz.getSimpleName());
         if (creatureType == null) {
             return -1;
         }
         
         // TODO: would also like to support capturing creatures from Natural Selection mod!
-        // they aren't registered in CreatureType, so I have to workaround it in SilkSpawners
+        // they aren't registered in EntityType, so I have to workaround it in SilkSpawners
 
         return creatureType.getTypeId();
     }
@@ -1601,8 +1603,8 @@ class EnchantMoreListener implements Listener {
 
     // Get item as if it was smelted
     private ItemStack smelt(ItemStack raw) {
-        // TODO: update for 1.1-R6
-        net.minecraft.server.ItemStack smeltNMS = net.minecraft.server.FurnaceRecipes.getInstance().a(raw.getTypeId());
+        // 'getResult' in 1.1-R8, was 'a' obfuscated in 1.1-R4
+        net.minecraft.server.ItemStack smeltNMS = net.minecraft.server.FurnaceRecipes.getInstance().getResult(raw.getTypeId());
 
         ItemStack smelted = (ItemStack)(new CraftItemStack(smeltNMS));
     
@@ -1612,7 +1614,8 @@ class EnchantMoreListener implements Listener {
     // Get all the items used to craft an item
     private Collection<ItemStack> uncraft(ItemStack wantedOutput, boolean compareData) {
         Collection<ItemStack> matchedInputs = new ArrayList<ItemStack>();
-        List recipes = net.minecraft.server.CraftingManager.getInstance().b();
+        // 'getRecipies()'[sic] in 1.1-R8, was 'b()' in 1.1-R4
+        List recipes = net.minecraft.server.CraftingManager.getInstance().getRecipies();
 
         Field shapelessRecipeItemsField;
         Field shapedRecipeItemsField;
@@ -2031,11 +2034,11 @@ class EnchantMoreListener implements Listener {
         return splash;
     }
 
-    // Get a CreatureType from entity ID
-    public CreatureType creatureTypeFromId(int eid) {
+    // Get a EntityType from entity ID
+    public EntityType creatureTypeFromId(int eid) {
         // Only available in 1.1-R4
         try {
-            return CreatureType.fromId(eid);
+            return EntityType.fromId(eid);
         } catch (NoSuchMethodError e) {
         }
 
@@ -2043,31 +2046,31 @@ class EnchantMoreListener implements Listener {
         // http://www.minecraftwiki.net/wiki/Data_values#Entity_IDs
         switch (eid)
         {
-        case 50: return CreatureType.CREEPER;
-        case 51: return CreatureType.SKELETON;
-        case 52: return CreatureType.SPIDER;
-        case 53: return CreatureType.GIANT;
+        case 50: return EntityType.CREEPER;
+        case 51: return EntityType.SKELETON;
+        case 52: return EntityType.SPIDER;
+        case 53: return EntityType.GIANT;
         default:
-        case 54: return CreatureType.ZOMBIE;
-        case 55: return CreatureType.SLIME;
-        case 56: return CreatureType.GHAST;
-        case 57: return CreatureType.PIG_ZOMBIE;
-        case 58: return CreatureType.ENDERMAN;
-        case 59: return CreatureType.CAVE_SPIDER;
-        case 60: return CreatureType.SILVERFISH;
-        case 61: return CreatureType.BLAZE;
-        case 62: return CreatureType.MAGMA_CUBE;
-        case 63: return CreatureType.ENDER_DRAGON;
-        case 90: return CreatureType.PIG;
-        case 91: return CreatureType.SHEEP;
-        case 92: return CreatureType.COW;
-        case 93: return CreatureType.CHICKEN;
-        case 94: return CreatureType.SQUID;
-        case 95: return CreatureType.WOLF;
-        case 96: return CreatureType.MUSHROOM_COW;
-        case 97: return CreatureType.SNOWMAN;
-        //case 98: return CreatureType.OCELET;
-        case 120: return CreatureType.VILLAGER;
+        case 54: return EntityType.ZOMBIE;
+        case 55: return EntityType.SLIME;
+        case 56: return EntityType.GHAST;
+        case 57: return EntityType.PIG_ZOMBIE;
+        case 58: return EntityType.ENDERMAN;
+        case 59: return EntityType.CAVE_SPIDER;
+        case 60: return EntityType.SILVERFISH;
+        case 61: return EntityType.BLAZE;
+        case 62: return EntityType.MAGMA_CUBE;
+        case 63: return EntityType.ENDER_DRAGON;
+        case 90: return EntityType.PIG;
+        case 91: return EntityType.SHEEP;
+        case 92: return EntityType.COW;
+        case 93: return EntityType.CHICKEN;
+        case 94: return EntityType.SQUID;
+        case 95: return EntityType.WOLF;
+        case 96: return EntityType.MUSHROOM_COW;
+        case 97: return EntityType.SNOWMAN;
+        //case 98: return EntityType.OCELET;
+        case 120: return EntityType.VILLAGER;
         }
     }
 
@@ -2413,7 +2416,7 @@ class EnchantMoreListener implements Listener {
 
 
                         event.setCancelled(true);   // stop arrow damage
-                        playerDamaged.shootArrow();        // reflect arrow
+                        playerDamaged.launchProjectile(Arrow.class);        // reflect arrow
 
                         // TODO: should we actually create a new arrow with the opposite velocity vector? TODO: yes! allows duping :(
                         // I think so.. bounce, not reshoot
