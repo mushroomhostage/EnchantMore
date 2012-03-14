@@ -1621,8 +1621,8 @@ class EnchantMoreListener implements Listener {
         Field shapedRecipeItemsField;
 
         try {
-            shapelessRecipeItemsField = net.minecraft.server.ShapelessRecipes.class.getDeclaredField("b");
-            shapedRecipeItemsField = net.minecraft.server.ShapedRecipes.class.getDeclaredField("d");
+            shapelessRecipeItemsField = net.minecraft.server.ShapelessRecipes.class.getDeclaredField("ingredients");
+            shapedRecipeItemsField = net.minecraft.server.ShapedRecipes.class.getDeclaredField("items");
             shapelessRecipeItemsField.setAccessible(true);
             shapedRecipeItemsField.setAccessible(true);
         } catch (Exception e) {
