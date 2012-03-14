@@ -2,7 +2,7 @@ X   X
     * Add Sword + Fortune = pickpocket (right-click player)
     * Add Sword + Punch = knock out of hand (right-click player)
     * Add Chestplate + Respiration = fish mode (no damage in water)
-    * Add support for custom items from PlasticCraft mod in default config
+    * Add support for custom items from PlasticCraft, Forestry in default config
     * Fix Sword + Silk Touch = capture creating invalid spawn eggs on non-standard mobs
 
 2012-02-25  0.7.5

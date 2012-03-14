@@ -259,6 +259,7 @@ items:
     - '1281'    # RedPower2 RubyPickaxe
     - '1282'    # RedPower2 EmeraldPickaxe
     - '1283'    # RedPower2 SapphirePickaxe
+    - '13261'   # Forestry Survivalist's Pickaxe
     - '21259'   # Metallurgy CopperPickaxe
     - '21273'   # Metallurgy BronzePickaxe
     - '21289'   # Metallurgy SteelPickaxe
@@ -309,6 +310,7 @@ items:
     - '1279'    # RedPower2 EmeraldShovel
     - '1280'    # RedPower2 SapphireShovel
     - '1278'    # RedPower2 RubyShovel
+    - '13264'   # Forestry Survivalist's Shovel
     - '21260'   # Metallurgy CopperShovel
     - '21274'   # Metallurgy BronzeShovel
     - '21290'   # Metallurgy SteelShovel
