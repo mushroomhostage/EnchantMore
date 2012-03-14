@@ -223,6 +223,9 @@ effects:
         maxLevel: 10        # level:maxLevel probability to succeed
     Sword + Protection:
         enable: true
+    Sword + Respiration:
+        enable: true
+        kickMessage: 'Kicked by Sword + Respiration from %s'
     Sword + Silk Touch:
         enable: true
 

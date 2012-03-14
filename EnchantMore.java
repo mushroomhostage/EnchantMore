@@ -2487,41 +2487,55 @@ class EnchantMoreListener implements Listener {
 
     // Player causing damage, attacking another entity
     private void onPlayerAttack(Player attacker, ItemStack weapon, Entity entity, EntityDamageByEntityEvent event) {
-        // TODO: Sword + Efficiency = sudden death
-        // disabled for now since doesn't work on enderdragon, where it would be most useful!
-        /*
-        if (hasEnch(weapon, INFINITE, attacker)) {
-            plugin.log.info("infinity sword! on "+entity);
-            if (entity instanceof LivingEntity) {
-                plugin.log.info("KILL");
-                ((LivingEntity)entity).setHealth(0);
-                ((LivingEntity)entity).damage(Integer.MAX_VALUE, attacker);
-
-
-                // Not even called when damaging enderdragon? says fixed in 1.1-R4..
-                // https://bukkit.atlassian.net/browse/BUKKIT-129
-                
-                if (entity instanceof ComplexLivingEntity) {
-                    // just to be sure..
-                    Set<ComplexEntityPart> parts = ((ComplexLivingEntity)entity).getParts();
-                    for (ComplexEntityPart part: parts) {
-                        part.remove();
+        if (weapon != null) {
+            if (isAxe(weapon.getType())) {
+                // Axe + Aqua Affinity = slowness effect
+                if (hasEnch(weapon, AQUA_AFFINITY, attacker)) {
+                    if (entity instanceof LivingEntity) {
+                        ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, getLevel(weapon, AQUA_AFFINITY, attacker)*20*5, 1));
+                        // see also: SLOW_DIGGING, WEAKNESS - TODO: can we apply all three?
                     }
                 }
-
-                entity.remove();
+                // TODO: Axe + Fortune = killed mobs drop bottles o' enchanting? listen in entity death event? for 1.2.3+. so you can store XP
             }
-        }
-        */
 
-        // Axe + Aqua Affinity = slowness effect
-        if (hasEnch(weapon, AQUA_AFFINITY, attacker)) {
-            if (entity instanceof LivingEntity) {
-                ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, getLevel(weapon, AQUA_AFFINITY, attacker)*20*5, 1));
-                // see also: SLOW_DIGGING, WEAKNESS - TODO: can we apply all three?
+            // Sword + Respiration = kickhammer
+            if (isSword(weapon.getType())) {
+                if (hasEnch(weapon, RESPIRATION, attacker)) {
+                    if (entity instanceof Player) {
+                        String message = getConfigString("kickMessage", "Kicked by Sword + Respiration from %s", weapon, RESPIRATION, attacker).replace("%s", attacker.getDisplayName());
+                        ((Player)entity).kickPlayer(message);
+                    }
+                }
             }
+
+            // TODO: Sword + Efficiency = sudden death
+            // disabled for now since doesn't work on enderdragon, where it would be most useful!
+            /*
+            if (hasEnch(weapon, INFINITE, attacker)) {
+                plugin.log.info("infinity sword! on "+entity);
+                if (entity instanceof LivingEntity) {
+                    plugin.log.info("KILL");
+                    ((LivingEntity)entity).setHealth(0);
+                    ((LivingEntity)entity).damage(Integer.MAX_VALUE, attacker);
+
+
+                    // Not even called when damaging enderdragon? says fixed in 1.1-R4..
+                    // https://bukkit.atlassian.net/browse/BUKKIT-129
+                    
+                    if (entity instanceof ComplexLivingEntity) {
+                        // just to be sure..
+                        Set<ComplexEntityPart> parts = ((ComplexLivingEntity)entity).getParts();
+                        for (ComplexEntityPart part: parts) {
+                            part.remove();
+                        }
+                    }
+
+                    entity.remove();
+                }
+            }
+            */
         }
-        // TODO: Axe + Fortune = killed mobs drop bottles o' enchanting? listen in entity death event? for 1.2.3+. so you can store XP
 
         ItemStack chestplate = attacker.getInventory().getChestplate();
         if (chestplate != null && chestplate.getType() != Material.AIR) {
