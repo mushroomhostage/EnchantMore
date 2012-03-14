@@ -228,7 +228,7 @@ effects:
         kickLevel: 1
         kickMessage: 'Kicked by Sword + Respiration from %s'
         banLevel: 2
-        banMessage: 'The banhammer has spoken! (%s)'
+        banCommand: 'ban %s'
     Sword + Silk Touch:
         enable: true
 

@@ -2523,11 +2523,10 @@ class EnchantMoreListener implements Listener {
                         int n = getLevel(weapon, RESPIRATION, attacker);
 
                         if (n >= getConfigInt("banLevel", 2, weapon, RESPIRATION, attacker)) {
-                            String address = ((Player)entity).getAddress().toString()); 
-                            Bukkit.getServer().banIP(address);
+                            // its a real banhammer! like http://forums.bukkit.org/threads/admn-banhammer-v1-2-ban-and-kick-by-hitting-a-player-1060.32360/
+                            String command = getConfigString("banCommand", "ban %s", weapon, RESPIRATION, attacker).replace("%s", ((Player)entity).getName());
+                            Bukkit.getServer().dispatchCommand(attacker, command);
                             // TODO: timed bans
-                            String message = getConfigString("banMessage", "The banhammer has spoken! (%s)", weapon, RESPIRATION, attacker).replace("%s", attacker.getDisplayName());
-                            ((Player)entity).kickPlayer(message);
                         } else if (n >= getConfigInt("kickLevel", 1, weapon, RESPIRATION, attacker)) {
                             String message = getConfigString("kickMessage", "Kicked by Sword + Respiration from %s", weapon, RESPIRATION, attacker).replace("%s", attacker.getDisplayName());
                             ((Player)entity).kickPlayer(message);
