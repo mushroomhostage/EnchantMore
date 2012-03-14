@@ -2520,8 +2520,18 @@ class EnchantMoreListener implements Listener {
             if (isSword(weapon.getType())) {
                 if (hasEnch(weapon, RESPIRATION, attacker)) {
                     if (entity instanceof Player) {
-                        String message = getConfigString("kickMessage", "Kicked by Sword + Respiration from %s", weapon, RESPIRATION, attacker).replace("%s", attacker.getDisplayName());
-                        ((Player)entity).kickPlayer(message);
+                        int n = getLevel(weapon, RESPIRATION, attacker);
+
+                        if (n >= getConfigInt("banLevel", 2, weapon, RESPIRATION, attacker)) {
+                            String address = ((Player)entity).getAddress().toString()); 
+                            Bukkit.getServer().banIP(address);
+                            // TODO: timed bans
+                            String message = getConfigString("banMessage", "The banhammer has spoken! (%s)", weapon, RESPIRATION, attacker).replace("%s", attacker.getDisplayName());
+                            ((Player)entity).kickPlayer(message);
+                        } else if (n >= getConfigInt("kickLevel", 1, weapon, RESPIRATION, attacker)) {
+                            String message = getConfigString("kickMessage", "Kicked by Sword + Respiration from %s", weapon, RESPIRATION, attacker).replace("%s", attacker.getDisplayName());
+                            ((Player)entity).kickPlayer(message);
+                        }
                     }
                 }
             }
