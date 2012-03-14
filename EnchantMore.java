@@ -2467,16 +2467,16 @@ class EnchantMoreListener implements Listener {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
             onPlayerDamaged((Player)entity, event);
-        } else {
-            if (event instanceof EntityDamageByEntityEvent) {
-                Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
-                if (damager instanceof Player) {
-                    Player damagerPlayer = (Player)damager;
+        } 
 
-                    ItemStack weapon = damagerPlayer.getInventory().getItemInHand();
+        if (event instanceof EntityDamageByEntityEvent) {
+            Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
+            if (damager instanceof Player) {
+                Player damagerPlayer = (Player)damager;
 
-                    onPlayerAttack(damagerPlayer, weapon, entity, (EntityDamageByEntityEvent)event);
-                }
+                ItemStack weapon = damagerPlayer.getInventory().getItemInHand();
+
+                onPlayerAttack(damagerPlayer, weapon, entity, (EntityDamageByEntityEvent)event);
             }
         }
     }
@@ -2515,6 +2515,20 @@ class EnchantMoreListener implements Listener {
             if (entity instanceof LivingEntity) {
                 ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, getLevel(weapon, AQUA_AFFINITY, attacker)*20*5, 1));
                 // see also: SLOW_DIGGING, WEAKNESS - TODO: can we apply all three?
+            }
+        }
+
+        // Chestplate + Punch = more damage with fists
+        if (weapon == null || weapon.getType() == Material.AIR) {
+            ItemStack chestplate = attacker.getInventory().getChestplate();
+            if (chestplate != null && chestplate.getType() != Material.AIR) {
+                if (hasEnch(chestplate, PUNCH, attacker)) {
+                    if (entity instanceof LivingEntity) {
+                        int amount = getConfigInt("damagePerLevel", 10, chestplate, PUNCH, attacker) * getLevel(chestplate, PUNCH, attacker);
+                        // TODO: stop infinite recursion!
+                        ((LivingEntity)entity).damage(amount, attacker);
+                    }
+                }
             }
         }
     }
