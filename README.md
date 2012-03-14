@@ -11,6 +11,8 @@ ranging from entertainingly destructive to legitimately useful.
 * Items in inventory appear as expected (glowing + descriptive tooltip) 
 * No client mods required
 * Only adds functionality, does not change any -- all your existing enchanted tools work as expected
+* You can disable any effects in config.yml
+* Supports enchantments on modded items
 
 **Important**: to enchant items, you currently need to use an enchanting plugin or inventory editor. EnchantMore does not yet enchant items itself or alter enchantment tables. Known plugins compatible with EnchantMore:
 
@@ -46,6 +48,8 @@ ignore canEnchantItem(), then it should be compatible with EnchantMore.)
 * Bow + Smite = strike lightning
 * Chestplate + Infinity = god mode (no damage/hunger)
 * Chestplate + Knockback = reflect arrows
+* Chestplate + Punch = brass knuckles (more damage with fists)
+* Chestplate + Respiration = fish mode (no damage in water)
 * Chestplate + Sharpness = reflect damage 
 * Chestplate + Silk Touch = cactus protection (no contact damage)
 * Fishing Rod + Efficiency = fish faster
@@ -58,7 +62,7 @@ ignore canEnchantItem(), then it should be compatible with EnchantMore.)
 * Fishing Rod + Smite = strike mobs with lightning
 * Flint & Steel + Aqua Affinity = vaporize water ([details](http://dev.bukkit.org/server-mods/enchantmore/images/9-flint-steel-aqua-affinity-vaporize-water/))
 * Flint & Steel + Blast Protection = anti-creeper (cancel nearby explosion)
-* Flint & Steel + Efficiency = burn faster (turn wood to grass)
+* Flint & Steel + Efficiency = burn faster (turn wood to leaves)
 * Flint & Steel + Fire Aspect = set mobs on fire
 * Flint & Steel + Fire Protection = fire resistance ([details](http://dev.bukkit.org/server-mods/enchantmore/images/10-flint-steel-fire-protection-fire-resistance/))
 * Flint & Steel + Punch = cannon
@@ -77,6 +81,7 @@ ignore canEnchantItem(), then it should be compatible with EnchantMore.)
 * Hoe + Respiration = grow ([details](http://dev.bukkit.org/server-mods/enchantmore/images/12-hoe-respiration-grow/))
 * Hoe + Silk Touch = collect farmland, crop block, pumpkin/melon stem, cake block, sugarcane block, netherwart block (preserving data)
 * Leggings + Feather Falling = surface (triple-tap shift)
+* Leggings + Knockback = tackle (more damage when sprinting)
 * Leggings + Punch = rocket launch pants (double-tap shift)
 * Pickaxe + Flame = auto-smelt ([details](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/))
 * Pickaxe + Flame II = auto-smelt and light path
@@ -96,9 +101,14 @@ ignore canEnchantItem(), then it should be compatible with EnchantMore.)
 * Shovel + Silk Touch II = harvest fallen snow, fire
 * Sword + Fire Protection = return to player when dropped in lava
 * Sword + Flame = create semi-permanent lit path
+* Sword + Fortune = pickpocket (right-click player)
+* Sword + Infinity = selective invisibility (right-click player)
 * Sword + Power = strike lightning far away
 * Sword + Protection = resistance when blocking 
+* Sword + Punch = knock out of hand (right-click player)
+* Sword + Respiration = banhammer (1=kick, 2+=temp ban)
 * Sword + Silk Touch = capture (right-click to drop creature/boat/minecart/primedTNT as item)
+
 
 ## Limitations
 * Not all enchantments reasonably combine with one another
