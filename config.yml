@@ -259,6 +259,7 @@ items:
     - '1281'    # RedPower2 RubyPickaxe
     - '1282'    # RedPower2 EmeraldPickaxe
     - '1283'    # RedPower2 SapphirePickaxe
+    - '3714'    # Mo' Food and Crops ObsidianPick
     - '13261'   # Forestry Survivalist's Pickaxe
     - '21259'   # Metallurgy CopperPickaxe
     - '21273'   # Metallurgy BronzePickaxe
@@ -276,6 +277,7 @@ items:
     - '1287'    # RedPower2 RubyHoe
     - '1288'    # RedPower2 EmeraldHoe
     - '1289'    # RedPower2 SapphireHoe
+    - '3717'    # Mo' Food and Crops ObsidianHoe
     - '21262'   # Metallurgy CopperHoe
     - '21276'   # Metallurgy BronzeHoe
     - '21292'   # Metallurgy SteelHoe
@@ -293,6 +295,7 @@ items:
     - '1275'    # RedPower2 RubySword
     - '1276'    # RedPower2 EmeraldSword
     - '1277'    # RedPower2 SapphireSword
+    - '3718'    # Mo' Food and Crops ObsidianSword
     - '21263'   # Metallurgy CopperSword
     - '21277'   # Metallurgy BronzeSword
     - '21293'   # Metallurgy SteelSword
@@ -310,6 +313,7 @@ items:
     - '1279'    # RedPower2 EmeraldShovel
     - '1280'    # RedPower2 SapphireShovel
     - '1278'    # RedPower2 RubyShovel
+    - '3715'    # Mo' Food and Crops ObsidianShovel
     - '13264'   # Forestry Survivalist's Shovel
     - '21260'   # Metallurgy CopperShovel
     - '21274'   # Metallurgy BronzeShovel
@@ -327,6 +331,7 @@ items:
     - '1284'    # RedPower2 RubyAxe
     - '1285'    # RedPower2 EmeraldAxe
     - '1286'    # RedPower2 SapphireAxe
+    - '3716'    # Mo' Food and Crops ObsidianAxe
     - '21261'   # Metallurgy CopperAxe
     - '21275'   # Metallurgy BronzeAxe
     - '21291'   # Metallurgy SteelAxe
