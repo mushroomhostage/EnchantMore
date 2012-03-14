@@ -206,6 +206,9 @@ effects:
     Sword + Fortune:
         enable: true
         maxLevel: 10
+    Sword + Infinity:
+        enable: true
+        durationPerLevelTicks: 40   # ticks to be invisible per each level
     Sword + Power:
         enable: true
         rangePerLevel: 100  # distance in blocks will strike away for each enchantment level

@@ -1119,6 +1119,33 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
+            // Sword + Infinity = selective invisibility (right-click player)
+            if (hasEnch(item, INFINITE, player)) {
+                if (entity instanceof Player) {
+                    Player other = (Player)entity;
+                    other.hidePlayer(player); // we're invisible to other player
+
+                    class ShowPlayerTask implements Runnable {
+                        Player player;
+                        Player other;
+
+                        public ShowPlayerTask(Player player, Player other) {
+                            this.player = player;
+                            this.other = other;
+                        }
+
+                        public void run() {
+                            other.showPlayer(player);
+                        }
+                    }
+
+                    long lengthTicks = getConfigInt("durationPerLevelTicks", 40, item, INFINITE, player) * getLevel(item, INFINITE, player);
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ShowPlayerTask(player, other), lengthTicks);
+                    // TODO: cooldown period
+                }
+            }
+
         } else if (isHoe(item.getType())) {
             // Hoe + Punch = grow animal
             if (hasEnch(item, PUNCH, player)) {
@@ -2456,7 +2483,7 @@ class EnchantMoreListener implements Listener {
 
     // Player causing damage, attacking another entity
     private void onPlayerAttack(Player attacker, ItemStack weapon, Entity entity, EntityDamageByEntityEvent event) {
-        // TODO: Sword + Infinity = sudden death
+        // TODO: Sword + Efficiency = sudden death
         // disabled for now since doesn't work on enderdragon, where it would be most useful!
         /*
         if (hasEnch(weapon, INFINITE, attacker)) {
