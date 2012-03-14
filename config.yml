@@ -229,6 +229,8 @@ effects:
         kickMessage: 'Kicked by Sword + Respiration from %s'
         banLevel: 2
         banCommand: 'ban %s'
+        banTicksPerLevel: 200 # ban for 10 seconds each level
+        pardonCommand: 'pardon %s'
     Sword + Silk Touch:
         enable: true
 

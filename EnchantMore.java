@@ -2516,7 +2516,7 @@ class EnchantMoreListener implements Listener {
                 // TODO: Axe + Fortune = killed mobs drop bottles o' enchanting? listen in entity death event? for 1.2.3+. so you can store XP
             }
 
-            // Sword + Respiration = kickhammer
+            // Sword + Respiration = banhammer (1=kick, 2+=temp ban)
             if (isSword(weapon.getType())) {
                 if (hasEnch(weapon, RESPIRATION, attacker)) {
                     if (entity instanceof Player) {
@@ -2524,9 +2524,29 @@ class EnchantMoreListener implements Listener {
 
                         if (n >= getConfigInt("banLevel", 2, weapon, RESPIRATION, attacker)) {
                             // its a real banhammer! like http://forums.bukkit.org/threads/admn-banhammer-v1-2-ban-and-kick-by-hitting-a-player-1060.32360/
-                            String command = getConfigString("banCommand", "ban %s", weapon, RESPIRATION, attacker).replace("%s", ((Player)entity).getName());
-                            Bukkit.getServer().dispatchCommand(attacker, command);
-                            // TODO: timed bans
+                            String banCommand = getConfigString("banCommand", "ban %s", weapon, RESPIRATION, attacker).replace("%s", ((Player)entity).getName());
+                            Bukkit.getServer().dispatchCommand(attacker, banCommand);
+
+                            // temporary ban (TODO: show how much time left on reconnect?)
+                            String pardonCommand = getConfigString("pardonCommand", "pardon %s", weapon, RESPIRATION, attacker).replace("%s", ((Player)entity).getName());
+
+                            class BanhammerPardonTask implements Runnable {
+                                String command;
+                                Player sender;
+
+                                public BanhammerPardonTask(String command, Player sender) {
+                                    this.command = command;
+                                    this.sender = sender;
+                                }
+
+                                public void run() {
+                                    Bukkit.getServer().dispatchCommand(sender, command);
+                                }
+                            }
+
+                            long banTicks = getConfigInt("banTicksPerLevel", 200, weapon, RESPIRATION, attacker) * getLevel(weapon, RESPIRATION, attacker);
+
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new BanhammerPardonTask(pardonCommand, attacker), banTicks);
                         } else if (n >= getConfigInt("kickLevel", 1, weapon, RESPIRATION, attacker)) {
                             String message = getConfigString("kickMessage", "Kicked by Sword + Respiration from %s", weapon, RESPIRATION, attacker).replace("%s", attacker.getDisplayName());
                             ((Player)entity).kickPlayer(message);
