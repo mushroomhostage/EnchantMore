@@ -203,6 +203,9 @@ effects:
         enable: true
     Sword + Flame:
         enable: true
+    Sword + Fortune:
+        enable: true
+        maxLevel: 10
     Sword + Power:
         enable: true
         rangePerLevel: 100  # distance in blocks will strike away for each enchantment level
