@@ -2360,6 +2360,9 @@ class EnchantMoreListener implements Listener {
                 playerDamaged.setHealth(playerDamaged.getMaxHealth());
             }
 
+            // TODO: a stealth god mode, look like being dealt damage, but take none?
+            // like http://forums.bukkit.org/threads/admn-jezusmode-better-godmode-1-2-3-r0-2.64927/
+
             // Chestplate + Respiration = fish mode (no damage in water)
             if (hasEnch(chestplate, RESPIRATION, playerDamaged)) {
                 Block blockIn = playerDamaged.getLocation().getBlock();
@@ -2518,6 +2521,7 @@ class EnchantMoreListener implements Listener {
                 // see also: SLOW_DIGGING, WEAKNESS - TODO: can we apply all three?
             }
         }
+        // TODO: Axe + Fortune = killed mobs drop bottles o' enchanting? listen in entity death event? for 1.2.3+. so you can store XP
 
         ItemStack chestplate = attacker.getInventory().getChestplate();
         if (chestplate != null && chestplate.getType() != Material.AIR) {
@@ -2543,6 +2547,8 @@ class EnchantMoreListener implements Listener {
                 }
             }
         }
+
+        // TODO: Leggings + Efficiency = ascend/descend ladders faster..but how? teleport? and where?
     }
 
     static private boolean shouldGlow(ItemStack item, Player player) {
