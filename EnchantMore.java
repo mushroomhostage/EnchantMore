@@ -1083,7 +1083,7 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
-            // Sword + Punch = knock item out of player hand (right-click)
+            // Sword + Punch = knock out of hand (right-click player)
             if (hasEnch(item, PUNCH, player)) {
                 if (entity instanceof Player) {
                     Player victim = (Player)entity;
@@ -1100,6 +1100,28 @@ class EnchantMoreListener implements Listener {
                         }
                     } else {
                         //plugin.log.info("fail");
+                    }
+                }
+            }
+
+            // Sword + Fortune = pickpocket (right-click player)
+            if (hasEnch(item, FORTUNE, player)) {
+                if (entity instanceof Player) {
+                    Player victim = (Player)entity;
+                    int level = getLevel(item, FORTUNE, player);
+                    int roll = random.nextInt(getConfigInt("maxLevel", 10, item, FORTUNE, player));
+                    if (roll <= level) {
+                        // Pickpocket succeeded!
+                        ItemStack[] pockets = victim.getInventory().getContents();
+                        for (int i = 0; i < pockets.length; i += 1) {    // TODO: choose random item?
+                            if (pockets[i] != null && pockets[i].getType() != Material.AIR) {
+                                // TODO: only drop one from stack?
+                                victim.getInventory().setItem(i, null);
+                                ItemStack drop = pockets[i].clone();
+                                world.dropItemNaturally(victim.getLocation(), drop);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -2319,7 +2341,6 @@ class EnchantMoreListener implements Listener {
             // Chestplate + Respiration = fish mode (no damage in water)
             if (hasEnch(chestplate, RESPIRATION, playerDamaged)) {
                 Block blockIn = playerDamaged.getLocation().getBlock();
-                plugin.log.info("damaged "+blockIn);
                 if (blockIn.getType() == Material.STATIONARY_WATER || blockIn.getType() == Material.WATER) {
                     // player underwater
                     event.setCancelled(true);
