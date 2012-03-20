@@ -319,6 +319,8 @@ items:
     - '21305'   # Metallurgy MithrilSword
     - '21317'   # Metallurgy OrichalcumSword
     - '21329'   # Metallurgy AdamantineSword
+    - '30148'   # IndustrialCraft2 NanoSaber Uncharged
+    - '30149'   # IndustrialCraft2 NanoSaber Charged
     - '30198'   # IndustrialCraft2 ToolBronzeSword
     Shovel:
     - diamond_spade
