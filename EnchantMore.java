@@ -178,6 +178,10 @@ class EnchantMoreListener implements Listener {
         return plugin.getConfig().getInt(getConfigSection(item, ench) + "." + name, defaultValue);
     }
 
+    static public double getConfigDouble(String name, double defaultValue, ItemStack item, Enchantment ench, Player player) {
+        return plugin.getConfig().getDouble(getConfigSection(item, ench) + "." + name, defaultValue);
+    }
+
     static public boolean getConfigBoolean(String name, boolean defaultValue, ItemStack item, Enchantment ench, Player player) {
         return plugin.getConfig().getBoolean(getConfigSection(item, ench) + "." + name, defaultValue);
     }
@@ -1147,6 +1151,11 @@ class EnchantMoreListener implements Listener {
                 }
             }
 
+            // Sword + Feather Falling = launch victim (right-click)
+            if (hasEnch(item, FEATHER_FALLING, player)) {
+                double dy = getConfigDouble("yVelocityPerLevel", 0.5, item, FEATHER_FALLING, player) * getLevel(item, FEATHER_FALLING, player);
+                entity.setVelocity(new Vector(0, dy, 0));
+            }
         } else if (isHoe(item.getType())) {
             // Hoe + Punch = grow animal
             if (hasEnch(item, PUNCH, player)) {
