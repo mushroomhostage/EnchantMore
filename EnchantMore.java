@@ -1148,6 +1148,8 @@ class EnchantMoreListener implements Listener {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ShowPlayerTask(player, other), lengthTicks);
                     // TODO: cooldown period
+
+                    damage(item, player);
                 }
             }
 
@@ -1155,6 +1157,8 @@ class EnchantMoreListener implements Listener {
             if (hasEnch(item, FEATHER_FALLING, player)) {
                 double dy = getConfigDouble("yVelocityPerLevel", 0.5, item, FEATHER_FALLING, player) * getLevel(item, FEATHER_FALLING, player);
                 entity.setVelocity(new Vector(0, dy, 0));
+
+                damage(item, player);
             }
         } else if (isHoe(item.getType())) {
             // Hoe + Punch = grow animal
@@ -1190,6 +1194,15 @@ class EnchantMoreListener implements Listener {
                         ", spawn "+stringifyLocation(other.getBedSpawnLocation())+", compass "+stringifyLocation(other.getCompassTarget()));
                 }
                 // TODO: more entities
+
+                damage(item, player);
+            }
+
+            // Hoe + Knockback = knock victim into ground (right-click)
+            if (hasEnch(item, KNOCKBACK, player)) {
+                double dy = getConfigDouble("yPerLevel", 1.0, item, KNOCKBACK, player) * getLevel(item, KNOCKBACK, player);
+                // TODO: respect non-PvP areas?
+                entity.teleport(entity.getLocation().subtract(0, dy, 0));
 
                 damage(item, player);
             }
