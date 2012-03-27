@@ -28,6 +28,9 @@ effects:
         enable: true
     Boots + Punch:
         enable: true
+    Boots + Feather Falling:
+        minLevel: 10
+        enable: true
     Bow + Aqua Affinity:
         enable: true
     Bow + Bane of Arthropods:

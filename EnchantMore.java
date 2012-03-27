@@ -2390,6 +2390,7 @@ class EnchantMoreListener implements Listener {
             }
         }
 
+                
         EntityDamageEvent.DamageCause cause = event.getCause();
 
         if (cause == EntityDamageEvent.DamageCause.LAVA ||
@@ -2420,15 +2421,25 @@ class EnchantMoreListener implements Listener {
             }
         } else if (cause == EntityDamageEvent.DamageCause.FALL) {
             ItemStack boots = playerDamaged.getInventory().getBoots();
-            // TODO: Boots + Knockback = bounce
-            if (boots != null && boots.getType() != Material.AIR && hasEnch(boots, KNOCKBACK, playerDamaged)) {
-                event.setCancelled(true);
-                if (!playerDamaged.isSneaking()) {  // interferes with always-sneak
-                    double amount = event.getDamage();   // proportional to height
-                    // This needs to be a damped oscillation
-                    double n = getLevel(boots, KNOCKBACK, playerDamaged) * 2.5f; 
-                    playerDamaged.setVelocity(playerDamaged.getVelocity().setY(n));
-                    // see also MorePhysics bouncing blocks
+
+            if (boots != null && boots.getType() != Material.AIR) {
+                // TODO: Boots + Knockback = bounce
+                if (hasEnch(boots, KNOCKBACK, playerDamaged)) {
+                    event.setCancelled(true);
+                    if (!playerDamaged.isSneaking()) {  // interferes with always-sneak
+                        double amount = event.getDamage();   // proportional to height
+                        // This needs to be a damped oscillation
+                        double n = getLevel(boots, KNOCKBACK, playerDamaged) * 2.5f; 
+                        playerDamaged.setVelocity(playerDamaged.getVelocity().setY(n));
+                        // see also MorePhysics bouncing blocks
+                    }
+                }
+            }
+
+            // Boots + Feather Falling X = zero fall damage
+            if (hasEnch(boots, FEATHER_FALLING, playerDamaged)) {
+                if (getLevel(boots, FEATHER_FALLING, playerDamaged) >= getConfigInt("minLevel", 10, boots, FEATHER_FALLING, playerDamaged)) {
+                    event.setCancelled(true);
                 }
             }
         }
