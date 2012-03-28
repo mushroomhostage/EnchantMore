@@ -4,7 +4,7 @@ EnchantMore adds dozens of new item enchantment effects,
 on flint & steel, hoes, shears, fishing rods, and other items --
 ranging from entertainingly destructive to legitimately useful.
 
-***New! [Download 0.8.2 here](http://dev.bukkit.org/server-mods/enchantmore/files/9-enchant-more-0-8-2/)*** - released 2012/03/13
+***[Download 0.8.2 here](http://dev.bukkit.org/server-mods/enchantmore/files/9-enchant-more-0-8-2/)*** - released 2012/03/13
 
 ## Features
 * More than 50 new enchantment/item combinations
@@ -19,6 +19,7 @@ ranging from entertainingly destructive to legitimately useful.
 * [EasyEnchant](http://dev.bukkit.org/server-mods/easyenchant/) - see the Exception section in the config to enable/disable
 * [Tim The Enchanter](http://dev.bukkit.org/server-mods/enchanter/) - /enchant command for ops
 * [AutoEnchanter](http://dev.bukkit.org/server-mods/autoenchanter/) - set "unsafe" to true in config 
+* [General](http://dev.bukkit.org/server-mods/general/) - supported in v4.3+, enable in config
 
 If you know of any other compatible plugins, let me know and I'll add them here. (If you're writing an enchanting plugin, use addUnsafeEnchantment() and 
 ignore canEnchantItem(), then it should be compatible with EnchantMore.)
@@ -131,5 +132,7 @@ Got a cool idea for a new effect? I can't promise I'll implement everything, but
 Feel free to discuss your ideas below, or open a [ticket](http://dev.bukkit.org/server-mods/enchantmore/tickets/)
 for more specific requests. Including the specific item + enchantment name is appreciated, preferably
 from the available [wanted effects](http://dev.bukkit.org/server-mods/enchantmore/pages/wanted-effects/) list.
+
+Also interested in new potions? Try [PotionsPlus](http://dev.bukkit.org/server-mods/potionsplus/).
 
 ***[Fork me on GitHub!](https://github.com/mushroomhostage/EnchantMore)***
