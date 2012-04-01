@@ -151,7 +151,11 @@ class EnchantMoreListener implements Listener {
     }
 
     static public boolean hasEnch(ItemStack tool, Enchantment ench, Player player) {
-        if (tool != null && !getEffectEnabled(tool.getTypeId(), ench)) {
+        if (tool == null) {
+            return false;
+        }
+
+        if (!getEffectEnabled(tool.getTypeId(), ench)) {
             // globally disabled in configuration
             return false;
         }
