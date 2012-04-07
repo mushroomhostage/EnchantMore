@@ -38,6 +38,9 @@ effects:
         enable: true
     Bow + Aqua Affinity:
         enable: true
+        freezeRangePerLevel: 1
+        stunRangePerLevel: 1.0
+        stunDurationTicksPerLevel: 100
     Bow + Bane of Arthropods:
         enable: true
     Bow + Efficiency:

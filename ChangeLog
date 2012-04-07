@@ -9,6 +9,7 @@ X   X
     * Add configurable velocity multipler to Boots + Power = witch's broom
     * Add configurable Y velocity to Boots + Punch = hover jump
     * Nerf Boots + Punch = hover jump, now jumps 0.7 instead of 1.0 by default
+    * Add configurable range and duration to Bow + Aqua Affinity = freeze
     * Fix Sword + Infinity, now damages item on use
 
 2012-03-13  0.8.2

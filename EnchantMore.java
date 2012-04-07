@@ -1956,10 +1956,11 @@ class EnchantMoreListener implements Listener {
             int y0 = dest.getBlockY();
             int z0 = dest.getBlockZ();
            
+            int freezeRange = r * getConfigInt("freezeRangePerLevel", 1, bow, AQUA_AFFINITY, player);
             // TODO: refactor
-            for (int dx = -r; dx <= r; dx += 1) {
-                for (int dy = -r; dy <= r; dy += 1) {
-                    for (int dz = -r; dz <= r; dz += 1) {
+            for (int dx = -freezeRange; dx <= freezeRange; dx += 1) {
+                for (int dy = -freezeRange; dy <= freezeRange; dy += 1) {
+                    for (int dz = -freezeRange; dz <= freezeRange; dz += 1) {
                         Block b = world.getBlockAt(dx+x0, dy+y0, dz+z0);
                        
                         if (b.getType() == Material.STATIONARY_WATER || b.getType() == Material.WATER) {
@@ -1971,11 +1972,15 @@ class EnchantMoreListener implements Listener {
             
             // TODO: only poison hit entity!
 
+            double stunRange = r * getConfigDouble("stunRangePerLevel", 1.0, bow, AQUA_AFFINITY, player);
+
             // stun nearby living things
-            List<Entity> victims = arrow.getNearbyEntities(r, r, r);
+            List<Entity> victims = arrow.getNearbyEntities(stunRange, stunRange, stunRange);
             for (Entity victim: victims) {
                 if (victim instanceof LivingEntity) {
-                    ((LivingEntity)victim).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, r * 20*5, 1));
+                    ((LivingEntity)victim).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 
+                        r * getConfigInt("stunDurationTicksPerLevel", 20*5, bow, AQUA_AFFINITY, player),
+                        1));
                 }
             }
 
