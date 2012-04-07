@@ -220,6 +220,7 @@ effects:
         harvestSilverfishBlocks: true   # instead of releasing the silverfish!
         placeSilverfishBlocks: true     # preserve subtype on placement (stone, cobblestone, stone brick)
         minLevelCrystal: 3              # minimum level to harvest endercrystals by right-clicking
+        spawnEggCrystal: true           # allow right-click spawn egg endercrystal to place
     Shears + Bane of Arthropods:
         enable: true
     Shears + Fortune:

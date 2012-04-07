@@ -140,6 +140,11 @@ class EnchantMoreListener implements Listener {
 
     static boolean defaultEnabledEffectState = true;
 
+    // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0 
+    // [ModLoaderMP 1.1 CB1.1R4] Missing Material.MONSTER_EGG, causes NoSuchFieldError
+    // fixed in r2 - but I find this name less confusing than 'Material.MONSTER_EGG'
+    final int SPAWN_EGG_ID = 383; 
+
     public EnchantMoreListener(EnchantMore pl) {
         plugin = pl;
 
@@ -851,6 +856,24 @@ class EnchantMoreListener implements Listener {
 
                 damage(item, player);
             }
+        } else if (item.getTypeId() == SPAWN_EGG_ID) {
+            if (item.getDurability() == EntityType.ENDER_CRYSTAL.getTypeId()) {
+                // to help out Pickaxe + Silk Touch III = harvest endercrystal (secondary), allow placing its spawn eggs
+                // see also: http://dev.bukkit.org/server-mods/silkspawners/ spawnEggOverride
+                ItemStack fakeItem = new ItemStack(Material.DIAMOND_PICKAXE, 1); // since configured by item, have to fake it.. (like sublimateIce
+                boolean shouldSpawnCrystal = getConfigBoolean("spawnEggCrystal", true, fakeItem, SILK_TOUCH, player);
+
+                if (shouldSpawnCrystal && plugin.canBuildHere(player, block)) {
+                    block.getWorld().spawn(block.getLocation().add(0, 1, 0), EnderCrystal.class);
+                }
+
+                // consume egg
+                if (item.getAmount() == 1) {
+                    player.setItemInHand(null);
+                } else {
+                    player.setItemInHand(new ItemStack(item.getTypeId(), item.getAmount() - 1, (short)EntityType.ENDER_CRYSTAL.getTypeId()));
+                }
+            }
         }
     }
 
@@ -1191,7 +1214,7 @@ class EnchantMoreListener implements Listener {
 
                         entity.remove();
 
-                        damage(item, player)
+                        damage(item, player);
 
                         // cancel explosion
                         event.setCancelled(true);
@@ -1834,10 +1857,6 @@ class EnchantMoreListener implements Listener {
         }
     }
 
-    // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0 
-    // [ModLoaderMP 1.1 CB1.1R4] Missing Material.MONSTER_EGG, causes NoSuchFieldError
-    // fixed in r2 - but I find this name less confusing than 'Material.MONSTER_EGG'
-    final int SPAWN_EGG_ID = 383; 
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onProjectileHit(ProjectileHitEvent event) {
