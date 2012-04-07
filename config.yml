@@ -216,8 +216,6 @@ effects:
         enable: true
     Sword + Fire Protection:
         enable: true
-    Sword + Flame:
-        enable: true
     Sword + Fortune:
         enable: true
         maxLevel: 10
