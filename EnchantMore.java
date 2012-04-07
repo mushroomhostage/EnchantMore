@@ -1949,7 +1949,7 @@ class EnchantMoreListener implements Listener {
 
         // Bow + Fire Aspect = [firey explosions](http://dev.bukkit.org/server-mods/enchantmore/images/5-bow-fire-aspect-fiery-explosions/)
         if (hasEnch(bow, FIRE_ASPECT, player)) {
-            float power = 1.0f * getLevel(bow, FIRE_ASPECT, player);
+            float power = (float)(getConfigDouble("powerPerLevel", 1.0, bow, FIRE_ASPECT, player)) * getLevel(bow, FIRE_ASPECT, player);
 
             world.createExplosion(dest, power, true);
         }

@@ -13,6 +13,7 @@ X   X
     * Add configurable range and duration to Bow + Aqua Affinity = freeze
     * Add configurable range and duration to Bow + Bane of Arthropods = poison
     * Improve Bow + Efficiency = instant shoot, now cannot pickup the shot arrows
+    * Add configurable power to Bow + Fire Aspect = fiery explosions
     * Fix Sword + Infinity, now damages item on use
 
 2012-03-13  0.8.2

@@ -53,6 +53,7 @@ effects:
         grappleHangOnTicks: 200     # time to delay before removing temporary ladder (10 seconds)
     Bow + Fire Aspect:
         enable: true
+        powerPerLevel: 1.0
     Bow + Knockback:
         enable: true
     Bow + Looting:
