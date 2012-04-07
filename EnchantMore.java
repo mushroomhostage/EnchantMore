@@ -2044,10 +2044,13 @@ class EnchantMoreListener implements Listener {
 
             // poison nearby living things
             int r = getLevel(bow, BANE, player);
-            List<Entity> victims = arrow.getNearbyEntities(r, r, r);
+            double poisonRange = r * getConfigDouble("poisonRangePerLevel", 1.0, bow, BANE, player);
+            List<Entity> victims = arrow.getNearbyEntities(poisonRange, poisonRange, poisonRange);
             for (Entity victim: victims) {
                 if (victim instanceof LivingEntity) {
-                    ((LivingEntity)victim).addPotionEffect(new PotionEffect(PotionEffectType.POISON, r*20*5, 1));
+                    ((LivingEntity)victim).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 
+                        r * getConfigInt("poisonDurationTicksPerLevel", 100, bow, BANE, player),
+                        1));
                 }
             }
 

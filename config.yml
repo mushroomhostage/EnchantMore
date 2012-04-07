@@ -43,6 +43,8 @@ effects:
         stunDurationTicksPerLevel: 100
     Bow + Bane of Arthropods:
         enable: true
+        poisonRangePerLevel: 1.0
+        poisonDurationTicksPerLevel: 100
     Bow + Efficiency:
         enable: true
     Bow + Feather Falling:
