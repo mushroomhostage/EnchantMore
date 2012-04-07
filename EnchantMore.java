@@ -1178,6 +1178,26 @@ class EnchantMoreListener implements Listener {
 
                 damage(item, player);
             }
+        } else if (isPickaxe(item.getType())) {
+            // Pickaxe + Silk Touch III = harvest endercrystal (right-click)
+            if (hasEnch(item, SILK_TOUCH, player)) {
+                if (getLevel(item, SILK_TOUCH, player) >= getConfigInt("minLevelCrystal", 3, item, SILK_TOUCH, player)) {
+                    if (entity instanceof EnderCrystal) {
+
+                        short entityID = (short)entity.getType().getTypeId();
+
+                        // drop a very special spawn egg
+                        entity.getLocation().getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(SPAWN_EGG_ID, 1, entityID));
+
+                        entity.remove();
+
+                        damage(item, player)
+
+                        // cancel explosion
+                        event.setCancelled(true);
+                    }
+                }
+            }
         } else if (isHoe(item.getType())) {
             // Hoe + Punch = grow animal
             if (hasEnch(item, PUNCH, player)) {
@@ -1814,6 +1834,11 @@ class EnchantMoreListener implements Listener {
         }
     }
 
+    // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0 
+    // [ModLoaderMP 1.1 CB1.1R4] Missing Material.MONSTER_EGG, causes NoSuchFieldError
+    // fixed in r2 - but I find this name less confusing than 'Material.MONSTER_EGG'
+    final int SPAWN_EGG_ID = 383; 
+
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onProjectileHit(ProjectileHitEvent event) {
         Entity entity = event.getEntity();
@@ -1853,10 +1878,6 @@ class EnchantMoreListener implements Listener {
 
                     boolean remove = true;
 
-                    // workaround http://www.mcportcentral.co.za/index.php?topic=1387.0 
-                    // [ModLoaderMP 1.1 CB1.1R4] Missing Material.MONSTER_EGG, causes NoSuchFieldError
-                    // fixed in r2
-                    final int SPAWN_EGG_ID = 383; 
 
                     for (int i = 0; i < itemStack.getAmount(); i += 1) {
                         if (itemStack.getTypeId() == SPAWN_EGG_ID && getConfigBoolean("allowSpawnEgg", true, bow, RESPIRATION, player)) {
