@@ -2546,7 +2546,9 @@ class EnchantMoreListener implements Listener {
                 // Axe + Aqua Affinity = slowness effect
                 if (hasEnch(weapon, AQUA_AFFINITY, attacker)) {
                     if (entity instanceof LivingEntity) {
-                        ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, getLevel(weapon, AQUA_AFFINITY, attacker)*20*5, 1));
+                        ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 
+                            getLevel(weapon, AQUA_AFFINITY, attacker) * getConfigInt("durationTicksPerLevel", 20*5, weapon, AQUA_AFFINITY, attacker),
+                            getConfigInt("amplifier", 1, weapon, AQUA_AFFINITY, attacker)));
                         // see also: SLOW_DIGGING, WEAKNESS - TODO: can we apply all three?
                     }
                 }

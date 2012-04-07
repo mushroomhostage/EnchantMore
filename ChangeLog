@@ -4,6 +4,7 @@ X   X
     * Add Boots + Feather Falling X = zero fall damage
     * Remove Sword + Flame = lit path (sorry, doesn't work in 1.2+)
     * Remove Axe + Flame II, Pickaxe + Flame II, Shovel + Flame II (see above)
+    * Add configurable duration and amplifier to Axe + Aqua Affinity = slowness effect
     * Fix Sword + Infinity, now damages item on use
 
 2012-03-13  0.8.2

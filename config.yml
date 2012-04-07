@@ -16,6 +16,8 @@ moveListener: true
 effects:
     Axe + Aqua Affinity:
         enable: true
+        durationTicksPerLevel: 100
+        amplifier: 1 
     Axe + Flame:
         enable: true
     Axe + Power:
