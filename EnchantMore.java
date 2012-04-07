@@ -1256,7 +1256,7 @@ class EnchantMoreListener implements Listener {
     }
 
     // Chop down a tree
-    private void fellTree(Block start, ItemStack tool, int level) {
+    private void fellTree(Block start, ItemStack tool, int level, int id1, int id2, int id3) {
         // TODO: detect if growing in dirt, really is a tree? (but then must find real trunk)
         // TODO: check if leaves to see if is a tree? (but then won't if leaves all torn down)
         // see also ChopTree for a different approach http://dev.bukkit.org/server-mods/choptree/
@@ -1269,14 +1269,14 @@ class EnchantMoreListener implements Listener {
                 for (int dz = -level; dz <= level; dz += 1) {
                     Block branch = trunk.getRelative(dx, 0, dz);
 
-                    if (branch != null && branch.getType() == Material.LOG) {
+                    if (branch != null && (branch.getTypeId() == id1 || branch.getTypeId() == id2 || branch.getTypeId() == id3)) {
                         branch.breakNaturally();
                     }
                 }
             }
 
             trunk = trunk.getRelative(BlockFace.UP);
-        } while (trunk != null && trunk.getType() == Material.LOG);
+        } while (trunk != null && (trunk.getTypeId() == id1 || trunk.getTypeId() == id2 || trunk.getTypeId() == id3));
     }
 
     private void hedgeTrimmer(Block start, ItemStack tool, int level) {
@@ -1348,10 +1348,18 @@ class EnchantMoreListener implements Listener {
 
             if (isAxe(item.getType())) {
                 // Axe + Power = [fell tree](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/)
-                if (hasEnch(item, POWER, player) && block.getType() == Material.LOG) {
-                    fellTree(block, item, getLevel(item, POWER, player) * getConfigInt("extraTrunkWidthPerLevel", 1, item, POWER, player));
-                    event.setCancelled(true);
-                    // no extra damage
+                if (hasEnch(item, POWER, player)) {
+                    // is it a tree?
+                    // TODO: configurable list, set
+                    int id1 = Material.LOG.getId();
+                    int id2 = getConfigInt("treeBlockId2", 143, item, POWER, player);   // RedPower2 Rubberwood
+                    int id3 = getConfigInt("treeBlockId3", 243, item, POWER, player);   // IC2 Rubber Wood
+
+                    if (block.getTypeId() == id1 || block.getTypeId() == id2 || block.getTypeId() == id3) {
+                        fellTree(block, item, getLevel(item, POWER, player) * getConfigInt("extraTrunkWidthPerLevel", 1, item, POWER, player), id1, id2, id3);
+                        event.setCancelled(true);
+                        // no extra damage
+                    }
                 }
             }
 
