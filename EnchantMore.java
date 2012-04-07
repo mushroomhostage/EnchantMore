@@ -828,7 +828,7 @@ class EnchantMoreListener implements Listener {
                 case 4: type = TreeType.REDWOOD; break;
                 case 5: type = TreeType.TALL_REDWOOD; break;
                 case 6: type = TreeType.BIRCH; break;
-                // doesn't seem to work in 1.1-R4 TODO: bug?
+                // doesn't seem to work in 1.1-R4.. nor 1.2.5-R1 TODO: bug?
                 case 7: type = TreeType.RED_MUSHROOM; break;
                 case 8: type = TreeType.BROWN_MUSHROOM; break;
                 }
@@ -1257,7 +1257,7 @@ class EnchantMoreListener implements Listener {
         do {
             trunk.breakNaturally();
 
-            // break branches around trunk up to enchantment level
+            // break branches around trunk up to range
             for (int dx = -level; dx <= level; dx += 1) {
                 for (int dz = -level; dz <= level; dz += 1) {
                     Block branch = trunk.getRelative(dx, 0, dz);
@@ -1342,7 +1342,7 @@ class EnchantMoreListener implements Listener {
             if (isAxe(item.getType())) {
                 // Axe + Power = [fell tree](http://dev.bukkit.org/server-mods/enchantmore/images/3-axe-power-fell-tree/)
                 if (hasEnch(item, POWER, player) && block.getType() == Material.LOG) {
-                    fellTree(block, item, getLevel(item, POWER, player));
+                    fellTree(block, item, getLevel(item, POWER, player) * getConfigInt("extraTrunkWidthPerLevel", 1, item, POWER, player));
                     event.setCancelled(true);
                     // no extra damage
                 }
@@ -2702,8 +2702,8 @@ class EnchantMoreListener implements Listener {
         if (boots != null && boots.getType() != Material.AIR) {
             // Boots + Punch = hover jump (double-tap shift)
             if (hasEnch(boots, PUNCH, player) && EnchantMoreTapShiftTask.isDoubleTapShift(player)) {
-                int n = getLevel(boots, PUNCH, player);
-                player.setVelocity(player.getVelocity().setY(n));
+                double y = getConfigDouble("yVelocityPerLevel", 1.0, boots, PUNCH, player) * getLevel(boots, PUNCH, player);
+                player.setVelocity(player.getVelocity().setY(y));
             }
         }
 
@@ -2989,7 +2989,11 @@ class EnchantMorePlayerMoveListener implements Listener {
             // Boots + Power = witch's broom (sprint flying)
             if (EnchantMoreListener.hasEnch(boots, EnchantMoreListener.POWER, player)) {
                 if (player.isSprinting()) {
-                    Vector velocity = event.getTo().getDirection().normalize().multiply(EnchantMoreListener.getLevel(boots, EnchantMoreListener.POWER, player));
+                    double factor = 
+                        EnchantMoreListener.getConfigDouble("velocityMultiplerPerLevel", 1.0, boots, EnchantMoreListener.POWER, player) 
+                        * EnchantMoreListener.getLevel(boots, EnchantMoreListener.POWER, player);
+
+                    Vector velocity = event.getTo().getDirection().normalize().multiply(factor);
 
                     // may get kicked for flying TODO: enable flying for user
                     player.setVelocity(velocity);

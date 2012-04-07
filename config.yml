@@ -16,10 +16,11 @@ moveListener: true
 effects:
     Axe + Aqua Affinity:
         enable: true
-        durationTicksPerLevel: 100
-        amplifier: 1 
+        durationTicksPerLevel: 100  # how long slowness should last, in ticks
+        amplifier: 1                # potion effect amplifier
     Axe + Flame:
         enable: true
+        extraTrunkWidthPerLevel: 1  # how far to chop around the tree trunk
     Axe + Power:
         enable: true
     Axe + Respiration:
@@ -28,8 +29,10 @@ effects:
         enable: true
     Boots + Power:
         enable: true
+        velocityMultiplerPerLevel: 1.0
     Boots + Punch:
         enable: true
+        yVelocityPerLevel: 0.7
     Boots + Feather Falling:
         minLevel: 10
         enable: true

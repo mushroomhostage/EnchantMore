@@ -5,6 +5,10 @@ X   X
     * Remove Sword + Flame = lit path (sorry, doesn't work in 1.2+)
     * Remove Axe + Flame II, Pickaxe + Flame II, Shovel + Flame II (see above)
     * Add configurable duration and amplifier to Axe + Aqua Affinity = slowness effect
+    * Add configurable trunk width to Axe + Power = fell tree
+    * Add configurable velocity multipler to Boots + Power = witch's broom
+    * Add configurable Y velocity to Boots + Punch = hover jump
+    * Nerf Boots + Punch = hover jump, now jumps 0.7 instead of 1.0 by default
     * Fix Sword + Infinity, now damages item on use
 
 2012-03-13  0.8.2
