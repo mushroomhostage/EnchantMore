@@ -221,6 +221,8 @@ effects:
     Shovel + Silk Touch:
         enable: true
         minLevel: 2         # since Silk Touch I already exists in vanilla, we require higher levels by default
+    Sword + Blast Protection:
+        enable: true
     Sword + Feather Falling:
         yVelocityPerLevel: 0.5
         enable: true

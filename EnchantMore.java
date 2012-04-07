@@ -502,13 +502,16 @@ class EnchantMoreListener implements Listener {
                         world.strikeLightning(target.getLocation());
                     }
                 }
-            } /* else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-                // TODO: Sword + Blast Protection = blocking summons summon fireballs
+            } else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+                // Sword + Blast Protection = shoot fireball (right-click)
                 if (hasEnch(item, BLAST_PROTECTION, player)) {
                     // This still doesn't work - explodes instantly
-                    player.launchProjectile(Fireball.class);
+                    Projectile projectile = player.launchProjectile(Fireball.class);
+
+                    projectile.setVelocity(new Vector(0,1,0));
+                    projectile.setShooter(player);
                 }
-            }*/
+            }
 
             // TODO: Aqua Affinity = slowness
         } else if (isShovel(item.getType())) {

@@ -2,6 +2,7 @@ X   X
     * Add Sword + Feather Falling = launch victim (right-click)
     * Add Hoe + Knockback = eat dirt (right-click to knock into ground)
     * Add Boots + Feather Falling X = zero fall damage
+    * Add Sword + Blast Protection = shoot fireball (right-click)
     * Remove Sword + Flame = lit path (sorry, doesn't work in 1.2+)
     * Remove Axe + Flame II, Pickaxe + Flame II, Shovel + Flame II (see above)
     * Add configurable duration and amplifier to Axe + Aqua Affinity = slowness effect
