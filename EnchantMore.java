@@ -418,6 +418,13 @@ class EnchantMoreListener implements Listener {
         }
     }
 
+    public void setArrowFromPlayer(Arrow arrow, boolean fromPlayer) {
+        (((CraftArrow)arrow).getHandle()).fromPlayer = fromPlayer;
+    }
+
+    public boolean getArrowFromPlayer(Arrow arrow) {
+        return (((CraftArrow)arrow).getHandle()).fromPlayer;
+    }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -446,7 +453,7 @@ class EnchantMoreListener implements Listener {
                 // TODO: remove from inventory!.. if not infinite bow
                
                 // meanwhile, make non-pickup-able to prevent duping
-                (((CraftArrow)arrow).getHandle()).fromPlayer = false;
+                setArrowFromPlayer(arrow, false);
             }
         } else if (item.getType() == Material.FLINT_AND_STEEL && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
             // Flint & Steel + Punch = cannon
@@ -2529,21 +2536,10 @@ class EnchantMoreListener implements Listener {
 
 
                         event.setCancelled(true);   // stop arrow damage
-                        playerDamaged.launchProjectile(Arrow.class);        // reflect arrow
+                        Arrow newArrow = playerDamaged.launchProjectile(Arrow.class);        // reflect arrow
 
-                        // TODO: should we actually create a new arrow with the opposite velocity vector? TODO: yes! allows duping :(
-                        // I think so.. bounce, not reshoot
-                        // not right
-                        /*
-                        Location location = playerDamaged.getLocation();
-                        World world = location.getWorld();
-                        Vector velocity = arrow.getVelocity().multiply(-1);
-                        float speed = 0.6f;  // "A recommend speed is 0.6"
-                        float spread = 12f;  // "A recommend spread is 12"
-
-
-                        world.spawnArrow(location, velocity, speed, spread);
-                        */
+                        // preserve from-player-ness, to prevent duping from skeleton arrows
+                        setArrowFromPlayer(newArrow, getArrowFromPlayer(arrow));
 
                         damage(chestplate, playerDamaged);
                     }
