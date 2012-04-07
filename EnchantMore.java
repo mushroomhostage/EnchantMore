@@ -3186,6 +3186,10 @@ public class EnchantMore extends JavaPlugin {
 <zml2008>  Using WG's API
 */
     public boolean canBuildHere(Player player, Location location) {
+        if (location == null) {
+            return true;
+        }
+
         WorldGuardPlugin wg = getWorldGuard();
         if (wg == null) {
             return true;
@@ -3195,6 +3199,10 @@ public class EnchantMore extends JavaPlugin {
     }
 
     public boolean canBuildHere(Player player, Block block) {
+        if (block == null) {
+            return true;
+        }
+
         WorldGuardPlugin wg = getWorldGuard();
         if (wg == null) {
             return true;
