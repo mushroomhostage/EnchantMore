@@ -87,6 +87,8 @@ effects:
     Chestplate + Punch:
         enable: true
         damagePerLevel: 5
+    Chestplate + Respiration:
+        enable: true
     Chestplate + Silk Touch:
         enable: true
     Chestplate + Sharpness:

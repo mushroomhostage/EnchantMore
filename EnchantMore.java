@@ -570,7 +570,7 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
 
-            // Hoe + Bane of Arthropods = downpour
+            // Hoe + Bane of Arthropods = downpour (left-click storm, right-click cancel)
             if (hasEnch(item, BANE, player)) {
                 if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
                     world.setStorm(true);
@@ -1419,21 +1419,20 @@ class EnchantMoreListener implements Listener {
 
             }
             if (isPickaxe(item.getType())) {
-                // Pickaxe + Silk Touch II = harvest ice, double slabs
+                // Pickaxe + Silk Touch II = harvest ice, double slabs, silverfish blocks
                 if (hasEnch(item, SILK_TOUCH, player)) {
                     int minLevel = getConfigInt("minLevel", 2, item, SILK_TOUCH, player);
-                    if (getLevel(item, SILK_TOUCH, player) >= plugin.getConfig().getInt("pickaxeSilkTouchIceLevel", minLevel)) {
+
+                    if (getLevel(item, SILK_TOUCH, player) >= minLevel) {
                         if (block.getType() == Material.ICE) {
                             if (getConfigBoolean("harvestIce", true, item, SILK_TOUCH, player)) {
                                 world.dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), 1));
                                 plugin.safeSetBlock(player, block, Material.AIR);
-                                // ModLoader NPE net.minecraft.server.ItemInWorldManager.breakBlock(ItemInWorldManager.java:254)
-                                // if we don't do this, so do it
-                                // see http://dev.bukkit.org/server-mods/enchantmore/tickets/6-on-modded-craft-bukkit-with-mod-loader-mp-forge-hoe/
                                 event.setCancelled(true); 
                                 // no extra damage
                             }
-                        } else if (block.getType() == Material.DOUBLE_STEP) {
+                        } 
+                        else if (block.getType() == Material.DOUBLE_STEP) {
                             if (getConfigBoolean("harvestDoubleSlabs", true, item, SILK_TOUCH, player)) {
                                 ItemStack drop = new ItemStack(block.getType(), 1, (short)block.getData());
 
@@ -1457,7 +1456,10 @@ class EnchantMoreListener implements Listener {
                             }
                         }
                     }
+                    
                     // TODO: how about Silk Touch III = harvest mob spawners? integrate SilkSpawners!
+                    // TODO: even better, Silk Touch III = harvest ender crystal :). Spawn egg 200, override placement (optional)..
+                    // but it is an entity not a block so handle differently
                 }
 
                 // Pickaxe + Looting = deconstruct (reverse crafting)
@@ -1496,6 +1498,11 @@ class EnchantMoreListener implements Listener {
                 // Pickaxe + Sharpness = mine ore vein
                 if (hasEnch(item, SHARPNESS, player)) {
                     int oreId = block.getTypeId();
+
+                    if (oreId == 74) {
+                        oreId = 73;
+                    }
+
                     byte oreData = block.getData();
 
                     boolean defaultValue = false;
@@ -1507,7 +1514,7 @@ class EnchantMoreListener implements Listener {
                     case 21:    // Lapis Lazuli Ore
                     case 56:    // Diamond Ore
                     case 73:    // Redstone Ore
-                    case 74:    // Glowing Redstone Ore
+                    case 74:    // Glowing Redstone Ore // TODO: fix bug, if only partly glowing won't mine all!
                         defaultValue = true;
                     }
 
@@ -1696,6 +1703,7 @@ class EnchantMoreListener implements Listener {
     }
 
     // Get all the items used to craft an item
+    // TODO: replace with new Bukkit.recipeIterator() in 1.2.5-R1.0? 
     private Collection<ItemStack> uncraft(ItemStack wantedOutput, boolean compareData) {
         Collection<ItemStack> matchedInputs = new ArrayList<ItemStack>();
         // 'getRecipies()'[sic] in 1.1-R8, was 'b()' in 1.1-R4
