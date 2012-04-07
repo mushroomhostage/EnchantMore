@@ -441,8 +441,12 @@ class EnchantMoreListener implements Listener {
         if (item.getType() == Material.BOW && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
             // Bow + Efficiency = instant shoot
             if (hasEnch(item, EFFICIENCY, player)) {
-                player.launchProjectile(Arrow.class);
-                // TODO: remove from inventory!
+                Arrow arrow = (Arrow)player.launchProjectile(Arrow.class);
+
+                // TODO: remove from inventory!.. if not infinite bow
+               
+                // meanwhile, make non-pickup-able to prevent duping
+                (((CraftArrow)arrow).getHandle()).fromPlayer = false;
             }
         } else if (item.getType() == Material.FLINT_AND_STEEL && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
             // Flint & Steel + Punch = cannon
