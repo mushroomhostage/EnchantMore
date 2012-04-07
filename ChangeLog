@@ -16,6 +16,8 @@ X   X
     * Improve Bow + Efficiency = instant shoot, now cannot pickup the shot arrows
     * Add configurable power to Bow + Fire Aspect = fiery explosions
     * Add configurable payloads (spawn egg, TNT, bucket, potion, etc.) to Bow + Respiration = stapled arrows
+    * Add configurable velocity multipler to Bow + Sharpness = increase velocity
+    * Add configurable projectile/living entity teleportation in Bow + Silk Touch = magnetic arrows
     * Fix Sword + Infinity, now damages item on use
 
 2012-03-13  0.8.2

@@ -73,8 +73,11 @@ effects:
         allowItem: true             # payload of other item drops the item (if off, item is deleted)
     Bow + Sharpness:
         enable: true
+        velocityFactorPerLevel: 2.0 # multiply arrow velocity
     Bow + Silk Touch:
         enable: true
+        allowProjectiles: true      # transports projectiles like arrows too
+        allowLivingEntities: true   # and living things, mobs, players, NPCs
     Bow + Smite:
         enable: true
     Chestplate + Infinity:

@@ -1937,7 +1937,17 @@ class EnchantMoreListener implements Listener {
 
             // Bow + Silk Touch = magnetic arrows (transport nearby entity) (secondary)
             if (hasEnch(bow, SILK_TOUCH, player)) {
-                passenger.teleport(dest);
+                boolean allow = true;
+                
+                if (passenger instanceof Projectile) {
+                    allow = getConfigBoolean("allowProjectiles", true, bow, SILK_TOUCH, player);
+                } else if (passenger instanceof LivingEntity) {
+                    allow = getConfigBoolean("allowLivingEntities", true, bow, SILK_TOUCH, player);
+                }
+
+                if (allow) {
+                    passenger.teleport(dest);
+                }
             }
         }
 
@@ -2332,7 +2342,7 @@ class EnchantMoreListener implements Listener {
 
         // Bow + Sharpness = increase velocity
         if (hasEnch(bow, SHARPNESS, player)) {
-            double factor = 2.0 * getLevel(bow, SHARPNESS, player);   // TODO: configurable factor
+            double factor = getConfigDouble("velocityFactorPerLevel", 2.0, bow, SHARPNESS, player) * getLevel(bow, SHARPNESS, player);
 
             // TODO: instead of scalar multiplication, therefore also multiplying the 'shooting inaccuracy'
             // offset, should we instead try to straighten out the alignment vector?
