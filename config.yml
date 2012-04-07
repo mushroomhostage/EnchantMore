@@ -60,6 +60,17 @@ effects:
         enable: true
     Bow + Respiration:
         enable: true
+        # payloads to allow attaching to arrows adjacent in inventory
+        allowSpawnEgg: true         # payload of spawn egg spawns creatures
+        allowDoubleArrow: true      # payload of arrow shoots the 2nd arrow
+        allowSnowball: true         # payload of snowball throws it
+        allowEgg: true              # payload of egg has chance to hatch chicken
+        allowTNT: true              # payload of TNT ignites primed explosion
+        allowWaterBucket: true      # payload of water bucket dumps water
+        allowLavaBucket: true       # payload of lava bucket dumps lava
+        allowSplashPotion: true     # payload of splash potion throws the potion
+        allowBlock: true            # payload of block places the block
+        allowItem: true             # payload of other item drops the item (if off, item is deleted)
     Bow + Sharpness:
         enable: true
     Bow + Silk Touch:

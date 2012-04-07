@@ -1830,7 +1830,7 @@ class EnchantMoreListener implements Listener {
         // Arrows carry payloads, did you know that?
         Entity passenger = arrow.getPassenger();
         if (passenger != null) {
-            // Bow + Respiration = stapled arrows (attach adjacent item in inventory)
+            // Bow + Respiration = stapled arrows (attach adjacent item in inventory, e.g. potions, spawn eggs, water, lava, TNT, blocks)
             if (hasEnch(bow, RESPIRATION, player)) {
                 if (passenger instanceof Item) {
                     Item item = (Item)passenger;
@@ -1844,13 +1844,13 @@ class EnchantMoreListener implements Listener {
                     final int SPAWN_EGG_ID = 383; 
 
                     for (int i = 0; i < itemStack.getAmount(); i += 1) {
-                        if (itemStack.getTypeId() == SPAWN_EGG_ID) {
+                        if (itemStack.getTypeId() == SPAWN_EGG_ID && getConfigBoolean("allowSpawnEgg", true, bow, RESPIRATION, player)) {
                             // Spawn Egg = creature
                             int entityId = itemStack.getData().getData();
 
                             // WARNING: This even spawns enderdragons! Even if Spawn Dragon eggs are blocked 
                             world.spawnCreature(dest, creatureTypeFromId(entityId));
-                        } else if (itemStack.getType() == Material.ARROW) {
+                        } else if (itemStack.getType() == Material.ARROW && getConfigBoolean("allowDoubleArrow", true, bow, RESPIRATION, player)) {
                             // Arrow
 
                             // TODO: make the spawned arrow have a useful velocity - none of these attempts
@@ -1866,22 +1866,22 @@ class EnchantMoreListener implements Listener {
                             float speed = 0.6f;
                             float spread = 12f;
                             world.spawnArrow(dest, velocity, speed, spread);
-                        } else if (itemStack.getType() == Material.SNOW_BALL) {
+                        } else if (itemStack.getType() == Material.SNOW_BALL && getConfigBoolean("allowSnowball", true, bow, RESPIRATION, player)) {
                             world.spawn(dest, Snowball.class);
-                        } else if (itemStack.getType() == Material.EGG) {
+                        } else if (itemStack.getType() == Material.EGG && getConfigBoolean("allowEgg", true, bow, RESPIRATION, player)) {
                             world.spawn(dest, Egg.class);
-                        } else if (itemStack.getType() == Material.TNT) {
+                        } else if (itemStack.getType() == Material.TNT && getConfigBoolean("allowTNT", true, bow, RESPIRATION, player)) {
                             // TNT, instant ignite from impact
                             TNTPrimed tnt = world.spawn(dest, TNTPrimed.class);
                             tnt.setFuseTicks(0);
-                        } else if (itemStack.getType() == Material.WATER_BUCKET) {
+                        } else if (itemStack.getType() == Material.WATER_BUCKET && getConfigBoolean("allowWaterBucket", true, bow, RESPIRATION, player)) {
                             // water bucket, spill and leave empty bucket
                             if (dest.getBlock() == null || dest.getBlock().getType() == Material.AIR) {
                                 if (plugin.safeSetBlock(player, dest.getBlock(), Material.WATER)) {
                                     world.dropItem(dest, new ItemStack(Material.BUCKET, 1));
                                 }
                             }
-                        } else if (itemStack.getType() == Material.LAVA_BUCKET) {
+                        } else if (itemStack.getType() == Material.LAVA_BUCKET && getConfigBoolean("allowLavaBucket", true, bow, RESPIRATION, player)) {
                             // lava bucket, same
                             if (dest.getBlock() == null || dest.getBlock().getType() == Material.AIR) {
                                 if (plugin.safeSetBlock(player, dest.getBlock(), Material.LAVA)) {
@@ -1897,16 +1897,18 @@ class EnchantMoreListener implements Listener {
                         } else if (itemStack.getType() == Material.FIRE) {
                             plugin.safeSetBlock(player, dest.getBlock(), Material.FIRE);
                             */
-                        } else if (isSplashPotion(itemStack)) {
+                        } else if (isSplashPotion(itemStack) && getConfigBoolean("allowSplashPotion", true, bow, RESPIRATION, player)) {
                             // Splash potion = throw
-                            // TODO: replace with potion API in 1.1-R4
                             net.minecraft.server.World nativeWorld = ((CraftWorld)world).getHandle();
                             net.minecraft.server.EntityPotion potion = new net.minecraft.server.EntityPotion(nativeWorld, 
                                 dest.getX(), dest.getY(), dest.getZ(), 
                                 itemStack.getDurability());
                             //potion.a(0, 0.1, 0, 1.375f, 6.0f);
                             nativeWorld.addEntity(potion);
-                        } else if (itemStack.getType().isBlock()) {
+
+                            // TODO: replace with potion API in 1.1-R4
+                            //ThrownPotion pot = (ThrownPotion)world.spawn(loc, ThrownPotion.class);
+                        } else if (itemStack.getType().isBlock() && getConfigBoolean("allowBlock", true, bow, RESPIRATION, player)) {
                             // Blocks = build
                             // TODO: better building than straight up vertical columns? build around?
                             Block build = dest.getBlock().getRelative(0, i, 0);
@@ -1915,11 +1917,13 @@ class EnchantMoreListener implements Listener {
                                 build.setType(itemStack.getType());
                             }
                         } else {
-                            // Other item, we can't do any better, just teleport it
-                            // TODO: can (and should) we place/use _all_ placeable items? using native methods?? (right-click)
-                            // so could automatically place custom items like BuildCraft oil buckets??
-                            passenger.teleport(dest);
-                            remove = false; 
+                            if (getConfigBoolean("allowItem", true, bow, RESPIRATION, player)) {
+                                // Other item, we can't do any better, just teleport it
+                                // TODO: can (and should) we place/use _all_ placeable items? using native methods?? (right-click)
+                                // so could automatically place custom items like BuildCraft oil buckets??
+                                passenger.teleport(dest);
+                                remove = false; 
+                            }
                         }
                     }
                     // Remove item stack entity if it was instantiated into something

@@ -7,7 +7,7 @@ X   X
     * Remove Axe + Flame II, Pickaxe + Flame II, Shovel + Flame II (see above)
     * Add configurable duration and amplifier to Axe + Aqua Affinity = slowness effect
     * Add configurable trunk width and two extra block IDs to Axe + Power = fell tree
-    * Add support for chopping down RP2/IC2 Rubbertrees with Axe + Power = fell tree
+    * Support for chopping down RP2/IC2 Rubbertrees with Axe + Power = fell tree
     * Add configurable velocity multipler to Boots + Power = witch's broom
     * Add configurable Y velocity to Boots + Punch = hover jump
     * Nerf Boots + Punch = hover jump, now jumps 0.7 instead of 1.0 by default
@@ -15,6 +15,7 @@ X   X
     * Add configurable range and duration to Bow + Bane of Arthropods = poison
     * Improve Bow + Efficiency = instant shoot, now cannot pickup the shot arrows
     * Add configurable power to Bow + Fire Aspect = fiery explosions
+    * Add configurable payloads (spawn egg, TNT, bucket, potion, etc.) to Bow + Respiration = stapled arrows
     * Fix Sword + Infinity, now damages item on use
 
 2012-03-13  0.8.2
