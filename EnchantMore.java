@@ -1088,37 +1088,17 @@ class EnchantMoreListener implements Listener {
 
             // Sword + Silk Touch = capture (right-click to drop creature/boat/minecart/primedTNT as item)
             if (hasEnch(item, SILK_TOUCH, player)) {
-                // TODO: can we use built-in item -> entity placement, and reverse it?
-                // mainly, I want to use this with Flan's Plane mod, so I can re-acquire planes that
-                // glitched falling into blocks, as items so I can replace them..
-                if (entity instanceof Creature) {
-                    // creature -> spawn egg
-                    // TODO: what is MobCatcher?
-                    Creature creature = (Creature)entity;
-                    short eid = getEntityTypeId(creature);
+                EntityType type = entity.getType();
 
-                    if (eid == -1) {
-                        // sorry, can't capture this :(
-                        // play an effect so the player knows something is happening
-                        world.playEffect(entity.getLocation(), Effect.SMOKE, 0);
-                    } else {
-                        world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MONSTER_EGG, 1, eid));
-                        entity.remove();
-                    }
-                } else if (entity instanceof Boat) {
-                    // boat item.. very useful (some plugins make boats drop items when broken)
-                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.BOAT, 1));
-                    entity.remove();
-                } else if (entity instanceof Minecart) {
-                    // minecart, not that useful, but quicker than breaking
-                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MINECART, 1));
-                    entity.remove();
-                } else if (entity instanceof TNTPrimed) {
-                    // primed TNT..cancel it! very useful in emergency situations
-                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.TNT, 1));
-                    entity.remove();
-                } else {
+                if (type == EntityType.UNKNOWN) {
+                    // silly Bukkit wrapper, you don't know what this is!
+                    // :(
+                    // TODO: bypass Bukkit to get modded entity types
+                    // would be very useful for mods like Flan's Planes or Hot Air Balloons or AnimalBikes, so can re-acquire glitched items
                     world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);
+                } else {
+                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MONSTER_EGG, 1, type.getTypeId()));
+                    entity.remove();
                 }
             }
 

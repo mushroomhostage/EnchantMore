@@ -1,6 +1,6 @@
 X   X   
-    * Add Sword + Blast Protection = shoot fireball (right-click)
     * Add Pickaxe + Silk Touch III = harvest endercrystal (right-click)
+    * Add Sword + Blast Protection = shoot fireball (right-click)
     * Add Sword + Feather Falling = launch victim (right-click)
     * Add Hoe + Knockback = eat dirt (right-click to knock into ground)
     * Add Boots + Feather Falling X = zero fall damage
@@ -20,7 +20,7 @@ X   X
     * Configurable velocity multipler to Bow + Sharpness = increase velocity
     * Configurable projectile/living entity teleportation in Bow + Silk Touch = magnetic arrows
     * Fix Sword + Infinity, now damages item on use
-    * Fix Chestplate + Knockback = reflect arrows, picking up reflected skeleton arrows
+    * Fix Chestplate + Knockback = reflect arrows, can no longer pickup reflected skeleton arrows
 
 2012-03-13  0.8.2
     * Add Sword + Punch = knock out of hand (right-click player)
