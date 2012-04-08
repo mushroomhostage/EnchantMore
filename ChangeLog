@@ -1,4 +1,4 @@
-X   X   
+2012-04-07  0.8.3
     * Add Pickaxe + Silk Touch III = harvest endercrystal (right-click)
     * Add Sword + Blast Protection = shoot fireball (right-click)
     * Add Sword + Feather Falling = launch victim (right-click)
@@ -21,6 +21,7 @@ X   X
     * Configurable projectile/living entity teleportation in Bow + Silk Touch = magnetic arrows
     * Fix Sword + Infinity, now damages item on use
     * Fix Chestplate + Knockback = reflect arrows, can no longer pickup reflected skeleton arrows
+    * Update for 1.2.5-R1.0
 
 2012-03-13  0.8.2
     * Add Sword + Punch = knock out of hand (right-click player)

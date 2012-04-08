@@ -1086,7 +1086,7 @@ class EnchantMoreListener implements Listener {
                 damage(item, player);
             }
 
-            // Sword + Silk Touch = capture (right-click to drop creature/boat/minecart/primedTNT as item)
+            // Sword + Silk Touch = capture (right-click to drop entity as item)
             if (hasEnch(item, SILK_TOUCH, player)) {
                 EntityType type = entity.getType();
 
