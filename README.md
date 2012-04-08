@@ -25,7 +25,7 @@ If you know of any other compatible plugins, let me know and I'll add them here.
 ignore canEnchantItem(), then it should be compatible with EnchantMore.)
 
 ## Available Effects
-*[Vote for your favorite!](http://dev.bukkit.org/server-mods/enchantmore/polls/what-is-your-favorite-enchantment-in-enchant-more-0/)*
+*[Vote for your favorites!](http://dev.bukkit.org/server-mods/enchantmore/polls/what-are-your-favorite-enchantments-in-enchant-more/)*
 
 * Axe + Aqua Affinity = slowness effect
 * Axe + Flame = [auto-smelt](http://dev.bukkit.org/server-mods/enchantmore/images/2-pickaxe-shovel-axe-flame-auto-smelt/)
