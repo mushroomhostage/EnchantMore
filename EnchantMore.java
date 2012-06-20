@@ -166,6 +166,8 @@ class EnchantMoreListener implements Listener {
         }
         // TODO: optional player permission support
 
+        // TODO: instead, should we check for permissions on player pickup?? more lightweight. but what about chests? listen for inventory close too?
+
         //plugin.log.info("hasEnch "+tool.getTypeId()+" "+ench.getId());
         return tool.containsEnchantment(ench);
     }
@@ -608,7 +610,7 @@ class EnchantMoreListener implements Listener {
                     "Weather "+world.getWeatherDuration());     // TODO: only if rain/storm?
 
                 player.sendMessage(
-                    "Block "+target.getTypeId() + ";" + target.getData()+" "+
+                    "Block "+target.getTypeId() + ";" + target.getData()+" ("+Material.getMaterial(target.getTypeId())+") "+
                     "Light "+target.getLightLevel() + " ("+target.getLightFromSky()+"/"+target.getLightFromBlocks()+") "+
                     (target.isBlockPowered() ? "Powered " : (target.isBlockIndirectlyPowered() ? " Powered (Indirect) " : "")) +
                     (target.isLiquid() ? "Liquid " : "")+
@@ -1097,8 +1099,15 @@ class EnchantMoreListener implements Listener {
                     // would be very useful for mods like Flan's Planes or Hot Air Balloons or AnimalBikes, so can re-acquire glitched items
                     world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);
                 } else {
-                    world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MONSTER_EGG, 1, type.getTypeId()));
-                    entity.remove();
+                    if (type == EntityType.PLAYER && !getConfigBoolean("capturePlayers", false, item, SILK_TOUCH, player)) {
+                        // Can't ghost out players! 
+                        // This has PvP implications, see https://github.com/mushroomhostage/exphc/issues/46
+                        // ..but, its an interesting effect, so its configurably allowed - "captured" players can't open chests, etc.
+                        world.playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);
+                    } else {
+                        world.dropItemNaturally(entity.getLocation(), new ItemStack(Material.MONSTER_EGG, 1, type.getTypeId()));
+                        entity.remove();
+                    }
                 }
             }
 
