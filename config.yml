@@ -271,6 +271,7 @@ effects:
         pardonCommand: 'pardon %s'
     Sword + Silk Touch:
         enable: true
+        capturePlayers: false   # whether should drop nonfunctional "player" spawn eggs
 
 
 # Canonical names of enchantments and their respective IDs
